@@ -1,0 +1,61 @@
+# copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
+#
+# This file is a part of Terminal.app. Terminal.app is free software; you
+# can redistribute it and/or modify it under the terms of the GNU General
+# Public License as published by the Free Software Foundation; version 2
+# of the License. See COPYING or main.m for more information.
+
+
+include $(GNUSTEP_MAKEFILES)/common.make
+
+APP_NAME = Terminal
+
+ADDITIONAL_OBJCFLAGS += -O2 -D$(subst -,_,$(GNUSTEP_HOST_OS))
+
+# Useful warnings:
+#	-W -Wformat=2 -Wno-sign-compare -Wpointer-arith \
+#	-Wbad-function-cast -Wcast-align -Wwrite-strings -Wstrict-prototypes \
+#	-Wmissing-prototypes -Wmissing-declarations \
+#	-Wnested-externs -Wno-unused-parameter
+
+Terminal_OBJC_FILES = \
+	main.m \
+	\
+	Services.m \
+	ServicesPrefs.m \
+	ServicesParameterWindowController.m \
+	\
+	TerminalWindow.m \
+	TerminalWindowPrefs.m \
+	\
+	TerminalView.m \
+	TerminalViewPrefs.m \
+	\
+	TerminalParser_Linux.m \
+	TerminalParser_LinuxPrefs.m \
+	\
+	PreferencesWindowController.m \
+	autokeyviewchain.m \
+	\
+	Label.m
+
+Terminal_LDFLAGS = -lutil
+
+Terminal_LOCALIZED_RESOURCE_FILES = Localizable.strings
+Terminal_LANGUAGES = English Swedish German French Spanish Hungarian Turkish \
+	Norwegian Russian
+
+Terminal_APPLICATION_ICON = Terminal.tiff
+Terminal_RESOURCE_FILES = \
+	Terminal.tiff DefaultTerminalServices.svcs \
+	cursor_line.tiff cursor_stroked.tiff cursor_filled.tiff \
+	cursor_inverted.tiff
+
+MAKE_STRINGS_OPTIONS = --aggressive-match --aggressive-remove
+
+
+GNUSTEP_INSTALLATION_DIR=$(GNUSTEP_SYSTEM_ROOT)
+
+
+include $(GNUSTEP_MAKEFILES)/application.make
+
