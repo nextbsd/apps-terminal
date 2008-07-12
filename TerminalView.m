@@ -2056,13 +2056,12 @@ improve? */
 		s=[TerminalView characterCellSize];
 		fx=s.width;
 		fy=s.height;
+
 		/* TODO: clear up font metrics issues with xlib/backart */
-		fx0=fabs(r.origin.x);
-		if (r.origin.y<0)
-			fy0=fy+r.origin.y;
-		else
-			fy0=r.origin.y;
-		NSDebugLLog(@"term",@"Bounding (%g %g)+(%g %g)",fx0,fy0,fx,fy);
+		NSLog(@"NSFont %@ info %@ size %g %@ %d", font, [font fontInfo], [font pointSize], NSStringFromRect([font boundingRectForGlyph: 'A']), [font glyphIsEncoded: 'A']);
+		fx0=-r.origin.x;
+		fy0=-r.origin.y;
+		NSDebugLLog(@"term",@"Bounding (%g %g)+(%g %g)",-fx0,-fy0,fx,fy);
 		font_encoding=[font mostCompatibleStringEncoding];
 		boldFont_encoding=[boldFont mostCompatibleStringEncoding];
 		NSDebugLLog(@"term",@"encoding %i and %i",
