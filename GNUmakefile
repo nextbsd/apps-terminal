@@ -1,4 +1,5 @@
-# copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
+# copyright 2002-2003 Alexander Malmberg <alexander@malmberg.org>
+# copyright 2008-2009 Riccardo Mottola
 #
 # This file is a part of Terminal.app. Terminal.app is free software; you
 # can redistribute it and/or modify it under the terms of the GNU General
@@ -10,6 +11,7 @@ include $(GNUSTEP_MAKEFILES)/common.make
 
 APP_NAME = Terminal
 PACKAGE_NAME = Terminal
+VERSION = 0.9.4
 
 ADDITIONAL_OBJCFLAGS += -O2 -D$(subst -,_,$(GNUSTEP_HOST_OS))
 
