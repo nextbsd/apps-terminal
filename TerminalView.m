@@ -105,8 +105,7 @@ int ptyMakeControllingTty(int *slaveFd, const char *slaveName)
 #ifdef TIOCNOTTY
     if ((fd = open(PATH_TTY, O_RDWR | O_NOCTTY)) >= 0 )
     {
-    	if(ioctl(fd, TIOCNOTTY, NULL) == -1)
-	    perror("forkpty:ioctol(TIOCNOTTY)");
+    	ioctl(fd, TIOCNOTTY, NULL)
 	close(fd);
     }
 #endif
