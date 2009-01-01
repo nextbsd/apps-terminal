@@ -1,5 +1,7 @@
 Terminal.app - copyright (c) 2002 Alexander Malmberg <alexander@malmberg.org>
 
+OpenPty and ForkPty replacements written by Riccardo Mottola, 2005-2008
+
 a terminal emulator for GNUstep
 
 This file is a part of Terminal.app. Terminal.app is free software; you
@@ -12,9 +14,13 @@ Installing
 ----------
 
 You'll need gnustep-base and gnustep-gui (or possibly some other
-openstep-like system). Recent versions are good. If you want to be able
-to use terminal services, you'll need a version of -gui newer than
-2002-06-12. The pty code is known to work on GNU/Linux and FreeBSD. Reports
+openstep-like system).
+The pty code is known to work on GNU/Linux and FreeBSD and NetBSD.
+Pty code replacement is provided and used by default on Solaris, where
+it is known to work. On other operating systems you might want to
+define USE_FORKPTY_REPLACEMENT in TerminalView.m
+
+Reports
 and/or patches for other systems are welcome.
 
 To build, run 'make'.

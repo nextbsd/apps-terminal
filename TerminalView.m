@@ -1,5 +1,6 @@
 /*
 copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
+forkpty replacement, 2005-2008 Riccardo Mottola <rmottola@users.sf.net>
 
 This file is a part of Terminal.app. Terminal.app is free software; you
 can redistribute it and/or modify it under the terms of the GNU General
@@ -12,6 +13,17 @@ TODO: Move pty and child process handling to another class. Make this a
 stupid but fast character cell display view.
 */
 
+/* define this if you need the forkpty replacement and it is not automatically
+activated */
+#undef USE_FORKPTY_REPLACEMENT
+
+
+/* check for solaris */
+#if defined (__SVR4) && defined (__sun)
+#define __SOLARIS__ 1
+#define USE_FORKPTY_REPLACEMENT 1
+#endif
+
 #include <math.h>
 #include <unistd.h>
 
@@ -20,6 +32,7 @@ stupid but fast character cell display view.
 #  include <sys/ioctl.h>
 #  include <termios.h>
 #  include <pcap.h>
+#define TCSETS TIOCSETA
 #else
 #ifdef freebsd
 #  include <sys/types.h>
@@ -37,7 +50,7 @@ stupid but fast character cell display view.
 #include <unistd.h>
 #include <fcntl.h>
 #ifndef freebsd
-#ifndef __NetBSD__
+#if !(defined (__NetBSD__)) && !(defined (__SOLARIS__))
 #  include <pty.h>
 #endif
 #endif
@@ -62,6 +75,207 @@ stupid but fast character cell display view.
 
 #include "TerminalViewPrefs.h"
 
+
+/* forkpty replacement */
+#ifdef USE_FORKPTY_REPLACEMENT
+#include <stdio.h> /* for stderr and perror*/
+#include <errno.h> /* for int errno */
+#include <fcntl.h>
+#include <sys/termios.h>
+#include <sys/types.h>
+#include <unistd.h>
+#include <stropts.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define PATH_TTY "/dev/tty"
+
+int ptyMakeControllingTty(int *slaveFd, const char *slaveName)
+{
+    pid_t pgid;
+    int   fd;
+    
+    if (!slaveFd || *slaveFd < 0)
+    {
+    	perror("slaveFd invalid");
+	return -1;
+    }
+    
+    /* disconnect from the old controlling tty */
+#ifdef TIOCNOTTY
+    if ((fd = open(PATH_TTY, O_RDWR | O_NOCTTY)) >= 0 )
+    {
+    	if(ioctl(fd, TIOCNOTTY, NULL) == -1)
+	    perror("forkpty:ioctol(TIOCNOTTY)");
+	close(fd);
+    }
+#endif
+
+
+    pgid = setsid(); /* create session and set process ID */
+    if (pgid == -1)
+    {
+    	if (errno == EPERM)
+    	    perror("EPERM error on setsid");
+    }
+
+    /* Make it our controlling tty */
+#ifdef TIOCSCTTY
+    if (ioctl(*slaveFd, TIOCSCTTY, NULL) == -1)
+    	return -1;
+#else
+#warning TIOCSCTTY replacement
+    {
+    	/* first terminal we open after setsid() is the controlling one */
+    	char *controllingTty;
+    	int ctr_fdes;
+ 	
+    	controllingTty = ttyname(*slaveFd);
+    	ctr_fdes = open(controllingTty, O_RDWR);
+    	close(ctr_fdes);
+    }
+#endif /* TIOCSCTTY */
+
+#if defined (TIOCSPGRP)
+    ioctl (0, TIOCSPGRP, &pgid);
+#else
+#warning no TIOCSPGRP
+    tcsetpgrp (0, pgid);
+#endif
+
+
+
+    if ((fd = open(slaveName, O_RDWR)) >= 0)
+    {
+    	close(*slaveFd);
+	*slaveFd = fd;
+	printf("Got new filedescriptor...\n");
+    }
+    if ((fd = open(PATH_TTY, O_RDWR)) == -1)
+    	return -1;
+    
+    close(fd);
+
+    return 0;
+}
+
+int openpty(int *amaster, int *aslave, char *name, const struct termios *termp, const struct winsize *winp)
+{
+    int fdm, fds;
+    char *slaveName;
+    
+    fdm = open("/dev/ptmx", O_RDWR); /* open master */
+    if (fdm == -1)
+    {
+    	perror("openpty:open(master)");
+	return -1;
+    }
+    if(grantpt(fdm))                    /* grant access to the slave */
+    {
+    	perror("openpty:grantpt(master)");
+	close(fdm);
+	return -1;
+    }
+    if(unlockpt(fdm))                /* unlock the slave terminal */
+    {
+    	perror("openpty:unlockpt(master)");
+	close(fdm);
+	return -1;
+    }
+    
+    slaveName = ptsname(fdm);        /* get name of the slave */
+    if (slaveName == NULL)
+    {
+    	perror("openpty:ptsname(master)");
+	close(fdm);
+	return -1;
+    }
+    if (name)                        /* of name ptr not null, copy it name back */
+        strcpy(name, slaveName);
+    
+    fds = open(slaveName, O_RDWR | O_NOCTTY); /* open slave */
+    if (fds == -1)
+    {
+    	perror("openpty:open(slave)");
+	close (fdm);
+	return -1;
+    }
+    
+    /* ldterm and ttcompat are automatically pushed on the stack on some systems*/
+#ifdef __SOLARIS__
+    if (ioctl(fds, I_PUSH, "ptem") == -1) /* pseudo terminal module */
+    {
+    	perror("openpty:ioctl(I_PUSH, ptem");
+	close(fdm);
+	close(fds);
+	return -1;
+    }
+    if (ioctl(fds, I_PUSH, "ldterm") == -1)  /* ldterm must stay atop ptem */
+    {
+	perror("forkpty:ioctl(I_PUSH, ldterm");
+	close(fdm);
+	close(fds);
+	return -1;
+    }
+#endif
+    
+    /* set terminal parameters if present */
+    if (termp)
+    	ioctl(fds, TCSETS, termp);
+    if (winp)
+        ioctl(fds, TIOCSWINSZ, winp);
+    
+    *amaster = fdm;
+    *aslave = fds;
+    return 0;
+}
+
+int forkpty (int *amaster, char *slaveName, const struct termios *termp, const struct winsize *winp)
+{
+    int fdm, fds; /* master and slave file descriptors */
+    pid_t pid;
+    
+    if (openpty(&fdm, &fds, slaveName, termp, winp) == -1)
+    {
+    	perror("forkpty:openpty()");
+	return -1;
+    }
+
+
+    pid = fork();
+    if (pid == -1)
+    {
+        /* error */
+        perror("forkpty:fork()");
+	close(fdm);
+	close(fds);
+        return -1;
+    } else if (pid == 0)
+    {	
+        /* child */
+        ptyMakeControllingTty(&fds, slaveName);
+    	if (fds != STDIN_FILENO && dup2(fds, STDIN_FILENO) == -1)
+	    perror("error duplicationg stdin");
+	if (fds != STDOUT_FILENO && dup2(fds, STDOUT_FILENO) == -1)
+	    perror("error duplicationg stdout");
+	if (fds != STDERR_FILENO && dup2(fds, STDERR_FILENO) == -1)
+	    perror("error duplicationg stderr");
+	
+	if (fds != STDIN_FILENO && fds != STDOUT_FILENO && fds != STDERR_FILENO)
+	    close(fds);
+	
+	
+	close (fdm);
+    } else
+    {
+        /* father */
+        close (fds);
+	*amaster = fdm;
+    }
+    return pid;
+}
+
+#endif /* forpkty replacement */
 
 /* TODO */
 @interface NSView (unlockfocus)
