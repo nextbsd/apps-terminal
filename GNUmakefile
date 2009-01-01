@@ -9,6 +9,7 @@
 include $(GNUSTEP_MAKEFILES)/common.make
 
 APP_NAME = Terminal
+PACKAGE_NAME = Terminal
 
 ADDITIONAL_OBJCFLAGS += -O2 -D$(subst -,_,$(GNUSTEP_HOST_OS))
 
