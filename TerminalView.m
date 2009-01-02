@@ -33,16 +33,16 @@ activated */
 #  include <termios.h>
 #  include <pcap.h>
 #define TCSETS TIOCSETA
-#else
-#ifdef freebsd
+#elif defined(freebsd)
 #  include <sys/types.h>
 #  include <sys/ioctl.h>
 #  include <termios.h>
 #  include <libutil.h>
 #  include <pcap.h>
+#elif defined(__OpenBSD__)
+#  include <termios.h>
 #else
 #  include <termio.h>
-#endif
 #endif
 
 #include <sys/time.h>
@@ -50,7 +50,7 @@ activated */
 #include <unistd.h>
 #include <fcntl.h>
 #ifndef freebsd
-#if !(defined (__NetBSD__)) && !(defined (__SOLARIS__))
+#if !(defined (__NetBSD__)) && !(defined (__SOLARIS__)) && !(defined(__OpenBSD__))
 #  include <pty.h>
 #endif
 #endif
