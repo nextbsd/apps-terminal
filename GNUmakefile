@@ -13,7 +13,7 @@ APP_NAME = Terminal
 PACKAGE_NAME = Terminal
 VERSION = 0.9.4
 
-ADDITIONAL_OBJCFLAGS += -O2 -D$(subst -,_,$(GNUSTEP_HOST_OS))
+ADDITIONAL_OBJCFLAGS += -O2 
 
 # Useful warnings:
 #	-W -Wformat=2 -Wno-sign-compare -Wpointer-arith \
@@ -42,7 +42,13 @@ Terminal_OBJC_FILES = \
 	\
 	Label.m
 
-Terminal_LDFLAGS = -lutil
+
+
+ifeq ($(findstring solaris, $(GNUSTEP_TARGET_OS)), solaris)
+ Terminal_LDFLAGS = 
+else
+ Terminal_LDFLAGS = -lutil
+endif
 
 Terminal_LOCALIZED_RESOURCE_FILES = Localizable.strings
 Terminal_LANGUAGES = English Swedish German French Spanish Hungarian Turkish \
