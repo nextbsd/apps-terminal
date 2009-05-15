@@ -1,3 +1,8 @@
+2009-05-15 17:35-EDT Gregory John Casamento <greg_casamento@yahoo.com>
+
+	* GNUmakefile: Added plist to makefile.
+	* TerminalInfo.plist: Updated information in plist.
+
 2009-01-02 Riccardo Mottola <rmottola@users.sf.net>
 	
 	* TerminalView.m: OpenBSD portability
