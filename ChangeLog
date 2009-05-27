@@ -1,3 +1,16 @@
+2009-05-27 Riccardo Mottola <rmottola@users.sf.net>
+
+	* TerminalParser_Linux.m: imported a patch by Jeff Teunissen, Backbone:
+	Terminal interpreted certain UTF-8 code sequences wrong, like e2 95 9b
+(U+255B, which the bug transforms into e2 95 94).
+	It turns out that it's due to the Linux console emulation,
+which interprets the 0x9b character (CSI, which is ESC with the high order
+bit set) to begin a control command.
+	Change the terminal emulation to only switch into command scanning mode if we aren't in the middle of a multi-byte character (that is, if iconv says
+it's not done processing the current character 0x9b is just a byte to be
+consumed). This is the only 8-bit character that the console treats specially, so
+this should be a complete fix.
+
 2009-05-15 17:35-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* GNUmakefile: Added plist to makefile.
