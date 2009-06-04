@@ -685,7 +685,7 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 //		del(currcons);
 		return;
 	case 128+27:			// This kills UTF-8 unless we do some funky stuff
-		if (!utf && !utf_count) {
+		if (!utf_count) {
 			vc_state = ESsquare;
 			return;
 		}
@@ -1120,9 +1120,9 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 			screen_char_t ch;
 
 			char *inp;
-			int in_size;
+			size_t in_size;
 			char *outp;
-			int out_size;
+			size_t out_size;
 			int char_width;
 
 			int ret;
@@ -1215,10 +1215,10 @@ Translates '\n' to '\r' when sending.
 	if (iconv_input_state)
 	{
 		unsigned int *inp;
-		int insize;
+		size_t insize;
 		char *outp;
 		char buf[16+1];
-		int outsize;
+		size_t outsize;
 		int ret;
 	
 		for (i=0;i<l;i++)
@@ -1251,7 +1251,7 @@ Translates '\n' to '\r' when sending.
 			if (ucs<256)
 			{
 				buf=ucs;
-				[ts ts_sendCString: &buf  length: 1];
+				[ts ts_sendCString: (char *)&buf  length: 1];
 			}
 			else
 				NSBeep();
@@ -1386,7 +1386,7 @@ Translates '\n' to '\r' when sending.
 		unsigned char tmp;
 		tmp=ch2;
 		NSDebugLLog(@"key",@"  send %02x",ch2);
-		[ts ts_sendCString: &tmp  length: 1];
+		[ts ts_sendCString: (char *)&tmp  length: 1];
 	}
 }
 
