@@ -38,6 +38,7 @@ static NSString
 	*BoldTerminalFontKey=@"BoldTerminalFont",
 	*BoldTerminalFontSizeKey=@"BoldTerminalFontSize",
 	*UseMultiCellGlyphsKey=@"UseMultiCellGlyphs",
+	*BlackOnWhiteKey=@"BlackOnWhite",
 	*CursorStyleKey=@"CursorStyle",
 	*ScrollBackLinesKey=@"ScrollBackLines",
 
@@ -50,6 +51,7 @@ static NSString
 static NSFont *terminalFont,*boldTerminalFont;
 
 static BOOL useMultiCellGlyphs;
+static BOOL blackOnWhite;
 
 static float brightness[3]={0.6,0.8,1.0};
 static float saturation[3]={1.0,1.0,0.75};
@@ -96,6 +98,7 @@ static int scrollBackLines;
 		}
 
 		useMultiCellGlyphs=[ud boolForKey: UseMultiCellGlyphsKey];
+		blackOnWhite=[ud boolForKey: BlackOnWhiteKey];
 
 		cursorStyle=[ud integerForKey: CursorStyleKey];
 		if ([ud objectForKey: CursorColorRKey])
@@ -142,6 +145,11 @@ static int scrollBackLines;
 	return useMultiCellGlyphs;
 }
 
++(BOOL) blackOnWhite
+{
+	return blackOnWhite;
+}
+
 +(const float *) brightnessForIntensities
 {
 	return brightness;
@@ -169,7 +177,26 @@ static int scrollBackLines;
 
 -(void) save
 {
+	BOOL	newState;
+
 	if (!top) return;
+
+	newState = !![b_blackOnWhite state];
+	if (blackOnWhite != newState)
+	  {
+	    blackOnWhite = newState;
+	    [ud setBool: blackOnWhite
+		 forKey: BlackOnWhiteKey];
+	    if (blackOnWhite == YES)
+	      {
+		[w_cursorColor setColor: [NSColor blackColor]];
+	      }
+	    else
+	      {
+		[w_cursorColor setColor: [NSColor whiteColor]];
+	      }
+	    [w_cursorColor setNeedsDisplay];
+	  }
 
 	cursorStyle=[[m_cursorStyle selectedCell] tag];
 	[ud setInteger: cursorStyle
@@ -219,6 +246,7 @@ static int scrollBackLines;
 	NSFont *f;
 
 	[b_useMultiCellGlyphs setState: useMultiCellGlyphs];
+	[b_blackOnWhite setState: blackOnWhite];
 
 	[m_cursorStyle selectCellWithTag: [[self class] cursorStyle]];
 	[w_cursorColor setColor: [[self class] cursorColor]];
@@ -360,6 +388,13 @@ static int scrollBackLines;
 
 			b=b_useMultiCellGlyphs=[[NSButton alloc] init];
 			[b setTitle: _(@"Handle wide (multi-cell) glyphs")];
+			[b setButtonType: NSSwitchButton];
+			[b sizeToFit];
+			[top addView: b enablingYResizing: NO];
+			DESTROY(b);
+
+			b=b_blackOnWhite=[[NSButton alloc] init];
+			[b setTitle: _(@"Display black on white text")];
 			[b setButtonType: NSSwitchButton];
 			[b sizeToFit];
 			[top addView: b enablingYResizing: NO];

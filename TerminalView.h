@@ -42,6 +42,7 @@ struct selection_range
 	float fx,fy,fx0,fy0;
 
 	BOOL use_multi_cell_glyphs;
+	BOOL blackOnWhite;
 
 	struct
 	{

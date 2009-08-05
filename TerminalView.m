@@ -411,10 +411,17 @@ static void set_background(NSGraphicsContext *gc,
 }
 
 static void set_foreground(NSGraphicsContext *gc,
-	unsigned char color,unsigned char in)
+	unsigned char color,unsigned char in, BOOL blackOnWhite)
 {
 	int fg=color;
 	float h,s,b;
+
+if (blackOnWhite)
+  {
+    if (color == 0) { fg = 7; in = 2; }		// Black becomes white
+    else if (color == 7) { fg = 0; in = 0; }	// White becomes black
+    //else in = 3;				// Other colors are saturated
+  }
 
 	if (fg>=8)
 	{
@@ -516,7 +523,7 @@ static void set_foreground(NSGraphicsContext *gc,
 		are combined and drawn with a single rectfill. */
 		l_color=0;
 		l_attr=0;
-		set_foreground(cur,l_color,l_attr);
+		set_foreground(cur,l_color,l_attr,blackOnWhite);
 		for (iy=y0;iy<y1;iy++)
 		{
 			ry=iy+current_scroll;
@@ -567,7 +574,7 @@ static void set_foreground(NSGraphicsContext *gc,
 
 						l_color=color;
 						l_attr=ch->attr&0x03;
-						set_foreground(cur,l_color,l_attr);
+						set_foreground(cur,l_color,l_attr,blackOnWhite);
 					}
 				}
 				else
@@ -630,7 +637,7 @@ static void set_foreground(NSGraphicsContext *gc,
 						{
 							l_color=color;
 							l_attr=ch->attr&0x03;
-							set_foreground(cur,l_color,l_attr);
+							set_foreground(cur,l_color,l_attr,blackOnWhite);
 						}
 					}
 					else
@@ -2282,6 +2289,7 @@ improve? */
 	}
 
 	use_multi_cell_glyphs=[TerminalViewDisplayPrefs useMultiCellGlyphs];
+	blackOnWhite=[TerminalViewDisplayPrefs blackOnWhite];
 
 	screen=malloc(sizeof(screen_char_t)*sx*sy);
 	memset(screen,0,sizeof(screen_char_t)*sx*sy);
