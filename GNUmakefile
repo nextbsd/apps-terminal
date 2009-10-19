@@ -45,7 +45,7 @@ Terminal_OBJC_FILES = \
 
 
 ifeq ($(findstring solaris, $(GNUSTEP_TARGET_OS)), solaris)
- Terminal_LDFLAGS = 
+ Terminal_LDFLAGS = -liconv
 else
  Terminal_LDFLAGS = -lutil
 endif
