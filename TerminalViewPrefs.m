@@ -489,10 +489,6 @@ static int scrollBackLines;
 	[self _pickFont];
 }
 
-/*
-TODO: The return type here should be (void), but due to forwarding issues in
--base, it has to be (id) to avoid a return type mismatch error
-*/
 -(void) changeFont: (id)sender
 {
 	NSFont *f;
