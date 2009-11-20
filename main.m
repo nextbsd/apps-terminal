@@ -228,6 +228,8 @@ copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
 {
 	NSArray *args=[[NSProcessInfo processInfo] arguments];
 
+	[TerminalServices updateServicesPlist];
+
 	[NSApp setServicesProvider: [[TerminalServices alloc] init]];
 
 	if ([args count]>1)

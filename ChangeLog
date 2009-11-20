@@ -1,3 +1,7 @@
+2009-10-20 Riccardo Mottola <rmottola@users.sf.net>
+
+	* main.m : regenerate services plist on startup
+
 2009-08-05 Richard Frith-Macdonald <rfm@gnu.org>
 	* TerminalView.h
 	* TerminalView.m
@@ -24,15 +28,15 @@ this should be a complete fix.
 	* TerminalInfo.plist: Updated information in plist.
 
 2009-01-02 Riccardo Mottola <rmottola@users.sf.net>
-	
+
 	* TerminalView.m: OpenBSD portability
 
 2009-01-01 Riccardo Mottola <rmottola@users.sf.net>
-	
+
 	* TerminalView.m: ForkPty and OpenPty replacements
 
 2008-07-12 Riccardo Mottola <rmottola@users.sf.net>
-	
+
 	* TerminalView.m: Remove font metric hack for xlib and art backend
 	(after fixes in backend, requires backend date 12 July 2008).
 	Patch by Fred Kiefer <FredKiefer@gmx.de>
