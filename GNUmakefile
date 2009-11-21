@@ -13,7 +13,6 @@ APP_NAME = Terminal
 PACKAGE_NAME = Terminal
 VERSION = 0.9.5
 
-ADDITIONAL_OBJCFLAGS += -O2 
 
 # Useful warnings:
 #	-W -Wformat=2 -Wno-sign-compare -Wpointer-arith \
