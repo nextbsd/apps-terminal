@@ -252,7 +252,7 @@ won't be necessary.
 
 -(NSMethodSignature *) methodSignatureForSelector: (SEL)sel
 {
-	return [current methodSignatureForSelector: sel];
+	return [super methodSignatureForSelector: sel];
 }
 
 @end
