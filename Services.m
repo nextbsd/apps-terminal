@@ -50,7 +50,7 @@ of the License. See COPYING or main.m for more information.
 	NSString *cmdline;
 	NSString *data;
 
-
+	NSLog(@"run service %@\n",name);
 	NSDebugLLog(@"service",@"run service %@\n",name);
 	if (!info)
 	{
@@ -74,7 +74,8 @@ of the License. See COPYING or main.m for more information.
 
 	NSDebugLLog(@"service",@"cmdline='%@' %i %i %i %i",
 		cmdline,type,ret_data,input,accepttypes);
-
+	NSLog(@"cmdline='%@' %i %i %i %i",
+		cmdline,type,ret_data,input,accepttypes);
 	data=nil;
 	if (input && accepttypes&ACCEPT_STRING &&
 	    (data=[pb stringForType: NSStringPboardType]))
@@ -87,6 +88,7 @@ of the License. See COPYING or main.m for more information.
 	}
 
 	NSDebugLLog(@"service",@"got data '%@'",data);
+	NSLog(@"got data '%@'",data);
 
 	if (input==INPUT_STDIN)
 	{
@@ -156,6 +158,7 @@ of the License. See COPYING or main.m for more information.
 	}
 
 	NSDebugLLog(@"service",@"final command line='%@'",cmdline);
+	NSLog(@"final command line='%@'",cmdline);
 
 	switch (type)
 	{
