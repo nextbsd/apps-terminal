@@ -80,8 +80,8 @@ Terminal services
 Terminal.app can provide services for other applications by piping the
 selection through arbitrary commands. Services are configured in one of
 the preferences panel's tabs. The first time you open this tab, a default
-set of services will be loaded. To save these where make_services will
-actually find them, press 'Apply and save'. This will also run
+set of services will be loaded. They are automatically added the first time
+so that they appear in the services menu. This will also run
 make_services to update the services list, but it may take up to 30
 seconds for running applications to notice the change.
 
