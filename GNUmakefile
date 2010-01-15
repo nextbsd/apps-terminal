@@ -11,7 +11,7 @@ include $(GNUSTEP_MAKEFILES)/common.make
 
 APP_NAME = Terminal
 PACKAGE_NAME = Terminal
-VERSION = 0.9.6
+VERSION = 0.9.7b
 
 
 # Useful warnings:
@@ -51,7 +51,7 @@ endif
 
 Terminal_LOCALIZED_RESOURCE_FILES = Localizable.strings
 Terminal_LANGUAGES = English Swedish German French Spanish Hungarian Turkish \
-	Norwegian Russian
+	Norwegian Russian Italian
 
 Terminal_APPLICATION_ICON = Terminal.tiff
 Terminal_RESOURCE_FILES = \

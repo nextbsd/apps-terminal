@@ -1,3 +1,9 @@
+2010-01-16 Riccardo Mottola <rmottola@users.sf.net>
+
+	* Italian.lproj/Localizable.strings,
+	GNUMakefile: added italian translation, revised version
+	of the draft provided by Guido Agostini
+
 2009-12-24 Riccardo Mottola <rmottola@users.sf.net>
 
 	* PreferencesWindowController.m : correct invocation signature
