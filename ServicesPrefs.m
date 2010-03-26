@@ -1,5 +1,6 @@
 /*
 copyright 2002 Alexander Malmberg <alexander@malmberg.org>
+2009-2010 GAP Project
 
 This file is a part of Terminal.app. Terminal.app is free software; you
 can redistribute it and/or modify it under the terms of the GNU General
@@ -7,25 +8,27 @@ Public License as published by the Free Software Foundation; version 2
 of the License. See COPYING or main.m for more information.
 */
 
-#include <Foundation/NSString.h>
-#include <Foundation/NSUserDefaults.h>
-#include <AppKit/NSButton.h>
-#include <AppKit/NSPopUpButton.h>
-#include <AppKit/NSTextField.h>
-#include <AppKit/NSTableView.h>
-#include <AppKit/NSTableColumn.h>
-#include <AppKit/NSScrollView.h>
-#include <AppKit/NSClipView.h>
-#include <AppKit/NSBox.h>
-#include <GNUstepGUI/GSVbox.h>
-#include <GNUstepGUI/GSHbox.h>
-#include <AppKit/NSSavePanel.h>
-#include <AppKit/NSOpenPanel.h>
-#include "Label.h"
+#import <Foundation/NSString.h>
+#import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSValue.h>
+#import <Foundation/NSBundle.h>
+#import <AppKit/NSButton.h>
+#import <AppKit/NSPopUpButton.h>
+#import <AppKit/NSTextField.h>
+#import <AppKit/NSTableView.h>
+#import <AppKit/NSTableColumn.h>
+#import <AppKit/NSScrollView.h>
+#import <AppKit/NSClipView.h>
+#import <AppKit/NSBox.h>
+#import <GNUstepGUI/GSVbox.h>
+#import <GNUstepGUI/GSHbox.h>
+#import <AppKit/NSSavePanel.h>
+#import <AppKit/NSOpenPanel.h>
+#import "Label.h"
 
-#include "ServicesPrefs.h"
+#import "ServicesPrefs.h"
 
-#include "Services.h"
+#import "Services.h"
 
 
 @implementation TerminalServicesPrefs

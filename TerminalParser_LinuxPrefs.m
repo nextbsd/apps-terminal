@@ -7,15 +7,17 @@ Public License as published by the Free Software Foundation; version 2
 of the License. See COPYING or main.m for more information.
 */
 
-#include <Foundation/NSString.h>
-#include <Foundation/NSUserDefaults.h>
-#include <AppKit/NSPopUpButton.h>
-#include <AppKit/NSBox.h>
-#include <GNUstepGUI/GSTable.h>
-#include <GNUstepGUI/GSVbox.h>
-#include "Label.h"
+#import <Foundation/NSString.h>
+#import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSBundle.h>
+#import <AppKit/NSPopUpButton.h>
+#import <AppKit/NSBox.h>
+#import <GNUstepGUI/GSTable.h>
+#import <GNUstepGUI/GSVbox.h>
+#import "Label.h"
 
-#include "TerminalParser_LinuxPrefs.h"
+#import "TerminalParser_LinuxPrefs.h"
 
 
 static NSUserDefaults *ud;

@@ -1,29 +1,33 @@
 /*
 copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
 
+2009-2010 GAP Project
+
 This file is a part of Terminal.app. Terminal.app is free software; you
 can redistribute it and/or modify it under the terms of the GNU General
 Public License as published by the Free Software Foundation; version 2
 of the License. See COPYING or main.m for more information.
 */
 
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSUserDefaults.h>
-#include <AppKit/NSBox.h>
-#include <AppKit/NSColor.h>
-#include <AppKit/NSColorPanel.h>
-#include <AppKit/NSColorWell.h>
-#include <AppKit/NSFont.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSTextField.h>
-#include <AppKit/NSFontManager.h>
-#include <GNUstepGUI/GSVbox.h>
-#include <GNUstepGUI/GSHbox.h>
-#include "Label.h"
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSUserDefaults.h>
+#import <AppKit/NSBox.h>
+#import <AppKit/NSColor.h>
+#import <AppKit/NSColorPanel.h>
+#import <AppKit/NSColorWell.h>
+#import <AppKit/NSFont.h>
+#import <AppKit/NSGraphics.h>
+#import <AppKit/NSImage.h>
+#import <AppKit/NSTextField.h>
+#import <AppKit/NSFontManager.h>
+#import <AppKit/NSButtonCell.h>
+#import <AppKit/NSMatrix.h>
+#import <GNUstepGUI/GSVbox.h>
+#import <GNUstepGUI/GSHbox.h>
+#import "Label.h"
 
-#include "TerminalViewPrefs.h"
+#import "TerminalViewPrefs.h"
 
 
 NSString *TerminalViewDisplayPrefsDidChangeNotification=

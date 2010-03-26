@@ -1,5 +1,6 @@
 /*
 copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
+2009-2010 GAP Project
 
 This file is a part of Terminal.app. Terminal.app is free software; you
 can redistribute it and/or modify it under the terms of the GNU General
@@ -16,19 +17,20 @@ lots borrowed from linux/drivers/char/console.c, GNU GPL:ed
  */
 
 
-#include <Foundation/NSString.h>
-#include <Foundation/NSDebug.h>
-#include <AppKit/NSGraphics.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSNotification.h>
+#import <AppKit/NSGraphics.h>
 
 #include <netinet/in.h>
 
 /* TODO */
-#include "TerminalViewPrefs.h"
-#include <AppKit/NSEvent.h>
+#import "TerminalViewPrefs.h"
+#import <AppKit/NSEvent.h>
 
-#include "TerminalParser_Linux.h"
+#import "TerminalParser_Linux.h"
 
-#include "TerminalParser_LinuxPrefs.h"
+#import "TerminalParser_LinuxPrefs.h"
 
 
 #include "charmaps.h"
