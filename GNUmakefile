@@ -11,7 +11,7 @@ include $(GNUSTEP_MAKEFILES)/common.make
 
 APP_NAME = Terminal
 PACKAGE_NAME = Terminal
-VERSION = 0.9.7b
+VERSION = 0.9.7
 
 
 # Useful warnings:
