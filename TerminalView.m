@@ -1978,7 +1978,8 @@ Handle master_fd
 		}
 
 		if (cdirectory)
-			chdir(cdirectory);
+			if (chdir(cdirectory) < 0)
+				fprintf(stderr, "Unable do set directory: %s\n", cdirectory);
 		putenv("TERM=linux");
 		putenv("TERM_PROGRAM=GNUstep_Terminal");
 		execv(cpath,(char *const*)cargs);
