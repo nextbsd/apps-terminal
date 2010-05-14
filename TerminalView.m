@@ -455,7 +455,7 @@ if (blackOnWhite)
 -(void) drawRect: (NSRect)r
 {
 	int ix,iy;
-	unsigned char buf[8];
+	char buf[8];
 	NSGraphicsContext *cur=GSCurrentContext();
 	int x0,y0,x1,y1;
 	NSFont *f,*current_font=nil;
@@ -710,8 +710,8 @@ if (blackOnWhite)
 						}
 						else
 						{
-							unsigned char *pbuf=buf;
-							int dlen=sizeof(buf)-1;
+						        unsigned char *pbuf=(unsigned char *)buf;
+							unsigned int dlen=sizeof(buf)-1;
 							GSFromUnicode(&pbuf,&dlen,&uch,1,encoding,NULL,GSUniTerminate);
 						}
 					}
