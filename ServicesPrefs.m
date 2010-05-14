@@ -12,6 +12,7 @@ of the License. See COPYING or main.m for more information.
 #import <Foundation/NSUserDefaults.h>
 #import <Foundation/NSValue.h>
 #import <Foundation/NSBundle.h>
+#import <Foundation/NSDictionary.h>
 #import <AppKit/NSButton.h>
 #import <AppKit/NSPopUpButton.h>
 #import <AppKit/NSTextField.h>
