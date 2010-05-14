@@ -1642,6 +1642,9 @@ Selection, copy/paste/services
 	int g;
 	struct selection_range r0,r1;
 
+	
+	r0.location=r0.length=0;
+	r1=r0;
 	first=YES;
 	ofs0=0; /* get compiler to shut up */
 	g=[e clickCount];
