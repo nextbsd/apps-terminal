@@ -21,6 +21,7 @@ of the License. See COPYING or main.m for more information.
 #import <AppKit/NSImage.h>
 #import <AppKit/NSTextField.h>
 #import <AppKit/NSFontManager.h>
+#import <AppKit/NSButton.h>
 #import <AppKit/NSButtonCell.h>
 #import <AppKit/NSMatrix.h>
 #import <GNUstepGUI/GSVbox.h>
@@ -293,7 +294,7 @@ static int scrollBackLines;
 
 		{
 			NSTextField *f;
-			NSButton *b;
+			NSButton *butt;
 			GSHbox *hb;
 
 			hb=[[GSHbox alloc] init];
@@ -317,13 +318,13 @@ static int scrollBackLines;
 			[top addView: [[[NSView alloc] init] autorelease] enablingYResizing: YES];
 
 			{
-				NSBox *b;
+				NSBox    *box;
 				GSTable *t;
 				NSColorWell *w;
 
-				b=[[NSBox alloc] init];
-				[b setAutoresizingMask: NSViewMinXMargin|NSViewMaxXMargin];
-				[b setTitle: _(@"Cursor")];
+				box=[[NSBox alloc] init];
+				[box setAutoresizingMask: NSViewMinXMargin|NSViewMaxXMargin];
+				[box setTitle: _(@"Cursor")];
 
 				t=[[GSTable alloc] initWithNumberOfRows: 2 numberOfColumns: 2];
 				[t setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
@@ -335,16 +336,16 @@ static int scrollBackLines;
 
 				{
 					NSMatrix *m;
-					NSButtonCell *b=[NSButtonCell new];
+					NSButtonCell *bc=[NSButtonCell new];
 					NSSize s;
 
-					[b setImagePosition: NSImageOnly];
-					[b setHighlightsBy: NSChangeBackgroundCellMask];
-					[b setShowsStateBy: NSChangeBackgroundCellMask];
+					[bc setImagePosition: NSImageOnly];
+					[bc setHighlightsBy: NSChangeBackgroundCellMask];
+					[bc setShowsStateBy: NSChangeBackgroundCellMask];
 
 					m=m_cursorStyle=[[NSMatrix alloc] initWithFrame: NSMakeRect(0,0,1,1)
 						mode: NSRadioModeMatrix
-						prototype: b
+						prototype: bc
 						numberOfRows: 1
 						numberOfColumns: 4];
 
@@ -381,28 +382,28 @@ static int scrollBackLines;
 
 
 				[t sizeToFit];
-				[b setContentView: t];
-				[b sizeToFit];
-				[top addView: b enablingYResizing: NO];
-				DESTROY(b);
+				[box setContentView: t];
+				[box sizeToFit];
+				[top addView: box enablingYResizing: NO];
+				DESTROY(box);
 			}
 
 			[top addView: [[[NSView alloc] init] autorelease] enablingYResizing: YES];
 
 
-			b=b_useMultiCellGlyphs=[[NSButton alloc] init];
-			[b setTitle: _(@"Handle wide (multi-cell) glyphs")];
-			[b setButtonType: NSSwitchButton];
-			[b sizeToFit];
-			[top addView: b enablingYResizing: NO];
-			DESTROY(b);
+			butt=b_useMultiCellGlyphs=[[NSButton alloc] init];
+			[butt setTitle: _(@"Handle wide (multi-cell) glyphs")];
+			[butt setButtonType: NSSwitchButton];
+			[butt sizeToFit];
+			[top addView: butt enablingYResizing: NO];
+			DESTROY(butt);
 
-			b=b_blackOnWhite=[[NSButton alloc] init];
-			[b setTitle: _(@"Display black on white text")];
-			[b setButtonType: NSSwitchButton];
-			[b sizeToFit];
-			[top addView: b enablingYResizing: NO];
-			DESTROY(b);
+			butt=b_blackOnWhite=[[NSButton alloc] init];
+			[butt setTitle: _(@"Display black on white text")];
+			[butt setButtonType: NSSwitchButton];
+			[butt sizeToFit];
+			[top addView: butt enablingYResizing: NO];
+			DESTROY(butt);
 
 
 			hb=[[GSHbox alloc] init];
@@ -420,13 +421,13 @@ static int scrollBackLines;
 			[hb addView: f  enablingXResizing: YES];
 			DESTROY(f);
 
-			b=[[NSButton alloc] init];
-			[b setTitle: _(@"Pick font...")];
-			[b setTarget: self];
-			[b setAction: @selector(_pickBoldTerminalFont:)];
-			[b sizeToFit];
-			[hb addView: b  enablingXResizing: NO];
-			DESTROY(b);
+			butt=[[NSButton alloc] init];
+			[butt setTitle: _(@"Pick font...")];
+			[butt setTarget: self];
+			[butt setAction: @selector(_pickBoldTerminalFont:)];
+			[butt sizeToFit];
+			[hb addView: butt  enablingXResizing: NO];
+			DESTROY(butt);
 
 			[top addView: hb enablingYResizing: NO];
 			DESTROY(hb);
@@ -447,13 +448,13 @@ static int scrollBackLines;
 			[hb addView: f  enablingXResizing: YES];
 			DESTROY(f);
 
-			b=[[NSButton alloc] init];
-			[b setTitle: _(@"Pick font...")];
-			[b setTarget: self];
-			[b setAction: @selector(_pickTerminalFont:)];
-			[b sizeToFit];
-			[hb addView: b  enablingXResizing: NO];
-			DESTROY(b);
+			butt=[[NSButton alloc] init];
+			[butt setTitle: _(@"Pick font...")];
+			[butt setTarget: self];
+			[butt setAction: @selector(_pickTerminalFont:)];
+			[butt sizeToFit];
+			[hb addView: butt  enablingXResizing: NO];
+			DESTROY(butt);
 
 			[top addView: hb enablingYResizing: NO];
 			DESTROY(hb);
