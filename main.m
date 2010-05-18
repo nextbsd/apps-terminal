@@ -1,6 +1,8 @@
 /*
 copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
 
+2009-2010 GAP Project
+
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
   the Free Software Foundation; version 2 of the License.
@@ -15,32 +17,36 @@ copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 */
 
-#include <Foundation/NSAutoreleasePool.h>
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSProcessInfo.h>
-#include <Foundation/NSRunLoop.h>
-#include <Foundation/NSUserDefaults.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSMenu.h>
-#include <AppKit/NSPanel.h>
-#include <AppKit/NSView.h>
+#import <Foundation/NSAutoreleasePool.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSProcessInfo.h>
+#import <Foundation/NSRunLoop.h>
+#import <Foundation/NSUserDefaults.h>
+#import <AppKit/NSApplication.h>
+#import <AppKit/NSMenu.h>
+#import <AppKit/NSMenuItem.h>
+#import <AppKit/NSPanel.h>
+#import <AppKit/NSView.h>
 
 /* For the quit panel: */
-#include <AppKit/NSButton.h>
-#include <AppKit/NSImage.h>
-#include <AppKit/NSImageView.h>
-#include <AppKit/NSScreen.h>
-#include <GNUstepGUI/GSVbox.h>
-#include <GNUstepGUI/GSHbox.h>
-#include "Label.h"
+#import <AppKit/NSTextField.h>
+#import <AppKit/NSButton.h>
+#import <AppKit/NSImage.h>
+#import <AppKit/NSImageView.h>
+#import <AppKit/NSScreen.h>
+#import <AppKit/NSBox.h>
+#import <GNUstepGUI/GSVbox.h>
+#import <GNUstepGUI/GSHbox.h>
+#import "Label.h"
 
 
-#include "PreferencesWindowController.h"
-#include "Services.h"
-#include "TerminalView.h"
-#include "TerminalWindow.h"
+#import "PreferencesWindowController.h"
+#import "Services.h"
+#import "TerminalView.h"
+#import "TerminalWindow.h"
 
 
 @interface NSMenu (helpers)
@@ -265,29 +271,29 @@ copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
 			[vb setBorder: 10.0];
 
 			{
-				NSButton *b;
+				NSButton *butt;
 				GSHbox *hb;
 
 				hb=[[GSHbox alloc] init];
 				[hb setAutoresizingMask: NSViewMinXMargin];
 
-				b=b_quit=[[NSButton alloc] init];
-				[b setTitle: _(@"Quit anyway")];
-				[b setTarget: self];
-				[b setAction: @selector(quitAnyway:)];
-				[b sizeToFit];
-				[hb addView: b  enablingXResizing: NO];
-				DESTROY(b);
+				butt=b_quit=[[NSButton alloc] init];
+				[butt setTitle: _(@"Quit anyway")];
+				[butt setTarget: self];
+				[butt setAction: @selector(quitAnyway:)];
+				[butt sizeToFit];
+				[hb addView: butt  enablingXResizing: NO];
+				DESTROY(butt);
 
-				b=b_dont=[[NSButton alloc] init];
-				[b setTitle: _(@"Don't quit")];
-				[b setImagePosition: NSImageRight];
-				[b setImage: [NSImage imageNamed: @"common_ret"]];
-				[b setTarget: self];
-				[b setAction: @selector(dontQuit:)];
-				[b sizeToFit];
-				[hb addView: b  enablingXResizing: NO withMinXMargin: 8.0];
-				DESTROY(b);
+				butt=b_dont=[[NSButton alloc] init];
+				[butt setTitle: _(@"Don't quit")];
+				[butt setImagePosition: NSImageRight];
+				[butt setImage: [NSImage imageNamed: @"common_ret"]];
+				[butt setTarget: self];
+				[butt setAction: @selector(dontQuit:)];
+				[butt sizeToFit];
+				[hb addView: butt  enablingXResizing: NO withMinXMargin: 8.0];
+				DESTROY(butt);
 
 				[vb addView: hb enablingYResizing: NO];
 				DESTROY(hb);

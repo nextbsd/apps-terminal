@@ -7,14 +7,10 @@ Public License as published by the Free Software Foundation; version 2
 of the License. See COPYING or main.m for more information.
 */
 
-#ifndef Label_h
-#define Label_h
-
-#include <AppKit/NSTextField.h>
+#import <Foundation/NSString.h>
+#import <AppKit/NSTextField.h>
 
 @interface NSTextField (label)
 + newLabel: (NSString *)title;
 @end
-
-#endif
 
