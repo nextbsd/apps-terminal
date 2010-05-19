@@ -1153,7 +1153,7 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 				out_size=4;
 				utf_count=0;	// reset the non-internal utf count
 
-				ret=iconv(iconv_state,(const char**)&inp,&in_size,&outp,&out_size);
+				ret=iconv(iconv_state,(const char **)&inp,&in_size,&outp,&out_size);
 
 				if (out_size==0)
 				{

@@ -26,6 +26,7 @@ copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
 #import <Foundation/NSRunLoop.h>
 #import <Foundation/NSUserDefaults.h>
 #import <AppKit/NSApplication.h>
+#import <AppKit/NSControl.h>
 #import <AppKit/NSMenu.h>
 #import <AppKit/NSMenuItem.h>
 #import <AppKit/NSPanel.h>

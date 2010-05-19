@@ -266,7 +266,7 @@ of the License. See COPYING or main.m for more information.
 
 		[[twc terminalView] runProgram: @"/bin/sh"
 			withArguments: [NSArray arrayWithObjects: @"-c",cmdline,nil]
-			initialInput: input==INPUT_STDIN?data:nil];
+			initialInput: input==INPUT_STDIN?data:0];
 	}
 		break;
 
