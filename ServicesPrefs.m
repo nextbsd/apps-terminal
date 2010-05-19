@@ -169,10 +169,10 @@ of the License. See COPYING or main.m for more information.
 		[tf_name setStringValue: name];
 
 		s=[d objectForKey: Key];
-		[tf_key setStringValue: s?s:@""];
+		[tf_key setStringValue: s?s:(NSString *)@""];
 
 		s=[d objectForKey: Commandline];
-		[tf_cmdline setStringValue: s?s:@""];
+		[tf_cmdline setStringValue: s?s:(NSString *)@""];
 
 		i=[[d objectForKey: Type] intValue];
 		if (i<0 || i>2) i=0;
