@@ -46,9 +46,12 @@ copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
 
 #import "PreferencesWindowController.h"
 #import "Services.h"
+#import "ServicesPrefs.h"
 #import "TerminalView.h"
+#import "TerminalViewPrefs.h"
 #import "TerminalWindow.h"
-
+#import "TerminalWindowPrefs.h"
+#import "TerminalParser_LinuxPrefs.h"
 
 @interface NSMenu (helpers)
 -(id <NSMenuItem>) addItemWithTitle: (NSString *)s;
@@ -94,13 +97,6 @@ copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
 	[super dealloc];
 }
 
-
-@class TerminalViewDisplayPrefs;
-@class TerminalViewShellPrefs;
-@class TerminalViewKeyboardPrefs;
-@class TerminalServicesPrefs;
-@class TerminalWindowPrefs;
-@class TerminalParser_LinuxPrefs;
 
 -(void) openPreferences: (id)sender
 {
@@ -470,9 +466,6 @@ copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
 
 
 /* TODO */
-@interface TerminalViewKeyboardPrefs
--(BOOL) commandAsMeta;
-@end
 
 #include <AppKit/NSWindow.h>
 #include <AppKit/NSEvent.h>
