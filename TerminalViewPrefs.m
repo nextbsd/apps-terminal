@@ -349,6 +349,7 @@ static int scrollBackLines;
 						numberOfRows: 1
 						numberOfColumns: 4];
 
+					[bc release];
 					[[m cellAtRow: 0 column: 0] setImage: [NSImage imageNamed: @"cursor_line"]];
 					[[m cellAtRow: 0 column: 1] setImage: [NSImage imageNamed: @"cursor_stroked"]];
 					[[m cellAtRow: 0 column: 2] setImage: [NSImage imageNamed: @"cursor_filled"]];
