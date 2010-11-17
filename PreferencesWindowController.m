@@ -219,6 +219,7 @@ won't be necessary.
 	[b setAction: @selector(_displayBoxButton:)];
 	[b setButtonType: NSPushOnPushOffButton];
 	[button_box addView: b];
+	[b release];
 	[button_box sizeToFit];
 
 	if (!current)
