@@ -495,14 +495,19 @@ copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
 
 int main(int argc, char **argv)
 {
+	Terminal *term;
+
 	CREATE_AUTORELEASE_POOL(arp);
 
 /*	[NSObject enableDoubleReleaseCheck: YES];*/
 
 	[TerminalApplication sharedApplication];
 
-	[NSApp setDelegate: [[Terminal alloc] init]];
+	term = [[Terminal alloc] init];
+	[NSApp setDelegate: term];
 	[NSApp run];
+
+	[term release];
 
 	DESTROY(arp);
 	return 0;
