@@ -187,6 +187,7 @@ static BOOL addYBorders;
 				[f setAutoresizingMask: NSViewWidthSizable];
 				[f sizeToFit];
 				[t putView: f atRow: 1 column: 1];
+				[f release];
 
 				f=[NSTextField newLabel: _(@"Height:")];
 				[f setAutoresizingMask: NSViewMinXMargin|NSViewMinYMargin|NSViewMaxYMargin];
@@ -196,6 +197,7 @@ static BOOL addYBorders;
 				[f setAutoresizingMask: NSViewWidthSizable];
 				[f sizeToFit];
 				[t putView: f atRow: 0 column: 1];
+				[f release];
 
 				[b setContentView: t];
 				[b sizeToFit];
