@@ -326,7 +326,7 @@ static int scrollBackLines;
 				[box setAutoresizingMask: NSViewMinXMargin|NSViewMaxXMargin];
 				[box setTitle: _(@"Cursor")];
 
-				t=[[GSTable alloc] initWithNumberOfRows: 2 numberOfColumns: 2];
+				t = [[[GSTable alloc] initWithNumberOfRows: 2 numberOfColumns: 2] autorelease];
 				[t setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
 
 				f=[NSTextField newLabel: _(@"Style:")];
