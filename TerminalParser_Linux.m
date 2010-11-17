@@ -1221,7 +1221,6 @@ Translates '\n' to '\r' when sending.
 		char *outp;
 		char buf[16+1];
 		size_t outsize;
-		int ret;
 	
 		for (i=0;i<l;i++)
 		{
@@ -1234,7 +1233,7 @@ Translates '\n' to '\r' when sending.
 			insize=4;
 			outsize=sizeof(buf);
 			outp=buf;
-			ret=iconv(iconv_input_state,(char **)&inp,&insize,&outp,&outsize);
+			iconv(iconv_input_state,(char **)&inp,&insize,&outp,&outsize);
 			if (outsize!=sizeof(buf))
 			{
 				[ts ts_sendCString: buf  length: sizeof(buf)-outsize];
