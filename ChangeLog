@@ -1,3 +1,7 @@
+2010-12-14 Riccardo Mottola
+
+	* main.m: hide ordered out quit panel from windows menu
+
 2010-05-14 04:37-EDT Gregory John Casamento <greg_casamento@yahoo.com>
 
 	* TerminalView.m: Correct sign issues with some pointer casts.
@@ -7,7 +11,7 @@
 	* ServicesPrefs.m:
 	Added missing import
 	* TerminalView.m: initialize to avoid warnings.
-	
+
 2010-03-26 Riccardo Mottola <rmottola@users.sf.net>
 
 	* ServicesPrefs.m,
