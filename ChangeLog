@@ -1,3 +1,12 @@
+2011-05-07 Riccardo Mottola <rm@gnu.org>
+
+	* Terminal.tiff
+	* cursor_filled.tiff
+	* cursor_inverted.tiff
+	* cursor_line.tiff
+	* cursor_stroked.tiff
+	Set resolution to 72 dpi screen.
+
 2010-12-14 Riccardo Mottola
 
 	* main.m: hide ordered out quit panel from windows menu
