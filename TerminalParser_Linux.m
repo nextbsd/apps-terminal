@@ -1,6 +1,6 @@
 /*
 copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
-2009-2010 GAP Project
+2009-2011 GAP Project
 
 This file is a part of Terminal.app. Terminal.app is free software; you
 can redistribute it and/or modify it under the terms of the GNU General
@@ -1342,6 +1342,7 @@ Translates '\n' to '\r' when sending.
 
 	{
 		BOOL commandAsMeta=[TerminalViewKeyboardPrefs commandAsMeta];
+		BOOL altIsNotMeta =[TerminalViewKeyboardPrefs altIsNotMeta];
 
 		/*
 		Thanks to different keyboard layouts and dumb default key handling
@@ -1356,11 +1357,13 @@ Translates '\n' to '\r' when sending.
 		left alt to be meta, and, if right alt is AltGr, right alt not to be
 		meta. Thus, when command-as-meta option is active, we intercept
 		command presses and treat them as meta, and we ignore alternate.
+
+		altIsNotMeta is needed to keep Alt as Alt and not as Meta.
 		
 		*/
 
 		if ((commandAsMeta && (mask&NSCommandKeyMask)) ||
-		    (!commandAsMeta && (mask&NSAlternateKeyMask)))
+		    (!commandAsMeta && !altIsNotMeta && (mask&NSAlternateKeyMask)))
 		{
 			NSDebugLLog(@"key",@"  meta");
 			[ts ts_sendCString: "\e"];

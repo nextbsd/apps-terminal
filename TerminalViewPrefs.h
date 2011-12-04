@@ -1,5 +1,6 @@
 /*
 copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
+          2009-2011 GNUstep Application Project (Riccardo Mottola)
 
 This file is a part of Terminal.app. Terminal.app is free software; you
 can redistribute it and/or modify it under the terms of the GNU General
@@ -72,9 +73,11 @@ extern NSString *TerminalViewDisplayPrefsDidChangeNotification;
 
 	NSButton *b_commandAsMeta;
 	NSButton *b_doubleEscape;
+	NSButton *b_altIsNotMeta;
 }
 
 +(BOOL) commandAsMeta;
++(BOOL) altIsNotMeta;
 +(BOOL) doubleEscape;
 
 @end

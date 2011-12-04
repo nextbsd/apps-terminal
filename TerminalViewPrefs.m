@@ -1,7 +1,7 @@
 /*
 copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
 
-2009-2010 GAP Project
+2009-2011 GAP Project
 
 This file is a part of Terminal.app. Terminal.app is free software; you
 can redistribute it and/or modify it under the terms of the GNU General
@@ -635,10 +635,11 @@ static BOOL loginShell;
 
 
 static NSString
-	*CommandAsMetaKey=@"CommandAsMeta",
-	*DoubleEscapeKey=@"DoubleEscape";
+         *CommandAsMetaKey=@"CommandAsMeta",
+         *DoubleEscapeKey=@"DoubleEscape",
+         *AltIsNotMetaKey=@"AltIsNotMeta";
 
-static BOOL commandAsMeta,doubleEscape;
+static BOOL commandAsMeta,doubleEscape, altIsNotMeta;
 
 @implementation TerminalViewKeyboardPrefs
 
@@ -649,6 +650,7 @@ static BOOL commandAsMeta,doubleEscape;
 
 	commandAsMeta=[ud boolForKey: CommandAsMetaKey];
 	doubleEscape=[ud boolForKey: DoubleEscapeKey];
+	altIsNotMeta=[ud boolForKey: AltIsNotMetaKey];
 }
 
 +(BOOL) commandAsMeta
@@ -659,6 +661,11 @@ static BOOL commandAsMeta,doubleEscape;
 +(BOOL) doubleEscape
 {
 	return doubleEscape;
+}
+
++(BOOL) altIsNotMeta
+{
+  return altIsNotMeta;
 }
 
 
@@ -677,12 +684,20 @@ static BOOL commandAsMeta,doubleEscape;
 	else
 		doubleEscape=NO;
 	[ud setBool: doubleEscape forKey: DoubleEscapeKey];
+
+	if ([b_altIsNotMeta state])
+		altIsNotMeta=YES;
+	else
+		altIsNotMeta=NO;
+	[ud setBool: altIsNotMeta forKey: AltIsNotMetaKey];
+
 }
 
 -(void) revert
 {
 	[b_commandAsMeta setState: commandAsMeta];
 	[b_doubleEscape setState: doubleEscape];
+	[b_altIsNotMeta setState: altIsNotMeta];
 }
 
 
@@ -723,6 +738,18 @@ static BOOL commandAsMeta,doubleEscape;
 			[b sizeToFit];
 			[top addView: b enablingYResizing: YES];
 			DESTROY(b);
+
+			b=b_altIsNotMeta=[[NSButton alloc] init];
+			[b setAutoresizingMask: NSViewMinYMargin|NSViewMaxYMargin|NSViewWidthSizable];
+			[b setTitle:
+				_(@"Treat the Alt key as Alt and not Meta.\n"
+				  @"Useful if command is used as Meta\n"
+				  @"And the keyboard has AltGr and not right Alt\n")];
+			[b setButtonType: NSSwitchButton];
+			[b sizeToFit];
+			[top addView: b enablingYResizing: YES];
+			DESTROY(b);
+
 
 			[top addSeparator];
 
