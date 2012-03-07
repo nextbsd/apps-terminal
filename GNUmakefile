@@ -44,9 +44,9 @@ Terminal_OBJC_FILES = \
 
 
 ifeq ($(findstring solaris, $(GNUSTEP_TARGET_OS)), solaris)
- Terminal_LDFLAGS = -liconv
+ Terminal_TOOL_LIBS += -liconv
 else
- Terminal_LDFLAGS = -lutil
+ Terminal_TOOL_LIBS += -lutil
 endif
 
 Terminal_LOCALIZED_RESOURCE_FILES = Localizable.strings
