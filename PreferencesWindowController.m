@@ -1,5 +1,9 @@
 /*
-copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
+Copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
+Copyright 2009-2012 Free Software Foundation Inc.
+
+Authors: Alexander Malmberg
+         Riccardo Mottola
 
 This file is a part of Terminal.app. Terminal.app is free software; you
 can redistribute it and/or modify it under the terms of the GNU General
@@ -7,25 +11,23 @@ Public License as published by the Free Software Foundation; version 2
 of the License. See COPYING or main.m for more information.
 */
 
-#include <Foundation/NSObject.h>
-#include <Foundation/NSInvocation.h>
-#include <Foundation/NSBundle.h>
-#include <AppKit/NSWindow.h>
-#include <AppKit/NSButton.h>
-#include <AppKit/NSScrollView.h>
-#include <AppKit/NSClipView.h>
-#include <AppKit/NSTableView.h>
-#include <AppKit/NSTableColumn.h>
-#include <AppKit/NSPanel.h>
-#include <AppKit/NSBox.h>
-#include <GNUstepGUI/GSHbox.h>
-#include <GNUstepGUI/GSVbox.h>
+#import <Foundation/NSObject.h>
+#import <Foundation/NSInvocation.h>
+#import <Foundation/NSBundle.h>
+#import <AppKit/NSWindow.h>
+#import <AppKit/NSButton.h>
+#import <AppKit/NSScrollView.h>
+#import <AppKit/NSClipView.h>
+#import <AppKit/NSTableView.h>
+#import <AppKit/NSTableColumn.h>
+#import <AppKit/NSPanel.h>
+#import <AppKit/NSBox.h>
+#import <GNUstepGUI/GSHbox.h>
+#import <GNUstepGUI/GSVbox.h>
 
-#include "autokeyviewchain.h"
-
-#include "PreferencesWindowController.h"
-
-#include "PrefBox.h"
+#import "autokeyviewchain.h"
+#import "PreferencesWindowController.h"
+#import "PrefBox.h"
 
 
 /*
@@ -170,10 +172,14 @@ won't be necessary.
 
 -(void) _displayBox: (NSObject<PrefBox> *)pb
 {
-	int idx=[pref_boxes indexOfObjectIdenticalTo: pb];
-	if (idx==NSNotFound) return;
+  NSUInteger idx;
 
-	if (current==pb) return;
+  idx = [pref_boxes indexOfObjectIdenticalTo: pb];
+  if (idx==NSNotFound)
+    return;
+
+  if (current==pb)
+    return;
 
 	if (current)
 	{
@@ -193,16 +199,19 @@ won't be necessary.
 
 -(void) _displayBoxButton: (id)sender
 {
-	int idx=[pref_buttons indexOfObjectIdenticalTo: sender];
-	if (idx==NSNotFound) return;
+  NSUInteger idx;
 
-	if ([pref_boxes objectAtIndex: idx]==current)
-	{
-		[sender setState: 1];
-		return;
-	}
+  idx = [pref_buttons indexOfObjectIdenticalTo: sender];
+  if (idx==NSNotFound)
+    return;
 
-	[self _displayBox: [pref_boxes objectAtIndex: idx]];
+  if ([pref_boxes objectAtIndex: idx]==current)
+    {
+      [sender setState: 1];
+      return;
+    }
+
+  [self _displayBox: [pref_boxes objectAtIndex: idx]];
 }
 
 -(void) addPrefBox: (NSObject<PrefBox> *)pb

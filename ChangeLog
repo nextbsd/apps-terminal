@@ -1,5 +1,10 @@
 2012-03-26 Riccardo Mottola <rm@gnu.org>
 
+	* PreferencesWindowController.m
+	Use NSUInteger as Index.
+
+2012-03-26 Riccardo Mottola <rm@gnu.org>
+
 	* PreferencesWindowController.[h,m]
 	Clean up imports
 
