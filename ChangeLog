@@ -1,3 +1,8 @@
+2012-03-27 Riccardo Mottola <rm@gnu.org>
+
+	* TerminalView.m
+	Fix OpenBSD includes.
+
 2012-03-26 Riccardo Mottola <rm@gnu.org>
 
 	* PreferencesWindowController.m
@@ -12,7 +17,7 @@
 
 	* GNUmakefile:
 	Use TOOL_LIBS instead of LDFLAGS to link the framework library.
-	
+
 2011-12-04 Riccardo Mottola <rm@gnu.org>
 
 	* TerminalParser_Linux.m

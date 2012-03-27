@@ -41,6 +41,8 @@ activated */
 #  include <pcap.h>
 #elif defined(__OpenBSD__)
 #  include <termios.h>
+#  include <util.h>
+#  include <sys/ioctl.h>
 #else
 #  include <termio.h>
 #endif
