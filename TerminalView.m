@@ -1093,7 +1093,7 @@ if (blackOnWhite)
 	if (!write_buf_len)
 	{
 		[[NSRunLoop currentRunLoop]
-			addEvent: (void *)master_fd
+			addEvent: (void *)(intptr_t)master_fd
 			type: ET_WDESC
 			watcher: self
 			forMode: NSDefaultRunLoopMode];
@@ -1878,7 +1878,7 @@ Handle master_fd
 
 	if (!write_buf_len)
 	{
-		[[NSRunLoop currentRunLoop] removeEvent: (void *)master_fd
+		[[NSRunLoop currentRunLoop] removeEvent: (void *)(intptr_t)master_fd
 			type: ET_WDESC
 			forMode: NSDefaultRunLoopMode
 			all: YES];
@@ -1902,11 +1902,11 @@ Handle master_fd
 	if (master_fd==-1)
 		return;
 	NSDebugLLog(@"pty",@"closing master fd=%i\n",master_fd);
-	[[NSRunLoop currentRunLoop] removeEvent: (void *)master_fd
+	[[NSRunLoop currentRunLoop] removeEvent: (void *)(intptr_t)master_fd
 		type: ET_RDESC
 		forMode: NSDefaultRunLoopMode
 		all: YES];
-	[[NSRunLoop currentRunLoop] removeEvent: (void *)master_fd
+	[[NSRunLoop currentRunLoop] removeEvent: (void *)(intptr_t)master_fd
 		type: ET_WDESC
 		forMode: NSDefaultRunLoopMode
 		all: YES];
