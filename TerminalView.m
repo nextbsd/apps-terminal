@@ -43,6 +43,7 @@ activated */
 #  include <termios.h>
 #  include <util.h>
 #  include <sys/ioctl.h>
+#elif defined (__GNU__)
 #else
 #  include <termio.h>
 #endif
