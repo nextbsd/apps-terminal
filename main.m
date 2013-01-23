@@ -1,7 +1,7 @@
 /*
 copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
 
-2009-2010 GAP Project
+2009-2013 GAP Project
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -25,6 +25,7 @@ copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
 #import <Foundation/NSProcessInfo.h>
 #import <Foundation/NSRunLoop.h>
 #import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSDictionary.h>
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSControl.h>
 #import <AppKit/NSMenu.h>
