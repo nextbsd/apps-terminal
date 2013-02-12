@@ -1649,7 +1649,6 @@ Selection, copy/paste/services
 
 	
 	r0.location=r0.length=0;
-	r1=r0;
 	first=YES;
 	ofs0=0; /* get compiler to shut up */
 	g=[e clickCount];
@@ -2187,8 +2186,12 @@ misc. stuff
 	nsbuf=malloc(nsx*max_scrollback*sizeof(screen_char_t));
 	if (!nscreen || !nsbuf)
 	{
-		NSLog(@"Failed to allocate screen buffer!");
-		return;
+          NSLog(@"Failed to allocate screen buffer!");
+          if (nscreen)
+            free(nscreen);
+          if (nsbuf)
+            free(nsbuf);
+          return;
 	}
 	memset(nscreen,0,sizeof(screen_char_t)*nsx*nsy);
 	memset(nsbuf,0,sizeof(screen_char_t)*nsx*max_scrollback);

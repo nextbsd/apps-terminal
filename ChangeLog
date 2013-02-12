@@ -1,5 +1,10 @@
 2013-02-12 Riccardo Mottola <rm@gnu.org>
 
+	* TerminalView.m
+	Free up memory in case of error.
+
+2013-02-12 Riccardo Mottola <rm@gnu.org>
+
 	* ServicesPrefs.m
 	NSInteger transition
 
