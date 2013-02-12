@@ -248,6 +248,7 @@ copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
 		[[twc terminalView] runProgram: @"/bin/sh"
 			withArguments: [NSArray arrayWithObjects: @"-c",cmdline,nil]
 			initialInput: nil];
+                [twc release];
 	}
 	else
 		[self openWindow: self];
