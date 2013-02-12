@@ -1,6 +1,6 @@
 /*
 copyright 2002 Alexander Malmberg <alexander@malmberg.org>
-2009-2010 GAP Project
+2009-2013 GAP Project
 
 This file is a part of Terminal.app. Terminal.app is free software; you
 can redistribute it and/or modify it under the terms of the GNU General
@@ -131,19 +131,19 @@ of the License. See COPYING or main.m for more information.
 }
 
 
--(int) numberOfRowsInTableView: (NSTableView *)tv
+-(NSInteger) numberOfRowsInTableView: (NSTableView *)tv
 {
 	return [service_list count];
 }
 
--(id) tableView: (NSTableView *)tv  objectValueForTableColumn: (NSTableColumn *)tc  row: (int)row
+-(id) tableView: (NSTableView *)tv  objectValueForTableColumn: (NSTableColumn *)tc  row: (NSInteger)row
 {
 	return [service_list objectAtIndex: row];
 }
 
 -(void) tableViewSelectionDidChange: (NSNotification *)n
 {
-	int r=[list selectedRow];
+	NSInteger r=[list selectedRow];
 
 	if (current>=0)
 		[self _update];
