@@ -1,6 +1,6 @@
 /*
 copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
-forkpty replacement, 2005-2008 Riccardo Mottola <rmottola@users.sf.net>
+forkpty replacement, 2005-2013 Riccardo Mottola <rmottola@users.sf.net>
 
 This file is a part of Terminal.app. Terminal.app is free software; you
 can redistribute it and/or modify it under the terms of the GNU General
@@ -32,6 +32,7 @@ activated */
 #  include <sys/ioctl.h>
 #  include <termios.h>
 #  include <pcap.h>
+#  include <util.h>
 #define TCSETS TIOCSETA
 #elif defined(__FreeBSD__)
 #  include <sys/types.h>
@@ -58,25 +59,26 @@ activated */
 #endif
 #endif
 
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSRunLoop.h>
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSCharacterSet.h>
-#include <Foundation/NSArchiver.h>
-#include <GNUstepBase/Unicode.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSPasteboard.h>
-#include <AppKit/NSDragging.h>
-#include <AppKit/NSEvent.h>
-#include <AppKit/NSGraphics.h>
-#include <AppKit/NSScroller.h>
-#include <AppKit/DPSOperators.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSRunLoop.h>
+#import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSCharacterSet.h>
+#import <Foundation/NSArchiver.h>
+#import <GNUstepBase/Unicode.h>
+#import <AppKit/NSApplication.h>
+#import <AppKit/NSPasteboard.h>
+#import <AppKit/NSDragging.h>
+#import <AppKit/NSEvent.h>
+#import <AppKit/NSGraphics.h>
+#import <AppKit/NSScroller.h>
+#import <AppKit/DPSOperators.h>
 
-#include "TerminalView.h"
+#import "TerminalView.h"
 
-#include "TerminalViewPrefs.h"
+#import "TerminalViewPrefs.h"
+#import "TerminalParser_Linux.h"
 
 
 /* forkpty replacement */
@@ -1269,7 +1271,7 @@ Keyboard events
 {
 	NSString *s=[e charactersIgnoringModifiers];
 
-	NSDebugLLog(@"key",@"got key flags=%08x  repeat=%i '%@' '%@' %4i %04x %i %04x %i\n",
+	NSDebugLLog(@"key",@"got key flags=%08x  repeat=%i '%@' '%@' %4i %04x %li %04x %li\n",
 		[e modifierFlags],[e isARepeat],[e characters],[e charactersIgnoringModifiers],[e keyCode],
 		[[e characters] characterAtIndex: 0],[[e characters] length],
 		[[e charactersIgnoringModifiers] characterAtIndex: 0],[[e charactersIgnoringModifiers] length]);

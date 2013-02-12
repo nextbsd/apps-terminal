@@ -1,3 +1,11 @@
+2013-02-12 Riccardo Mottola <rm@gnu.org>
+
+	* ServicesPrefs.m
+	NSInteger transition
+
+	* TerminalView.m
+	Warning fixes
+
 2013-01-24 Riccardo Mottola <rm@gnu.org>
 
 	* main.m
@@ -9,7 +17,7 @@
 	Fix GNU/HURD includes.
 
 2012-03-28 Sebastian Reitenbach <sebastia@l00-bugdead-prods.de>
-	
+
 	* TerminalView.m
 	Fix warnings on 64Bit systems, cast from integer to pointer of different size
 
