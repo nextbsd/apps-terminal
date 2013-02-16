@@ -832,7 +832,7 @@ if (blackOnWhite)
 }
 
 
--(void) ts_goto: (int)x:(int)y
+-(void) ts_goto: (int)x :(int)y
 {
 	NSDebugLLog(@"ts",@"goto: %i:%i",x,y);
 	cursor_x=x;
@@ -843,7 +843,7 @@ if (blackOnWhite)
 	if (cursor_y<0) cursor_y=0;
 }
 
--(void) ts_putChar: (screen_char_t)ch  count: (int)c  at: (int)x:(int)y
+-(void) ts_putChar: (screen_char_t)ch  count: (int)c  at: (int)x :(int)y
 {
 	int i;
 	screen_char_t *s;
@@ -888,7 +888,7 @@ if (blackOnWhite)
 	ADD_DIRTY(0,0,sx,sy); /* TODO */
 }
 
--(void) ts_scrollUp: (int)t:(int)b  rows: (int)nr  save: (BOOL)save
+-(void) ts_scrollUp: (int)t :(int)b  rows: (int)nr  save: (BOOL)save
 {
 	screen_char_t *d, *s;
 
@@ -974,7 +974,7 @@ if (blackOnWhite)
 	ADD_DIRTY(0,t,sx,b-t);
 }
 
--(void) ts_scrollDown: (int)t:(int)b  rows: (int)nr
+-(void) ts_scrollDown: (int)t: (int)b  rows: (int)nr
 {
 	screen_char_t *s;
 	unsigned int step;
@@ -1080,7 +1080,7 @@ if (blackOnWhite)
 	ADD_DIRTY(0,y,sx,1);
 }
 
--(screen_char_t) ts_getCharAt: (int)x:(int)y
+-(screen_char_t) ts_getCharAt: (int)x :(int)y
 {
 	NSDebugLLog(@"ts",@"getCharAt: %i:%i",x,y);
 	return SCREEN(x,y);

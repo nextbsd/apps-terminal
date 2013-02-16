@@ -1,8 +1,14 @@
+2013-02-17 Riccardo Mottola <rm@gnu.org>
+
+	* Terminal.h
+	* TerminalView.m
+	Method name cleanup.
+
 2013-02-13 Riccardo Mottola <rm@gnu.org>
 
 	* main.m
 	Fix memory leak.
-	
+
 2013-02-12 Riccardo Mottola <rm@gnu.org>
 
 	* TerminalView.m
