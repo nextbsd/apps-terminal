@@ -1132,7 +1132,7 @@ if (blackOnWhite)
 	if (l!=len)
 	{
 		if (errno!=EAGAIN)
-			NSLog(_(@"Unexpected error while writing: %m."));
+			NSLog(_(@"Unexpected error while writing."));
 		if (l<0)
 			l=0;
 		[self addDataToWriteBuffer: &msg[l]  length: len-l];
@@ -1861,7 +1861,7 @@ Handle master_fd
 	if (l<0)
 	{
 		if (errno!=EAGAIN)
-			NSLog(_(@"Unexpected error while writing: %m."));
+			NSLog(_(@"Unexpected error while writing."));
 		return;
 	}
 	memmove(write_buf,&write_buf[l],write_buf_len-l);
@@ -1957,7 +1957,7 @@ Handle master_fd
 	{
 		if (pipe(pipefd))
 		{
-			NSLog(_(@"Unable to open pipe for input: %m."));
+			NSLog(_(@"Unable to open pipe for input."));
 			return;
 		}
 		NSDebugLLog(@"pty",@"creating pipe for initial data, got %i %i",
@@ -1969,7 +1969,7 @@ Handle master_fd
 	ret=forkpty(&master_fd,NULL,NULL,&ws);
 	if (ret<0)
 	{
-		NSLog(_(@"Unable to fork: %m."));
+		NSLog(_(@"Unable to fork."));
 		return;
 	}
 
@@ -1997,7 +1997,7 @@ Handle master_fd
 	flags=fcntl(master_fd,F_GETFL,0);
 	if (flags==-1)
 	{
-		NSLog(_(@"Unable to set non-blocking mode: %m."));
+		NSLog(_(@"Unable to set non-blocking mode."));
 	}
 	else
 	{

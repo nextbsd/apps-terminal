@@ -15,8 +15,8 @@ add comments above this one
 /* Flag: untranslated */
 /* File: TerminalView.m:1857 */
 /* Flag: untranslated */
-"Unexpected error while writing: %m."
-= "Unexpected error while writing: %m.";
+"Unexpected error while writing."
+= "Unexpected error while writing.";
 
 /* File: main.m:324 */
 /* Flag: untranslated */
@@ -169,9 +169,9 @@ add comments above this one
 
 /*** Strings from TerminalView.m ***/
 /* File: TerminalView.m:1965 */
-"Unable to fork: %m." = "Unable to fork: %m.";
+"Unable to fork." = "Unable to fork.";
 /* File: TerminalView.m:1953 */
-"Unable to open pipe for input: %m." = "Unable to open pipe for input: %m.";
+"Unable to open pipe for input." = "Unable to open pipe for input.";
 /* File: TerminalView.m:1765 */
 "[Process exited]" = "[Process exited]";
 
