@@ -1,3 +1,8 @@
+2014-01-05 Riccardo Mottola <rm@ngu.org>
+
+	* ServicesPrefs.h
+	Adopt NSTableViewDelegate protocol to fix warning.
+
 2013-02-17 Riccardo Mottola <rm@gnu.org>
 
 	* Terminal.h

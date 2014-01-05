@@ -1,5 +1,6 @@
 /*
 copyright 2002 Alexander Malmberg <alexander@malmberg.org>
+          2014 The GAP Project
 
 This file is a part of Terminal.app. Terminal.app is free software; you
 can redistribute it and/or modify it under the terms of the GNU General
@@ -10,12 +11,14 @@ of the License. See COPYING or main.m for more information.
 #ifndef ServicesPrefs_h
 #define ServicesPrefs_h
 
-#include "PrefBox.h"
+#import <AppKit/NSTableView.h>
+
+#import "PrefBox.h"
 
 @class NSMutableDictionary,NSMutableArray;
 @class GSVbox,NSTableView,NSPopUpButton,NSTextField;
 
-@interface TerminalServicesPrefs : NSObject <PrefBox>
+@interface TerminalServicesPrefs : NSObject <PrefBox, NSTableViewDelegate>
 {
 	NSMutableDictionary *services;
 	NSMutableArray *service_list;
