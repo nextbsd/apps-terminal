@@ -46,6 +46,11 @@ Terminal_OBJC_FILES = \
 ifeq ($(findstring solaris, $(GNUSTEP_TARGET_OS)), solaris)
  Terminal_TOOL_LIBS += -liconv
 else
+
+ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
+ Terminal_TOOL_LIBS += -liconv 
+endif
+
  Terminal_TOOL_LIBS += -lutil
 endif
 
