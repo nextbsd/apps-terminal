@@ -87,8 +87,6 @@ activated */
 #include <errno.h> /* for int errno */
 #include <fcntl.h>
 #include <sys/termios.h>
-#include <sys/types.h>
-#include <unistd.h>
 #include <stropts.h>
 #include <stdlib.h>
 #include <string.h>
