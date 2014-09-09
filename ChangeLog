@@ -1,4 +1,9 @@
-2014-01-05 Riccardo Mottola <rm@ngu.org>
+2014-09-09 Riccardo Mottola <rm@gnu.org>
+
+	* TerminalViewPrefs.m
+	Do not use isa pointer.
+
+2014-01-05 Riccardo Mottola <rm@gnu.org>
 
 	* ServicesPrefs.h
 	Adopt NSTableViewDelegate protocol to fix warning.

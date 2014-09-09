@@ -256,11 +256,11 @@ static int scrollBackLines;
 	[m_cursorStyle selectCellWithTag: [[self class] cursorStyle]];
 	[w_cursorColor setColor: [[self class] cursorColor]];
 
-	f=[isa terminalFont];
+	f=[[self class] terminalFont];
 	[f_terminalFont setStringValue: [NSString stringWithFormat: @"%@ %0.1f",[f fontName],[f pointSize]]];
 	[f_terminalFont setFont: f];
 
-	f=[isa boldTerminalFont];
+	f=[[self class] boldTerminalFont];
 	[f_boldTerminalFont setStringValue: [NSString stringWithFormat: @"%@ %0.1f",[f fontName],[f pointSize]]];
 	[f_boldTerminalFont setFont: f];
 
