@@ -1,3 +1,11 @@
+2014-09-09 Gregory John Casamento <greg.casamento@gmail.com>
+
+	* TerminalParser_Linux.m: Add case to handle escape code.
+	* TerminalView.h: Add representedFilename
+	* TerminalView.m: Add methods.
+	* TerminalWindow.m: Add code to call setRepresentedFilename on
+	terminal window.
+
 2014-09-09 Riccardo Mottola <rm@gnu.org>
 
 	* TerminalViewPrefs.m
