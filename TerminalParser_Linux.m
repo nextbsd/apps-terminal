@@ -759,6 +759,7 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 		case '0':
 		case '1':
 		case '2':
+		case '3':
 			vc_state=EStitle_semi;
 			title_type=c-'0';
 			return;

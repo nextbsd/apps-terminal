@@ -824,6 +824,8 @@ if (blackOnWhite)
 		ASSIGN(title_miniwindow,new_title);
 	if (title_type==2 || title_type==0)
 		ASSIGN(title_window,new_title);
+	if (title_type==3)
+		ASSIGN(title_filename,new_title);
 	[[NSNotificationCenter defaultCenter]
 		postNotificationName: TerminalViewTitleDidChangeNotification
 		object: self];
@@ -2361,6 +2363,11 @@ improve? */
 -(NSString *) miniwindowTitle
 {
 	return title_miniwindow;
+}
+
+-(NSString *) representedFilename
+{
+	return title_filename;
 }
 
 

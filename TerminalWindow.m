@@ -157,6 +157,7 @@ NSString *TerminalWindowNoMoreActiveWindowsNotification=
 {
 	[[self window] setTitle: [tv windowTitle]];
 	[[self window] setMiniwindowTitle: [tv miniwindowTitle]];
+	[[self window] setRepresentedFilename: [tv representedFilename]];
 }
 
 

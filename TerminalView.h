@@ -64,7 +64,7 @@ struct selection_range
 	int cursor_x,cursor_y;
 	int current_x,current_y;
 
-	NSString *title_window,*title_miniwindow;
+	NSString *title_window,*title_miniwindow,*title_filename;
 
 	NSObject<TerminalParser> *tp;
 
@@ -92,6 +92,7 @@ struct selection_range
 
 -(NSString *) windowTitle;
 -(NSString *) miniwindowTitle;
+-(NSString *) representedFilename;
 
 +(NSSize) characterCellSize;
 
