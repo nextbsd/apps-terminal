@@ -13,13 +13,11 @@ add comments above this one
 
 /* File: TerminalView.m:1130 */
 /* File: TerminalView.m:1857 */
-/* Flag: untranslated */
 "Unexpected error while writing: %m." = "Errore inatteso scrivendo: %m.";
 
 /* File: main.m:324 */
 /* Flag: untranslated */
 /* File: main.m:345 */
-/* Flag: untranslated */
 "Quit?" = "Uscire?";
 
 
@@ -187,7 +185,7 @@ add comments above this one
 /* File: TerminalViewPrefs.m:268 */
 "Display" = "Display";
 /* File: TerminalViewPrefs.m:390 */
-"Handle wide (multi-cell) glyphs" = "Gestisci glifi ampi (cella multipla)";
+"Handle wide (multi-cell) glyphs" = "Gestisci glifi estesi (cella multipla)";
 /* File: TerminalViewPrefs.m:690 */
 /* File: TerminalViewPrefs.m:685 */
 "Keyboard" = "Tastiera";
@@ -226,7 +224,7 @@ add comments above this one
 "Add top and bottom border" = "Aggiungi bordo in alto e in basso";
 /* File: TerminalWindowPrefs.m:152 */
 "Close new windows when idle"
-= "Chiudi le nuove finestre quando non utilizzate";
+= "Chiudi le nuove finestre quando inattive";
 /* File: TerminalWindowPrefs.m:176 */
 "Default size" = "Dimensione di default";
 /* File: TerminalWindowPrefs.m:153 */
@@ -251,7 +249,7 @@ add comments above this one
 /* File: main.m:172 */
 "Cut" = "Taglia";
 /* File: main.m:181 */
-"Edit" = "Composizione";
+"Edit" = "Modifica";
 /* File: main.m:201 */
 "Hide" = "Nascondi";
 /* File: main.m:154 */
