@@ -114,7 +114,7 @@ add comments above this one
 
 /* File: TerminalViewPrefs.m:763 */
 "Send a double escape for the escape key.\n\nThis means that the escape key will be\nrecognized faster by many programs, but\nyou can't use it as a substitute for meta."
-  = "Envoyer l'échappement en double pour la touche Echappement.\n\nCela signifie que la touche Echappement sera reconnu plus vite par \nde nombreux programmes mais vous ne pourrez l'utiliser pour remplacer Meta.";
+  = "Envoyer l'échappement en double pour la touche Echappement.\n\nCela signifie que la touche Echappement sera reconnue plus vite par \nde nombreux programmes mais vous ne pourrez l'utiliser pour remplacer Meta.";
 
 /* File: main.m:156 */
 /* Flag: untranslated */
@@ -130,7 +130,7 @@ add comments above this one
 "Services" = "Services";
 
 /* File: main.m:280 */
-"Quit anyway" = "Vraiment quitter";
+"Quit anyway" = "Quitter vraiment";
 
 /* File: main.m:288 */
 "Don't quit" = "Ne pas quitter";
@@ -241,7 +241,7 @@ add comments above this one
 "Start as login-shell" = "D\u00e9marrer comme login-shell";
 /* File: TerminalViewPrefs.m:736 */
 "Treat the command key as meta.\n\nNote that with this enabled, you won't be\nable to access menu entries with the\nkeyboard."
-  = "Traiter la touche command comme meta.\n\nNotez qu'avec cette touche activ\u00e9e,vous\nn'aurez plus acc\u00e9s au menu.";
+  = "Traiter la touche command comme meta.\n\nNotez qu'avec cette touche activ\u00e9e, vous\nn'aurez plus acc\u00e9s au menu.";
 
 
 /*** Strings from TerminalWindowPrefs.m ***/
