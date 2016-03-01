@@ -44,7 +44,7 @@ add comments above this one
 
 /* File: ServicesPrefs.m:607 */
 /* Flag: untranslated */
-"Plain text" = "Plain text";
+"Plain text" = "Texte seul";
 
 /* File: TerminalParser_LinuxPrefs.m:43 */
 /* Flag: untranslated */
@@ -199,7 +199,7 @@ add comments above this one
 /* File: ServicesPrefs.m:575 */
 "Run in idle window" = "Ex\u00e9cuter en idle fen\u00eatre";
 /* File: ServicesPrefs.m:574 */
-"Run in new window" = "Ex\u00e9cuter dans une nouvell fen\u00eatre";
+"Run in new window" = "Ex\u00e9cuter dans une nouvelle fen\u00eatre";
 /* File: ServicesPrefs.m:473 */
 "Terminal services" = "Services de Terminal";
 /* File: ServicesPrefs.m:478 */
@@ -241,7 +241,7 @@ add comments above this one
 "Start as login-shell" = "D\u00e9marrer comme login-shell";
 /* File: TerminalViewPrefs.m:736 */
 "Treat the command key as meta.\n\nNote that with this enabled, you won't be\nable to access menu entries with the\nkeyboard."
-  = "Traiter la touche command comme meta.\n\nNotez qu'avec cette touche activ\u00e9e, vous\nn'aurez plus acc\u00e9s au menu.";
+  = "Traiter la touche Command comme Meta.\n\nNotez qu'avec cette touche activ\u00e9e, vous\nn'aurez plus acc\u00e9s au menu.";
 
 
 /*** Strings from TerminalWindowPrefs.m ***/
@@ -249,7 +249,7 @@ add comments above this one
 "Add top and bottom border" = "Ajouter une bordure en haut et en bas";
 /* File: TerminalWindowPrefs.m:154 */
 "Close new windows when idle"
-  = "Fermer les nouvelles fen\u00eatre lorsque lorsque le shell se termine";
+  = "Fermer les nouvelles fen\u00eatres lorsque le shell se termine";
 /* File: TerminalWindowPrefs.m:178 */
 "Default size" = "Taille par d\u00e9faut";
 /* File: TerminalWindowPrefs.m:155 */
