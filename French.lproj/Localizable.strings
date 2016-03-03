@@ -13,7 +13,7 @@ add comments above this one
 
 /* File: ServicesParameterWindowController.m:98 */
 /* File: ServicesPrefs.m:658 */
-"Command line:" = "Ligne de commande:";
+"Command line:" = "Ligne de commande :";
 
 /* File: TerminalWindow.m:200 */
 /* Flag: untranslated */
@@ -43,11 +43,9 @@ add comments above this one
 "Input in stdin" = "Entrée dans stdin";
 
 /* File: ServicesPrefs.m:607 */
-/* Flag: untranslated */
 "Plain text" = "Texte seul";
 
 /* File: TerminalParser_LinuxPrefs.m:43 */
-/* Flag: untranslated */
 "UTF-8" = "UTF-8";
 
 /* File: TerminalParser_LinuxPrefs.m:44 */
@@ -78,7 +76,7 @@ add comments above this one
 
 /* File: TerminalView.m:1623 */
 /* Flag: unmatched */
-"Unable to fork: %m." = "Impossible de forker: %m.";
+"Unable to fork: %m." = "Impossible de forker : %m.";
 
 /* File: TerminalView.m:1960 */
 "Unable to open pipe for input." = "Impossible d'ouvrir un pipe pour l'entrée.";
@@ -93,7 +91,7 @@ add comments above this one
 "Line" = "Ligne";
 
 /* File: TerminalViewPrefs.m:304 */
-"Scroll-back length in lines:" = "Nombre de lignes de marche arrière :";
+"Scroll-back length in lines :" = "Nombre de lignes de marche arrière :";
 
 /* File: TerminalViewPrefs.m:332 */
 "Style:" = "Style :";
@@ -106,7 +104,7 @@ add comments above this one
 
 /* File: TerminalViewPrefs.m:616 */
 /* Flag: untranslated */
-"Shell:" = "Shell:";
+"Shell:" = "Shell :";
 
 /* File: TerminalViewPrefs.m:747 */
 "Treat the Alt key as Alt and not Meta.\nUseful if command is used as Meta\nAnd the keyboard has AltGr and not right Alt\n"
@@ -187,7 +185,7 @@ add comments above this one
 /* File: ServicesPrefs.m:565 */
 "Input on command line" = "Entr\u00e9e standard sur la ligne de commande";
 /* File: ServicesPrefs.m:645 */
-"Key:" = "Touche:";
+"Key:" = "Touche :";
 /* File: ServicesPrefs.m:632 */
 "Name:" = "Nom :";
 /* File: ServicesPrefs.m:512 */
@@ -197,7 +195,7 @@ add comments above this one
 /* File: ServicesPrefs.m:573 */
 "Run in background" = "Ex\u00e9cuter en arri\u00e8re plan";
 /* File: ServicesPrefs.m:575 */
-"Run in idle window" = "Ex\u00e9cuter en idle fen\u00eatre";
+"Run in idle window" = "Ex\u00e9cuter en fen\u00eatre en attente";
 /* File: ServicesPrefs.m:574 */
 "Run in new window" = "Ex\u00e9cuter dans une nouvelle fen\u00eatre";
 /* File: ServicesPrefs.m:473 */
@@ -218,7 +216,7 @@ add comments above this one
 
 /*** Strings from TerminalViewPrefs.m ***/
 /* File: TerminalViewPrefs.m:414 */
-"Bold font:" = "Texte gras:";
+"Bold font:" = "Texte gras :";
 /* File: TerminalViewPrefs.m:373 */
 "Color:" = "Couleur :";
 /* File: TerminalViewPrefs.m:327 */
@@ -230,7 +228,7 @@ add comments above this one
 /* File: TerminalViewPrefs.m:706 */
 "Keyboard" = "Clavier";
 /* File: TerminalViewPrefs.m:441 */
-"Normal font:" = "Texte normal:";
+"Normal font:" = "Texte normal :";
 /* File: TerminalViewPrefs.m:453 */
 /* File: TerminalViewPrefs.m:426 */
 "Pick font..." = "D\u00e9finir la police...";
@@ -255,13 +253,13 @@ add comments above this one
 /* File: TerminalWindowPrefs.m:155 */
 "Don't close new windows" = "Ne pas fermer les nouvelles fen\u00eatres";
 /* File: TerminalWindowPrefs.m:192 */
-"Height:" = "Hauteur:";
+"Height:" = "Hauteur :";
 /* File: TerminalWindowPrefs.m:116 */
 "Terminal Window" = "Fen\u00eatre Terminal";
 /* File: TerminalWindowPrefs.m:121 */
 "Terminal\nWindow" = "Fen\u00eatre\nTerminal";
 /* File: TerminalWindowPrefs.m:182 */
-"Width:" = "Largeur:";
+"Width:" = "Largeur :";
 
 
 /*** Strings from main.m ***/
