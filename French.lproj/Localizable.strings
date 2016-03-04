@@ -195,7 +195,7 @@ add comments above this one
 /* File: ServicesPrefs.m:573 */
 "Run in background" = "Ex\u00e9cuter en arri\u00e8re plan";
 /* File: ServicesPrefs.m:575 */
-"Run in idle window" = "Ex\u00e9cuter en fen\u00eatre en attente";
+"Run in idle window" = "Ex\u00e9cuter dans une fen\u00eatre en attente";
 /* File: ServicesPrefs.m:574 */
 "Run in new window" = "Ex\u00e9cuter dans une nouvelle fen\u00eatre";
 /* File: ServicesPrefs.m:473 */
