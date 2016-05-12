@@ -1,10 +1,12 @@
 /*
-copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
+  Copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
+            2016 Riccardo Mottola
+            2016 Tim Sheridan
 
-This file is a part of Terminal.app. Terminal.app is free software; you
-can redistribute it and/or modify it under the terms of the GNU General
-Public License as published by the Free Software Foundation; version 2
-of the License. See COPYING or main.m for more information.
+  This file is a part of Terminal.app. Terminal.app is free software; you
+  can redistribute it and/or modify it under the terms of the GNU General
+  Public License as published by the Free Software Foundation; version 2
+  of the License. See COPYING or main.m for more information.
 */
 
 #ifndef TerminalWindow_h
@@ -13,12 +15,14 @@ of the License. See COPYING or main.m for more information.
 @class TerminalView;
 
 #include <AppKit/NSWindowController.h>
+#include <AppKit/NSTabView.h>
 
 NSString *TerminalWindowNoMoreActiveWindowsNotification;
 
 @interface TerminalWindowController : NSWindowController
 {
-	TerminalView *tv;
+	NSMutableArray *terminal_views;
+	NSTabView *tab_view;
 	BOOL close_on_idle;
 }
 
@@ -30,9 +34,21 @@ NSString *TerminalWindowNoMoreActiveWindowsNotification;
 
 - init;
 
--(TerminalView *) terminalView;
+-(TerminalView *) frontTerminalView;
 
 -(void) setShouldCloseWhenIdle: (BOOL)should_close;
+
+-(BOOL) showTabBar;
+-(void) setShowTabBar:(BOOL)visible inWindow:(NSWindow *)window;
+
+-(void) newTerminalTabInWindow:(NSWindow *)window;
+-(void) closeTerminalTab:(TerminalView *)tv inWindow:(NSWindow *)window;
+
+-(void) showPreviousTab;
+-(void) showNextTab;
+
+-(void) moveTabLeft;
+-(void) moveTabRight;
 
 @end
 

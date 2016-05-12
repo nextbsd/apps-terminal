@@ -1,7 +1,11 @@
 /*
-copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
+  copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
 
-2009-2013 GAP Project
+  2009-2016 GAP Project
+
+  Authors: Alexander Malmberg <alexander@malmberg.org>
+           Riccardo Mottola
+           Tim Sheridan
 
   This program is free software; you can redistribute it and/or modify
   it under the terms of the GNU General Public License as published by
@@ -28,6 +32,7 @@ copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
 #import <Foundation/NSDictionary.h>
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSControl.h>
+#import <AppKit/NSEvent.h>
 #import <AppKit/NSMenu.h>
 #import <AppKit/NSMenuItem.h>
 #import <AppKit/NSPanel.h>
@@ -159,17 +164,16 @@ copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
 	[m release];
 
 	/* 'Terminal' menu */
-	/* TODO: think hard about this. originally, the Terminal menu was supposed
-	to have several entries. */
-/*	m=[[NSMenu alloc] init];
+	m=[[NSMenu alloc] init];
 	[m addItemWithTitle: _(@"New window")
 		action: @selector(openWindow:)
-		keyEquivalent: @"n"];
-	[menu setSubmenu: m forItem: [menu addItemWithTitle: _(@"Terminal")]];
-	[m release];*/
-	[menu addItemWithTitle: _(@"New terminal")
-		action: @selector(openWindow:)
-		keyEquivalent: @"n"];
+              keyEquivalent: @"n"];
+	[m addItemWithTitle: _(@"New tab")
+		action: @selector(openTab:)
+		keyEquivalent: @"t"];
+        [menu setSubmenu: m forItem: [menu addItemWithTitle: _(@"Terminal")]];
+	[m release];
+
 
 	/* 'Edit' menu */
 	m=[[NSMenu alloc] init];
@@ -185,11 +189,34 @@ copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
 	[menu setSubmenu: m forItem: [menu addItemWithTitle: _(@"Edit")]];
 	[m release];
 
+	/* 'View' menu */
+	m=[[NSMenu alloc] init];
+	[m addItemWithTitle: _(@"Show tab bar")
+		action: @selector(showTabBarToggle:)
+		keyEquivalent: @"T"];
+	[menu setSubmenu: m forItem: [menu addItemWithTitle: _(@"View")]];
+	[m release];
+
 	/* 'Windows' menu */
 	m=[[NSMenu alloc] init];
-	[m addItemWithTitle: _(@"Close")
+	[m addItemWithTitle: _(@"Close window")
 		action: @selector(performClose:)
+		keyEquivalent: @"W"];
+	[m addItemWithTitle: _(@"Close tab")
+		action: @selector(closeTab:)
 		keyEquivalent: @"w"];
+	[m addItemWithTitle: _(@"Show previous tab")
+		action: @selector(showPreviousTab:)
+		keyEquivalent: @"{"];
+	[m addItemWithTitle: _(@"Show next tab")
+		action: @selector(showNextTab:)
+		keyEquivalent: @"}"];
+	[m addItemWithTitle: _(@"Move tab left")
+		action: @selector(moveTabLeft:)
+		keyEquivalent: @"("];
+	[m addItemWithTitle: _(@"Move tab right")
+		action: @selector(moveTabRight:)
+		keyEquivalent: @")"];
 	[m addItemWithTitle: _(@"Miniaturize all")
 		action: @selector(miniaturizeAll:)
 		keyEquivalent: @"m"];
@@ -224,7 +251,51 @@ copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
 {
 	TerminalWindowController *twc;
 	twc=[TerminalWindowController newTerminalWindow];
-	[[twc terminalView] runShell];
+	[[twc frontTerminalView] runShell];
+}
+
+-(void) openTab: (id)sender
+{
+	TerminalWindowController *twc = [[NSApp keyWindow] windowController];
+	[twc newTerminalTabInWindow:[NSApp keyWindow]];
+	[[twc frontTerminalView] runShell];
+}
+
+-(void) closeTab: (id)sender
+{
+	TerminalWindowController *twc = [[NSApp keyWindow] windowController];
+	TerminalView *tv = [twc frontTerminalView];
+	[twc closeTerminalTab:tv inWindow:[NSApp keyWindow]];
+}
+
+-(void) showTabBarToggle: (id)sender
+{
+	TerminalWindowController *twc = [[NSApp keyWindow] windowController];
+	[twc setShowTabBar:(! [twc showTabBar]) inWindow:[NSApp keyWindow]];
+}
+
+-(void) showPreviousTab: (id)sender
+{
+	TerminalWindowController *twc = [[NSApp keyWindow] windowController];
+	[twc showPreviousTab];
+}
+
+-(void) showNextTab: (id)sender
+{
+	TerminalWindowController *twc = [[NSApp keyWindow] windowController];
+	[twc showNextTab];
+}
+
+-(void) moveTabLeft: (id)sender
+{
+	TerminalWindowController *twc = [[NSApp keyWindow] windowController];
+	[twc moveTabLeft];
+}
+
+-(void) moveTabRight: (id)sender
+{
+	TerminalWindowController *twc = [[NSApp keyWindow] windowController];
+	[twc moveTabRight];
 }
 
 
@@ -245,7 +316,7 @@ copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
 		cmdline=[args componentsJoinedByString: @" "];
 
 		twc=[TerminalWindowController newTerminalWindow];
-		[[twc terminalView] runProgram: @"/bin/sh"
+		[[twc frontTerminalView] runProgram: @"/bin/sh"
 			withArguments: [NSArray arrayWithObjects: @"-c",cmdline,nil]
 			initialInput: nil];
                 [twc release];
@@ -405,7 +476,7 @@ copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
 	[NSApp activateIgnoringOtherApps: YES];
 
 	twc=[TerminalWindowController newTerminalWindow];
-	[[twc terminalView] runProgram: filename
+	[[twc frontTerminalView] runProgram: filename
 		withArguments: nil
 		initialInput: nil];
 
@@ -442,7 +513,7 @@ copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
 		}
 	}
 
-	[[twc terminalView] runProgram: path
+	[[twc frontTerminalView] runProgram: path
 		withArguments: args
 		inDirectory: directory
 		initialInput: nil

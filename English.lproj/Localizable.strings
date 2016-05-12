@@ -12,16 +12,12 @@ add comments above this one
 "Command line:" = "Command line:";
 
 /* File: TerminalView.m:1130 */
-/* Flag: untranslated */
 /* File: TerminalView.m:1857 */
-/* Flag: untranslated */
 "Unexpected error while writing."
 = "Unexpected error while writing.";
 
 /* File: main.m:324 */
-/* Flag: untranslated */
 /* File: main.m:345 */
-/* Flag: untranslated */
 "Quit?" = "Quit?";
 
 
@@ -259,6 +255,7 @@ add comments above this one
 "Info..." = "Info...";
 /* File: main.m:166 */
 "New terminal" = "New terminal";
+"New tab" = "New tab";
 /* File: main.m:178 */
 "Paste" = "Paste";
 /* File: main.m:150 */

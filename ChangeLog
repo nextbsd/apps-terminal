@@ -1,3 +1,12 @@
+2016-03-12 Riccardo Mottola <rm@gnu.org>
+
+	* English.lproj/Localizable.strings
+	* TerminalWindow.h
+	* TerminalWindow.m
+	* main.m
+	* Services.m
+	Add tab support. Adaptation of patch by Tim Sheridan
+
 2016-03-01 Riccardo Mottola <rm@gnu.org>
 
 	* French.lproj/Localizable.string
