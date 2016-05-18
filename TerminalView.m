@@ -1,6 +1,6 @@
 /*
-copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
-forkpty replacement, 2005-2013 Riccardo Mottola <rmottola@users.sf.net>
+copyright 2002-2003 Alexander Malmberg <alexander@malmberg.org>
+          2005-2016 Riccardo Mottola <rmottola@users.sf.net>
 
 This file is a part of Terminal.app. Terminal.app is free software; you
 can redistribute it and/or modify it under the terms of the GNU General
