@@ -1,3 +1,8 @@
+2016-05-19 Riccardo Mottola <rm@gnu.org>
+
+	* TerminalView.m
+	attempt to handle vertical resize and cursor placement better
+
 2016-03-12 Riccardo Mottola <rm@gnu.org>
 
 	* English.lproj/Localizable.strings
