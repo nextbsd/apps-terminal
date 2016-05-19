@@ -55,8 +55,8 @@ NSString *TerminalWindowNoMoreActiveWindowsNotification=
 	NSWindow *win;
 	NSScroller *scroller;
 	GSHbox *hb;
-	float fx,fy;
-	int scroller_width;
+	CGFloat fx,fy;
+	CGFloat scroller_width;
 	NSRect contentRect,windowRect;
 	NSSize contentSize,minSize;
         NSTabViewItem *tab_item;
@@ -338,12 +338,13 @@ static NSMutableArray *idle_list;
         TerminalView *tv;
         NSScroller *scroller;
         GSHbox *hb;
+	CGFloat fy;
 
 	if ([tab_view numberOfTabViewItems] == 1) {
 		[window setContentView: tab_view];
 	}
 
-	float fy;
+
 
 	{
 		NSSize size=[TerminalView characterCellSize];

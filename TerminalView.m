@@ -2379,7 +2379,7 @@ improve? */
 	ignore_resize=ignore;
 }
 
--(void) setBorder: (float)x : (float)y
+-(void) setBorder: (CGFloat)x : (CGFloat)y
 {
 	border_x=x;
 	border_y=y;

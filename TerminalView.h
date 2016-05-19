@@ -39,7 +39,7 @@ struct selection_range
 
 	NSFont *font,*boldFont;
 	int font_encoding,boldFont_encoding;
-	float fx,fy,fx0,fy0;
+	CGFloat fx,fy,fx0,fy0;
 
 	BOOL use_multi_cell_glyphs;
 	BOOL blackOnWhite;
@@ -83,12 +83,12 @@ struct selection_range
 
 	BOOL ignore_resize;
 
-	float border_x,border_y;
+	CGFloat border_x,border_y;
 }
 
 -(void) setIgnoreResize: (BOOL)ignore;
 
--(void) setBorder: (float)x : (float)y;
+-(void) setBorder: (CGFloat)x : (CGFloat)y;
 
 -(NSString *) windowTitle;
 -(NSString *) miniwindowTitle;

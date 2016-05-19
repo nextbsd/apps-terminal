@@ -1,3 +1,10 @@
+2016-05-20 Riccardo Mottola <rm@gnu.org>
+
+	* TerminalView.h
+	* TerminalView.m
+	* TerminalWindow.m
+	Transition to CGFloat
+
 2016-05-19 Riccardo Mottola <rm@gnu.org>
 
 	* TerminalView.m
