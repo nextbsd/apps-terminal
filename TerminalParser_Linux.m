@@ -251,7 +251,7 @@ static const unichar *_set_translate(int charset)
 	intensity = 1;
 	underline = 0;
 	reverse = 0;
-	blink = 0;
+	blink = 1;
 	color = def_color;
 }
 

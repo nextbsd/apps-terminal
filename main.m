@@ -171,7 +171,7 @@
 	[m addItemWithTitle: _(@"New tab")
 		action: @selector(openTab:)
 		keyEquivalent: @"t"];
-        [menu setSubmenu: m forItem: [menu addItemWithTitle: _(@"Terminal")]];
+        [menu setSubmenu: m forItem: [menu addItemWithTitle: _(@"Shell")]];
 	[m release];
 
 
