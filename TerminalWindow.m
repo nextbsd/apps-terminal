@@ -52,6 +52,8 @@ NSString *TerminalWindowNoMoreActiveWindowsNotification=
 
 - init
 {
+  if ((self = [super init]))
+    {
 	NSWindow *win;
 	NSScroller *scroller;
 	GSHbox *hb;
@@ -168,7 +170,8 @@ NSString *TerminalWindowNoMoreActiveWindowsNotification=
 		name: TerminalViewTitleDidChangeNotification
 		object: tv];
 
-	return self;
+    }
+  return self;
 }
 
 
