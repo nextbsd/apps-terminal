@@ -1,5 +1,10 @@
 2016-05-20 Riccardo Mottola <rm@gnu.org>
 
+	* TerminalWindow.m
+	Check that view actually gets found.
+
+2016-05-20 Riccardo Mottola <rm@gnu.org>
+
 	* TerminalView.h
 	* TerminalView.m
 	* TerminalWindow.m

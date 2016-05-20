@@ -177,7 +177,14 @@ NSString *TerminalWindowNoMoreActiveWindowsNotification=
 
 -(void) _updateTitleFromTerminalView: (TerminalView *)tv
 {
-	NSInteger index = [terminal_views indexOfObjectIdenticalTo:tv];
+  NSUInteger index;
+  
+  index = [terminal_views indexOfObjectIdenticalTo:tv];
+  if (index == NSNotFound)
+    {
+      NSLog(@"updateTitle view no found: %@ %@", [tv windowTitle], [tv representedFilename]);
+      return;
+    }
 	[[tab_view tabViewItemAtIndex:index] setLabel:[tv windowTitle]];
 	[tab_view display];
 
