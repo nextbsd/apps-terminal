@@ -198,7 +198,7 @@ NSString *TerminalWindowNoMoreActiveWindowsNotification=
 -(void) dealloc
 {
 	num_instances--;
-	[isa checkActiveWindows];
+	[TerminalWindowController checkActiveWindows];
 	[[NSNotificationCenter defaultCenter]
 		removeObserver: self];
         [terminal_views release];
@@ -241,7 +241,7 @@ static NSMutableArray *idle_list;
 		[[self window] setMiniwindowTitle: t];
 	}
 
-	[isa checkActiveWindows];
+	[TerminalWindowController checkActiveWindows];
 }
 
 -(void) _becameNonIdle: (NSNotification *)n
