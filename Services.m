@@ -12,23 +12,23 @@
   of the License. See COPYING or main.m for more information.
 */
 
-#include <Foundation/NSString.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSDictionary.h>
-#include <Foundation/NSUserDefaults.h>
-#include <Foundation/NSTask.h>
-#include <Foundation/NSData.h>
-#include <Foundation/NSPathUtilities.h>
-#include <AppKit/NSPasteboard.h>
-#include <AppKit/NSWorkspace.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSDictionary.h>
+#import <Foundation/NSUserDefaults.h>
+#import <Foundation/NSTask.h>
+#import <Foundation/NSData.h>
+#import <Foundation/NSPathUtilities.h>
+#import <AppKit/NSPasteboard.h>
+#import <AppKit/NSWorkspace.h>
 
-#include "Services.h"
+#import "Services.h"
 
-#include "ServicesParameterWindowController.h"
+#import "ServicesParameterWindowController.h"
 
-#include "TerminalWindow.h"
-#include "TerminalView.h"
+#import "TerminalWindow.h"
+#import "TerminalView.h"
 
 
 @implementation TerminalServices
