@@ -10,7 +10,7 @@ of the License. See COPYING or main.m for more information.
 #ifndef TerminalParser_LinuxPrefs_h
 #define TerminalParser_LinuxPrefs_h
 
-#include "PrefBox.h"
+#import "PrefBox.h"
 
 
 @class GSVbox,NSPopUpButton;

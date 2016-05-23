@@ -11,7 +11,7 @@ of the License. See COPYING or main.m for more information.
 #ifndef TerminalViewPrefs_h
 #define TerminalViewPrefs_h
 
-#include "PrefBox.h"
+#import "PrefBox.h"
 
 
 @class NSString,NSFont,NSColor;

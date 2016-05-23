@@ -14,7 +14,7 @@ of the License. See COPYING or main.m for more information.
 
 #include <iconv.h>
 
-#include "Terminal.h"
+#import "Terminal.h"
 
 @interface TerminalParser_Linux : NSObject <TerminalParser>
 {
