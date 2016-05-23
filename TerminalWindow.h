@@ -14,8 +14,8 @@
 
 @class TerminalView;
 
-#include <AppKit/NSWindowController.h>
-#include <AppKit/NSTabView.h>
+#import <AppKit/NSWindowController.h>
+#import <AppKit/NSTabView.h>
 
 NSString *TerminalWindowNoMoreActiveWindowsNotification;
 

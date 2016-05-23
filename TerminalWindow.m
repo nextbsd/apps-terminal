@@ -12,21 +12,21 @@
 #include <math.h>
 #include <sys/wait.h>
 
-#include <Foundation/NSBundle.h>
-#include <Foundation/NSDebug.h>
-#include <Foundation/NSNotification.h>
-#include <Foundation/NSString.h>
-#include <Foundation/NSUserDefaults.h>
-#include <AppKit/NSApplication.h>
-#include <AppKit/NSScroller.h>
-#include <AppKit/NSTabViewItem.h>
-#include <AppKit/NSWindow.h>
-#include <GNUstepGUI/GSHbox.h>
+#import <Foundation/NSBundle.h>
+#import <Foundation/NSDebug.h>
+#import <Foundation/NSNotification.h>
+#import <Foundation/NSString.h>
+#import <Foundation/NSUserDefaults.h>
+#import <AppKit/NSApplication.h>
+#import <AppKit/NSScroller.h>
+#import <AppKit/NSTabViewItem.h>
+#import <AppKit/NSWindow.h>
+#import <GNUstepGUI/GSHbox.h>
 
-#include "TerminalWindow.h"
+#import "TerminalWindow.h"
 
-#include "TerminalWindowPrefs.h"
-#include "TerminalView.h"
+#import "TerminalWindowPrefs.h"
+#import "TerminalView.h"
 
 
 /* TODO: this needs cleaning up. chances are this will interfere
