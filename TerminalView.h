@@ -10,7 +10,7 @@ of the License. See COPYING or main.m for more information.
 #ifndef TerminalView_h
 #define TerminalView_h
 
-#include <AppKit/NSView.h>
+#import <AppKit/NSView.h>
 
 
 extern NSString
