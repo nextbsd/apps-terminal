@@ -23,6 +23,7 @@ NSString *TerminalWindowNoMoreActiveWindowsNotification;
 {
 	NSMutableArray *terminal_views;
 	NSTabView *tab_view;
+        BOOL isShowingTabs;
 	BOOL close_on_idle;
 }
 

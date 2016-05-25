@@ -1,3 +1,9 @@
+2016-05-26 Riccardo Mottola <rm@gnu.org>
+
+	* TerminalWindow.h
+	* TerminalWindow.m
+	Use isShowingTabs to know if tab is displayed and optimize content view setting.
+
 2016-05-20 Riccardo Mottola <rm@gnu.org>
 
 	* TerminalWindow.m

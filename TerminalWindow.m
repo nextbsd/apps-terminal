@@ -63,9 +63,11 @@ NSString *TerminalWindowNoMoreActiveWindowsNotification=
 	NSSize contentSize,minSize;
         NSTabViewItem *tab_item;
         TerminalView *tv;
-
 	int sx,sy;
 
+        isShowingTabs = NO;
+        if ([self showTabBar])
+          isShowingTabs = YES;
 
 	{
 		NSSize size=[TerminalView characterCellSize];
@@ -146,11 +148,16 @@ NSString *TerminalWindowNoMoreActiveWindowsNotification=
 	else
 		[tv setBorder: 4 : 0];
 
-	[win setContentView: hb];
+        if (isShowingTabs)
+          {
+            [win setContentView: tab_view];
+          }
+        else
+          {
+            [win setContentView: hb];
+          }
 	DESTROY(hb);
 
-	// Show tab bar if needed
-	[self setShowTabBar:[self showTabBar] inWindow:win];
 
 	[win release];
 
@@ -335,9 +342,11 @@ static NSMutableArray *idle_list;
 			[window setContentView:tab_view];
 			[tab_view selectFirstTabViewItem:nil];
 			[tab_view display];
+                        isShowingTabs = YES;
 		} else {
 			NSView *view = [[tab_view selectedTabViewItem] view];
 			[window setContentView:view];
+                        isShowingTabs = NO;
 		}
 	}
 }
@@ -350,9 +359,8 @@ static NSMutableArray *idle_list;
         GSHbox *hb;
 	CGFloat fy;
 
-	if ([tab_view numberOfTabViewItems] == 1) {
-		[window setContentView: tab_view];
-	}
+	if (!isShowingTabs)
+          [window setContentView: tab_view];
 
 
 
