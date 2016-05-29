@@ -469,7 +469,7 @@ static NSMutableArray *idle_list;
           {
             NSView *view;
 
-            view = [[tab_view tabViewItemAtIndex:0]; view];
+            view = [[tab_view tabViewItemAtIndex:0] view];
             [view retain];
             [window setContentView: view];
             [view release];
