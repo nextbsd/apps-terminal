@@ -974,7 +974,7 @@ if (blackOnWhite)
 	ADD_DIRTY(0,t,sx,b-t);
 }
 
--(void) ts_scrollDown: (int)t: (int)b  rows: (int)nr
+-(void) ts_scrollDown: (int)t :(int)b  rows: (int)nr
 {
 	screen_char_t *s;
 	unsigned int step;
@@ -1272,7 +1272,7 @@ Keyboard events
 	NSString *s=[e charactersIgnoringModifiers];
 
 	NSDebugLLog(@"key",@"got key flags=%08x  repeat=%i '%@' '%@' %4i %04x %li %04x %li\n",
-		[e modifierFlags],[e isARepeat],[e characters],[e charactersIgnoringModifiers],[e keyCode],
+                    (unsigned int)[e modifierFlags],(int)[e isARepeat],[e characters],[e charactersIgnoringModifiers],[e keyCode],
 		[[e characters] characterAtIndex: 0],[[e characters] length],
 		[[e charactersIgnoringModifiers] characterAtIndex: 0],[[e charactersIgnoringModifiers] length]);
 
