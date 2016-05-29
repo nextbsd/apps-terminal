@@ -1,3 +1,8 @@
+2016-05-29 Riccardo Mottola <rm@gnu.org>
+
+	* TerminalWindow.m
+	Remove view from contentView and put it into Tab Item and vice-versa.
+
 2016-05-26 Riccardo Mottola <rm@gnu.org>
 
 	* TerminalWindow.h

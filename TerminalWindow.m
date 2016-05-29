@@ -127,7 +127,8 @@ NSString *TerminalWindowNoMoreActiveWindowsNotification=
 	[tab_view setDelegate:self];
 	tab_item = [[NSTabViewItem alloc] init];
 	[tab_item setLabel:@"Terminal"];
-	[tab_item setView:hb];
+        if (isShowingTabs)
+          [tab_item setView:hb];
 	[tab_view addTabViewItem:tab_item];
         [tab_item release];
         
@@ -189,7 +190,8 @@ NSString *TerminalWindowNoMoreActiveWindowsNotification=
   index = [terminal_views indexOfObjectIdenticalTo:tv];
   if (index == NSNotFound)
     {
-      NSLog(@"updateTitle view no found: %@ %@", [tv windowTitle], [tv representedFilename]);
+      NSLog(@"updateTitle view not found: %@ %@", [tv windowTitle], [tv representedFilename]);
+      NSLog(@"view is: %@, views are: %@", tv, terminal_views);
       return;
     }
 	[[tab_view tabViewItemAtIndex:index] setLabel:[tv windowTitle]];
@@ -339,14 +341,20 @@ static NSMutableArray *idle_list;
 
 	if ([tab_view numberOfTabViewItems] == 1) {
 		if (visible) {
-			[window setContentView:tab_view];
-			[tab_view selectFirstTabViewItem:nil];
-			[tab_view display];
-                        isShowingTabs = YES;
+                  NSView *view;
+
+                  view = [window contentView];
+                  [view retain];
+                  [window setContentView:tab_view];
+                  [[tab_view tabViewItemAtIndex:0] setView:view];
+                  [tab_view selectFirstTabViewItem:nil];
+                  [tab_view display];
+                  [view release];
+                  isShowingTabs = YES;
 		} else {
-			NSView *view = [[tab_view selectedTabViewItem] view];
-			[window setContentView:view];
-                        isShowingTabs = NO;
+                  NSView *view = [[tab_view selectedTabViewItem] view];
+                  [window setContentView:view];
+                  isShowingTabs = NO;
 		}
 	}
 }
@@ -360,9 +368,16 @@ static NSMutableArray *idle_list;
 	CGFloat fy;
 
 	if (!isShowingTabs)
-          [window setContentView: tab_view];
+          {
+            NSView *view;
 
-
+            view = [window contentView];
+            [view retain];
+            [window setContentView:tab_view];
+            [[tab_view tabViewItemAtIndex:0] setView:view];
+            [view release];
+            isShowingTabs = YES;
+          }
 
 	{
 		NSSize size=[TerminalView characterCellSize];
@@ -450,11 +465,15 @@ static NSMutableArray *idle_list;
 	[tab_view removeTabViewItem:item];
 	[terminal_views removeObjectAtIndex:index];
 
-	if ([tab_view numberOfTabViewItems] == 1) {
-		NSTabViewItem *only_item = [tab_view tabViewItemAtIndex:0];
-		NSView *view = [only_item view];
-		[window setContentView: view];
-		[window makeFirstResponder:[terminal_views objectAtIndex:0]];
+	if ([tab_view numberOfTabViewItems] == 1)
+          {
+            NSView *view;
+
+            view = [[tab_view tabViewItemAtIndex:0]; view];
+            [view retain];
+            [window setContentView: view];
+            [view release];
+            [window makeFirstResponder:[terminal_views objectAtIndex:0]];
 
 		// Follow tab bar visible setting
 		[self setShowTabBar:[self showTabBar] inWindow:window];
