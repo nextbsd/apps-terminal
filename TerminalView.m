@@ -2157,6 +2157,8 @@ misc. stuff
 	nsx=(size.width-border_x)/fx;
 	nsy=(size.height-border_y)/fy;
 
+        NSLog(@"resize from (%i %i - %f %f) to %i %i", sx, sy, size.width, size.height, nsx, nsy);
+
 	NSDebugLLog(@"term",@"_resizeTerminalTo: (%g %g) %i %i (%g %g)\n",
 		size.width,size.height,
 		nsx,nsy,
