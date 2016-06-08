@@ -2157,8 +2157,6 @@ misc. stuff
 	nsx=(size.width-border_x)/fx;
 	nsy=(size.height-border_y)/fy;
 
-        NSLog(@"resize from (%i %i - %f %f) to %i %i", sx, sy, size.width, size.height, nsx, nsy);
-
 	NSDebugLLog(@"term",@"_resizeTerminalTo: (%g %g) %i %i (%g %g)\n",
 		size.width,size.height,
 		nsx,nsy,
@@ -2232,9 +2230,8 @@ improve? */
 	if (sb_length<0)
 		sb_length=0;
 
-	if (nsy != sy)
-	  cursor_y = nsy-(sy-cursor_y);
-	
+        cursor_y = nsy-(sy-cursor_y);
+        
 	sx=nsx;
 	sy=nsy;
 	free(screen);
@@ -2242,9 +2239,8 @@ improve? */
 	screen=nscreen;
 	sbuf=nsbuf;
 
-	if (cursor_x>sx)
-	  cursor_x=sx-1;
-
+        [self ts_goto: cursor_x : cursor_y];
+        
 	[self _updateScroller];
 
 	[tp setTerminalScreenWidth: sx height: sy];
