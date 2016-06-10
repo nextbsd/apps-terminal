@@ -247,7 +247,7 @@ add comments above this one
 "Cut" = "Cut";
 /* File: main.m:181 */
 "Edit" = "Edit";
-/* File: main.m:201 */
+"View"="View";
 "Hide" = "Hide";
 /* File: main.m:154 */
 "Info" = "Info";

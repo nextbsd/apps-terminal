@@ -250,6 +250,7 @@ add comments above this one
 "Cut" = "Taglia";
 /* File: main.m:181 */
 "Edit" = "Modifica";
+"View"="Vista";
 /* File: main.m:201 */
 "Hide" = "Nascondi";
 /* File: main.m:154 */
@@ -257,7 +258,8 @@ add comments above this one
 /* File: main.m:148 */
 "Info..." = "Informazioni...";
 /* File: main.m:166 */
-"New terminal" = "Nuovo terminale";
+"New window" = "Nuova finestra";
+"New tab" = "Nuova linguetta";
 /* File: main.m:178 */
 "Paste" = "Incolla";
 /* File: main.m:150 */
@@ -268,3 +270,11 @@ add comments above this one
 "Services" = "Servizi";
 /* File: main.m:192 */
 "Windows" = "Finestre";
+
+"Show tab bar"="Mostra barra linguette";
+"Close window"="Chiudi finestra";
+"Close tab"="Chiudi linguetta";
+"Show previous tab"="Mostra linguetta precedente";
+"Show next tab"="Mostra prossima linguetta";
+"Move tab left"="Sposta linguetta a sinistra";
+"Move tab right"="Sposta linguetta a destra";
