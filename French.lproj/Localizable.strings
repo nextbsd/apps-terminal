@@ -118,9 +118,6 @@ add comments above this one
 /* Flag: untranslated */
 "Benchmark" = "Benchmark";
 
-/* File: main.m:170 */
-"New terminal" = "Nouveau terminal";
-
 /* File: main.m:193 */
 "Miniaturize all" = "Tout miniaturiser";
 
@@ -277,6 +274,9 @@ add comments above this one
 "Info" = "Information";
 /* File: main.m:152 */
 "Info..." = "Panneaux d'informations";
+
+"New terminal" = "Nouveau terminal";
+"New tab" = "Nouvel onglet";
 /* File: main.m:182 */
 "Paste" = "Coller";
 /* File: main.m:154 */

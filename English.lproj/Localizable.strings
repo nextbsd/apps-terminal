@@ -266,3 +266,11 @@ add comments above this one
 "Services" = "Services";
 /* File: main.m:192 */
 "Windows" = "Windows";
+
+"Show tab bar"="Show tab bar";
+"Close window"="Close window";
+"Close tab"="Close tab";
+"Show previous tab"="Show previous tab";
+"Show next tab"="Show next tab";
+"Move tab left"="Move tab left";
+"Move tab right"="Move tab right";
