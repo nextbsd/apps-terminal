@@ -16,17 +16,14 @@ add comments above this one
 "Command line:" = "Ligne de commande :";
 
 /* File: TerminalWindow.m:200 */
-/* Flag: untranslated */
 /* File: TerminalWindow.m:204 */
 " (idle)" = " (en attente)";
 
 /* File: main.m:329 */
-/* Flag: untranslated */
 /* File: main.m:350 */
 "Quit?" = "Quitter ?";
 
 /* File: TerminalView.m:1135 */
-/* Flag: untranslated */
 /* File: TerminalView.m:1864 */
 "Unexpected error while writing." = "Erreur inattendue durant l'écriture.";
 
@@ -118,11 +115,41 @@ add comments above this one
 /* Flag: untranslated */
 "Benchmark" = "Benchmark";
 
+/* File: main.m:168 */
+"New window" = "Nouvelle fenêtre";
+
+/* File: main.m:171 */
+"New tab" = "Nouvel onglet";
+
+/* File: main.m:194 */
+"Show tab bar" = "Montrer la barre d'onglets"; 
+
+/* File: main.m:197 */
+"View" = "Vue";
+
 /* File: main.m:193 */
 "Miniaturize all" = "Tout miniaturiser";
 
 /* File: main.m:201 */
 "Services" = "Services";
+
+/* File: main.m:202 */
+"Close window" = "Fermer la fenêtre";
+
+/* File: main.m:205 */
+"Close tab" = "Fermer l'onglet";
+
+/* File: main.m:208 */
+"Show previous tab" = "Montrer l'onglet précédent";
+
+/* File: main.m:211 */
+"Show next tab" = "Montrer l'onglet suivant";
+
+/* File: main.m:214 */
+"Move tab left" = "Déplacer l'onglet à gauche";
+
+/* File: main.m:217 */
+"Move tab right" = "Déplacer l'onglet à droite";
 
 /* File: main.m:280 */
 "Quit anyway" = "Quitter vraiment";
@@ -140,15 +167,15 @@ add comments above this one
 /* File: PreferencesWindowController.m:97 */
 "Apply and save" = "Appliquer et sauvegarder";
 /* File: PreferencesWindowController.m:142 */
-"Preferences" = "Panneau des Pr\u00e9f\u00e9rences";
+"Preferences" = "Panneau des Préférences";
 
 
 /*** Strings from Services.m ***/
 /* File: Services.m:151 */
-"Service aborted by user." = "Service annul\u00e9e par l'utilisateur.";
+"Service aborted by user." = "Service annulé par l'utilisateur.";
 /* File: Services.m:59 */
 "There is no terminal service called '%@'.\nYour services list is probably out-of-date.\nRun 'make_services' to update it."
-  = "Il n'y a aucun service de terminal appel\u00e9e '%@'.\nVotre liste de services n'est probabement pas \u00e0 jour.\nLancer 'make_services' pour la mettre \u00e0 jour.";
+  = "Il n'y a aucun service de terminal appelé '%@'.\nVotre liste de services n'est probabement pas à jour.\nLancer 'make_services' pour la mettre à jour.";
 
 
 /*** Strings from ServicesParameterWindowController.m ***/
@@ -157,7 +184,7 @@ add comments above this one
 /* File: ServicesParameterWindowController.m:74 */
 "OK" = "OK";
 /* File: ServicesParameterWindowController.m:118 */
-"Parameter for service %@" = "Param\u00e8tre pour le service %@";
+"Parameter for service %@" = "Paramètre pour le service %@";
 
 
 /*** Strings from ServicesPrefs.m ***/
@@ -180,7 +207,7 @@ add comments above this one
 /* File: ServicesPrefs.m:520 */
 "Import..." = "Importer...";
 /* File: ServicesPrefs.m:565 */
-"Input on command line" = "Entr\u00e9e standard sur la ligne de commande";
+"Input on command line" = "Entrée standard sur la ligne de commande";
 /* File: ServicesPrefs.m:645 */
 "Key:" = "Touche :";
 /* File: ServicesPrefs.m:632 */
@@ -190,11 +217,11 @@ add comments above this one
 /* File: ServicesPrefs.m:555 */
 "Return output" = "Retourner la sortie standard";
 /* File: ServicesPrefs.m:573 */
-"Run in background" = "Ex\u00e9cuter en arri\u00e8re plan";
+"Run in background" = "Exécuter en arrière plan";
 /* File: ServicesPrefs.m:575 */
-"Run in idle window" = "Ex\u00e9cuter dans une fen\u00eatre en attente";
+"Run in idle window" = "Exécuter dans une fenêtre en attente";
 /* File: ServicesPrefs.m:574 */
-"Run in new window" = "Ex\u00e9cuter dans une nouvelle fen\u00eatre";
+"Run in new window" = "Exécuter dans une nouvelle fenêtre";
 /* File: ServicesPrefs.m:473 */
 "Terminal services" = "Services de Terminal";
 /* File: ServicesPrefs.m:478 */
@@ -228,15 +255,15 @@ add comments above this one
 "Normal font:" = "Texte normal :";
 /* File: TerminalViewPrefs.m:453 */
 /* File: TerminalViewPrefs.m:426 */
-"Pick font..." = "D\u00e9finir la police...";
+"Pick font..." = "Définir la police...";
 /* File: TerminalViewPrefs.m:583 */
 /* File: TerminalViewPrefs.m:578 */
 "Shell" = "Shell par d\u00e9faut";
 /* File: TerminalViewPrefs.m:604 */
-"Start as login-shell" = "D\u00e9marrer comme login-shell";
+"Start as login-shell" = "Démarrer comme login-shell";
 /* File: TerminalViewPrefs.m:736 */
 "Treat the command key as meta.\n\nNote that with this enabled, you won't be\nable to access menu entries with the\nkeyboard."
-  = "Traiter la touche Command comme Meta.\n\nNotez qu'avec cette touche activ\u00e9e, vous\nn'aurez plus acc\u00e9s au menu.";
+  = "Traiter la touche Command comme Meta.\n\nNotez qu'avec cette touche activée, vous\nn'aurez plus accès au menu.";
 
 
 /*** Strings from TerminalWindowPrefs.m ***/
@@ -244,17 +271,17 @@ add comments above this one
 "Add top and bottom border" = "Ajouter une bordure en haut et en bas";
 /* File: TerminalWindowPrefs.m:154 */
 "Close new windows when idle"
-  = "Fermer les nouvelles fen\u00eatres lorsque le shell se termine";
+  = "Fermer les nouvelles fenêtres lorsque le shell se termine";
 /* File: TerminalWindowPrefs.m:178 */
-"Default size" = "Taille par d\u00e9faut";
+"Default size" = "Taille par défaut";
 /* File: TerminalWindowPrefs.m:155 */
-"Don't close new windows" = "Ne pas fermer les nouvelles fen\u00eatres";
+"Don't close new windows" = "Ne pas fermer les nouvelles fenêtres";
 /* File: TerminalWindowPrefs.m:192 */
 "Height:" = "Hauteur :";
 /* File: TerminalWindowPrefs.m:116 */
-"Terminal Window" = "Fen\u00eatre Terminal";
+"Terminal Window" = "Fenêtre Terminal";
 /* File: TerminalWindowPrefs.m:121 */
-"Terminal\nWindow" = "Fen\u00eatre\nTerminal";
+"Terminal\nWindow" = "Fenêtre\nTerminal";
 /* File: TerminalWindowPrefs.m:182 */
 "Width:" = "Largeur :";
 
@@ -275,13 +302,12 @@ add comments above this one
 /* File: main.m:152 */
 "Info..." = "Panneaux d'informations";
 
-"New terminal" = "Nouveau terminal";
-"New tab" = "Nouvel onglet";
+
 /* File: main.m:182 */
 "Paste" = "Coller";
 /* File: main.m:154 */
-"Preferences..." = "Pr\u00e9f\u00e9rences...";
+"Preferences..." = "Préférences...";
 /* File: main.m:209 */
 "Quit" = "Quitter";
 /* File: main.m:196 */
-"Windows" = "Fen\u00eatres";
+"Windows" = "Fenêtres";
