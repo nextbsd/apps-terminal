@@ -473,10 +473,13 @@ if (blackOnWhite)
 	if (pending_scroll)
 		[self _handlePendingScroll: NO];
 
-	/* draw the black border around the view if needed*/
+	/* draw the border around the view if needed */
 	{
 		float a,b;
-		DPSsetgray(cur,0.0);
+		if (blackOnWhite)
+			DPSsetgray(cur,1.0);
+		else
+			DPSsetgray(cur,0.0);
 		if (r.origin.x<border_x)
 			DPSrectfill(cur,r.origin.x,r.origin.y,border_x-r.origin.x,r.size.height);
 		if (r.origin.y<border_y)

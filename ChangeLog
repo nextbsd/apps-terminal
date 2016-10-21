@@ -1,7 +1,7 @@
-2016-06-08 Riccardo Mottola <rm@gnu.org>
+2016-10-21 Ray Haleblian
 
 	* TerminalView.m
-	Fix code that preserves cursor position on resize, use ts_goto to bound values.
+	Draw border according to the black or white settings.
 
 2016-05-29 Riccardo Mottola <rm@gnu.org>
 
