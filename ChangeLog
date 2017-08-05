@@ -1,6 +1,11 @@
 2017-08-05 Riccardo Mottola <rm@gnu.org>
 
 	* TerminalView.m
+	Do not compensate for font bounding origin, not needed anymore.
+
+2017-08-05 Riccardo Mottola <rm@gnu.org>
+
+	* TerminalView.m
 	Change all display postscript calls in modern calls to NSBezierPath and NSCopyBits.
 
 2016-10-21 Ray Haleblian

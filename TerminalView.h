@@ -1,5 +1,7 @@
 /*
-copyright 2002 Alexander Malmberg <alexander@malmberg.org>
+Copyright (c) 2002 Alexander Malmberg <alexander@malmberg.org>
+Copyright (c) 2017 Riccardo Mottola <rm@gnu.org>
+
 
 This file is a part of Terminal.app. Terminal.app is free software; you
 can redistribute it and/or modify it under the terms of the GNU General
@@ -39,7 +41,7 @@ struct selection_range
 
 	NSFont *font,*boldFont;
 	int font_encoding,boldFont_encoding;
-	CGFloat fx,fy,fx0,fy0;
+	CGFloat fx,fy;
 
 	BOOL use_multi_cell_glyphs;
 	BOOL blackOnWhite;

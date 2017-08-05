@@ -1,6 +1,6 @@
 /*
-copyright 2002-2003 Alexander Malmberg <alexander@malmberg.org>
-          2005-2016 Riccardo Mottola <rmottola@users.sf.net>
+Copyright (c) 2002-2003 Alexander Malmberg <alexander@malmberg.org>
+Copyright (c) 2005-2017 Riccardo Mottola <rm@gnu.org>
 
 This file is a part of Terminal.app. Terminal.app is free software; you
 can redistribute it and/or modify it under the terms of the GNU General
@@ -732,7 +732,7 @@ if (blackOnWhite)
                                                               foreColor, NSForegroundColorAttributeName,
                                                               backColor, NSBackgroundColorAttributeName,
                                                               nil];
-					[strBuf drawAtPoint:NSMakePoint(scr_x+fx0,scr_y+fy0) withAttributes:attrs];
+					[strBuf drawAtPoint:NSMakePoint(scr_x,scr_y) withAttributes:attrs];
                                         [strBuf release];
 				}
 
@@ -2285,9 +2285,7 @@ improve? */
 
 		/* TODO: clear up font metrics issues with xlib/backart */
 		NSLog(@"NSFont %@ info %@ size %g %@ %d", font, [font fontInfo], [font pointSize], NSStringFromRect([font boundingRectForGlyph: 'A']), [font glyphIsEncoded: 'A']);
-		fx0=-r.origin.x;
-		fy0=-r.origin.y;
-		NSDebugLLog(@"term",@"Bounding (%g %g)+(%g %g)",-fx0,-fy0,fx,fy);
+		NSDebugLLog(@"term",@"Bounding (%g %g)+(%g %g)",r.origin.x,r.origin.y,fx,fy);
 		font_encoding=[font mostCompatibleStringEncoding];
 		boldFont_encoding=[boldFont mostCompatibleStringEncoding];
 		NSDebugLLog(@"term",@"encoding %i and %i",
