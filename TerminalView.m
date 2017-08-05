@@ -71,9 +71,12 @@ activated */
 #import <AppKit/NSPasteboard.h>
 #import <AppKit/NSDragging.h>
 #import <AppKit/NSEvent.h>
+#import <AppKit/NSFont.h>
 #import <AppKit/NSGraphics.h>
 #import <AppKit/NSScroller.h>
-#import <AppKit/DPSOperators.h>
+#import <AppKit/NSBezierPath.h>
+#import <AppKit/NSAttributedString.h>
+#import <AppKit/NSStringDrawing.h>
 
 #import "TerminalView.h"
 
@@ -379,8 +382,7 @@ TerminalScreen protocol implementation and rendering methods
 
 	if (lockFocus)
 		[self lockFocus];
-	DPScomposite(GSCurrentContext(),border_x+x0,border_y+y0,w,h,
-		[self gState],border_x+dx,border_y+dy,NSCompositeCopy);
+        NSCopyBits([self gState], NSMakeRect(border_x+x0,border_y+y0,w,h), NSMakePoint(border_x+dx,border_y+dy));
 	if (lockFocus)
 		[self unlockFocusNeedsFlush: NO];
 
@@ -395,11 +397,12 @@ static int total_draw=0;
 static const float col_h[8]={  0,240,120,180,  0,300, 60,  0};
 static const float col_s[8]={0.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0};
 
-static void set_background(NSGraphicsContext *gc,
+static NSColor* set_background(NSGraphicsContext *gc,
 	unsigned char color,unsigned char in)
 {
 	float bh,bs,bb;
 	int bg=color>>4;
+        NSColor *nsColor;
 
 	if (bg==0)
 		bb=0.0;
@@ -410,14 +413,17 @@ static void set_background(NSGraphicsContext *gc,
 	bs=col_s[bg];
 	bh=col_h[bg]/360.0;
 
-	DPSsethsbcolor(gc,bh,bs,bb);
+	nsColor = [NSColor colorWithCalibratedHue:bh saturation:bs brightness:bb alpha:1];
+        [nsColor set];
+        return nsColor;
 }
 
-static void set_foreground(NSGraphicsContext *gc,
+static NSColor* set_foreground(NSGraphicsContext *gc,
 	unsigned char color,unsigned char in, BOOL blackOnWhite)
 {
 	int fg=color;
 	float h,s,b;
+        NSColor *nsColor;
 
 if (blackOnWhite)
   {
@@ -451,7 +457,9 @@ if (blackOnWhite)
 	if (in==2)
 		s*=0.75;
 
-	DPSsethsbcolor(gc,h,s,b);
+	nsColor = [NSColor colorWithCalibratedHue:h saturation:s brightness:b alpha:1];
+        [nsColor set];
+        return nsColor;
 }
 
 
@@ -462,6 +470,7 @@ if (blackOnWhite)
 	NSGraphicsContext *cur=GSCurrentContext();
 	int x0,y0,x1,y1;
 	NSFont *f,*current_font=nil;
+        NSColor *foreColor, *backColor;
 
 	int encoding;
 
@@ -477,22 +486,23 @@ if (blackOnWhite)
 	{
 		float a,b;
 		if (blackOnWhite)
-			DPSsetgray(cur,1.0);
+                  backColor = [NSColor whiteColor];
 		else
-			DPSsetgray(cur,0.0);
+		  backColor = [NSColor blackColor];
+                [backColor set];
 		if (r.origin.x<border_x)
-			DPSrectfill(cur,r.origin.x,r.origin.y,border_x-r.origin.x,r.size.height);
+		  [NSBezierPath fillRect:NSMakeRect(r.origin.x,r.origin.y,border_x-r.origin.x,r.size.height)];
 		if (r.origin.y<border_y)
-			DPSrectfill(cur,r.origin.x,r.origin.y,r.size.width,border_y-r.origin.y);
+		  [NSBezierPath fillRect:NSMakeRect(r.origin.x,r.origin.y,r.size.width,border_y-r.origin.y)];
 
 		a=border_x+sx*fx;
 		b=r.origin.x+r.size.width;
 		if (b>a)
-			DPSrectfill(cur,a,r.origin.y,b-a,r.size.height);
+		  [NSBezierPath fillRect:NSMakeRect(a,r.origin.y,b-a,r.size.height)];
 		a=border_y+sy*fy;
 		b=r.origin.y+r.size.height;
 		if (b>a)
-			DPSrectfill(cur,r.origin.x,a,r.size.width,b-a);
+		  [NSBezierPath fillRect:NSMakeRect(r.origin.x,a,r.size.width,b-a)];
 	}
 
 	/* figure out what character cells might need redrawing */
@@ -529,7 +539,7 @@ if (blackOnWhite)
 		are combined and drawn with a single rectfill. */
 		l_color=0;
 		l_attr=0;
-		set_foreground(cur,l_color,l_attr,blackOnWhite);
+		foreColor = set_foreground(cur,l_color,l_attr,blackOnWhite);
 		for (iy=y0;iy<y1;iy++)
 		{
 			ry=iy+current_scroll;
@@ -539,17 +549,9 @@ if (blackOnWhite)
 				ch=&sbuf[x0+(max_scrollback+ry)*sx];
 
 			scr_y=(sy-1-iy)*fy+border_y;
-/*
-#define R(scr_x,scr_y,fx,fy) \
-				DPSgsave(cur); \
-				DPSsetgray(cur,0.0); \
-				DPSrectfill(cur,scr_x,scr_y,fx,fy); \
-				DPSgrestore(cur); \
-				DPSrectstroke(cur,scr_x,scr_y,fx,fy); \
-*/
 
-/* ~400 cycles/cell on average */
-#define R(scr_x,scr_y,fx,fy) DPSrectfill(cur,scr_x,scr_y,fx,fy)
+
+#define R(scr_x,scr_y,fx,fy) [NSBezierPath fillRect:NSMakeRect(scr_x,scr_y,fx,fy)]
 			start_x=-1;
 			for (ix=x0;ix<x1;ix++,ch++)
 			{
@@ -580,7 +582,7 @@ if (blackOnWhite)
 
 						l_color=color;
 						l_attr=ch->attr&0x03;
-						set_foreground(cur,l_color,l_attr,blackOnWhite);
+						foreColor = set_foreground(cur,l_color,l_attr,blackOnWhite);
 					}
 				}
 				else
@@ -597,7 +599,7 @@ if (blackOnWhite)
 
 						l_color=color;
 						l_attr=ch->attr&0x03;
-						set_background(cur,l_color,l_attr);
+						backColor = set_background(cur,l_color,l_attr);
 					}
 				}
 
@@ -643,7 +645,7 @@ if (blackOnWhite)
 						{
 							l_color=color;
 							l_attr=ch->attr&0x03;
-							set_foreground(cur,l_color,l_attr,blackOnWhite);
+							foreColor = set_foreground(cur,l_color,l_attr,blackOnWhite);
 						}
 					}
 					else
@@ -654,13 +656,16 @@ if (blackOnWhite)
 						{
 							l_color=color;
 							l_attr=ch->attr&0x03;
-							set_background(cur,l_color,l_attr);
+							backColor = set_background(cur,l_color,l_attr);
 						}
 					}
 				}
 
 				if (ch->ch!=0 && ch->ch!=32 && ch->ch!=MULTI_CELL_GLYPH)
 				{
+					NSDictionary *attrs;
+                                        NSString *strBuf;
+
 					total_draw++;
 					if ((ch->attr&3)==2)
 					{
@@ -675,7 +680,6 @@ if (blackOnWhite)
 					if (f!=current_font)
 					{
 					/* ~190 cycles/change */
-						[f set];
 						current_font=f;
 					}
 
@@ -721,30 +725,20 @@ if (blackOnWhite)
 							GSFromUnicode(&pbuf,&dlen,&uch,1,encoding,NULL,GSUniTerminate);
 						}
 					}
-					/* ~580 cycles */
-					DPSmoveto(cur,scr_x+fx0,scr_y+fy0);
 					/* baseline here for mc-case 0.65 */
-					/* ~3800 cycles */
-					DPSshow(cur,buf);
-
-					/* ~95 cycles to ARTGState -DPSshow:... */
-					/* ~343 cycles to isEmpty */
-					/* ~593 cycles to currentpoint */
-					/* ~688 cycles to transform */
-					/* ~1152 cycles to FTFont -drawString:... */
-					/* ~1375 cycles to -drawString:... setup */
-					/* ~1968 cycles cmap lookup */
-					/* ~2718 cycles sbit lookup */
-					/* ~~2750 cycles blit setup */
-					/* ~3140 cycles blit loop, empty call */
-					/* ~3140 cycles blit loop, setup */
-					/* ~3325 cycles blit loop, no write */
-					/* ~3800 cycles total */
+                                        strBuf = [[NSString alloc] initWithCString:buf];
+					attrs = [NSDictionary dictionaryWithObjectsAndKeys:
+                                                                current_font, NSFontAttributeName,
+                                                              foreColor, NSForegroundColorAttributeName,
+                                                              backColor, NSBackgroundColorAttributeName,
+                                                              nil];
+					[strBuf drawAtPoint:NSMakePoint(scr_x+fx0,scr_y+fy0) withAttributes:attrs];
+                                        [strBuf release];
 				}
 
 				/* underline */
 				if (ch->attr&0x4)
-					DPSrectfill(cur,scr_x,scr_y,fx,1);
+                                   [NSBezierPath fillRect:NSMakeRect(scr_x,scr_y,fx,1)];
 			}
 		}
 	}
@@ -760,18 +754,17 @@ if (blackOnWhite)
 		switch ([TerminalViewDisplayPrefs cursorStyle])
 		{
 		case CURSOR_LINE:
-			DPSrectfill(cur,x,y,fx,fy*0.1);
-			break;
+		  [NSBezierPath fillRect:NSMakeRect(x,y,fx,fy*0.1)];
+		  break;
 		case CURSOR_BLOCK_STROKE:
-			DPSrectstroke(cur,x+0.5,y+0.5,fx-1.0,fy-1.0);
-			break;
+		  [NSBezierPath strokeRect:NSMakeRect(x+0.5,y+0.5,fx-1.0,fy-1.0)];
+		  break;
 		case CURSOR_BLOCK_FILL:
-			DPSrectfill(cur,x,y,fx,fy);
-			break;
+		  [NSBezierPath fillRect:NSMakeRect(x,y,fx,fy)];
+		  break;
 		case CURSOR_BLOCK_INVERT:
-			DPScompositerect(cur,x,y,fx,fy,
-				NSCompositeHighlight);
-			break;
+	          NSHighlightRect(NSMakeRect(x, y, fx, fy));
+	  	  break;
 		}
 		draw_cursor=NO;
 	}
@@ -968,8 +961,7 @@ if (blackOnWhite)
 			y0=sy*fy-y0-h;
 			dy=sy*fy-dy-h;
 			[self lockFocus];
-			DPScomposite(GSCurrentContext(),border_x+x0,border_y+y0,w,h,
-				[self gState],border_x+dx,border_y+dy,NSCompositeCopy);
+                        NSCopyBits([self gState], NSMakeRect(border_x+x0,border_y+y0,w,h), NSMakePoint(border_x+dx,border_y+dy));
 			[self unlockFocusNeedsFlush: NO];
 			num_scrolls++;
 		}
@@ -1019,8 +1011,7 @@ if (blackOnWhite)
 			y0=sy*fy-y0-h;
 			dy=sy*fy-dy-h;
 			[self lockFocus];
-			DPScomposite(GSCurrentContext(),border_x+x0,border_y+y0,w,h,
-				[self gState],border_x+dx,border_y+dy,NSCompositeCopy);
+                        NSCopyBits([self gState], NSMakeRect(border_x+x0,border_y+y0,w,h), NSMakePoint(border_x+dx,border_y+dy));
 			[self unlockFocusNeedsFlush: NO];
 			num_scrolls++;
 		}
@@ -1075,8 +1066,7 @@ if (blackOnWhite)
 		y0=sy*fy-y0-h;
 		dy=sy*fy-dy-h;
 		[self lockFocus];
-		DPScomposite(GSCurrentContext(),border_x+cx0,border_y+y0,w,h,
-			[self gState],border_x+dx,border_y+dy,NSCompositeCopy);
+                NSCopyBits([self gState], NSMakeRect(border_x+cx0,border_y+y0,w,h), NSMakePoint(border_x+dx,border_y+dy));
 		[self unlockFocusNeedsFlush: NO];
 		num_scrolls++;
 	}
