@@ -42,6 +42,7 @@ struct selection_range
 	NSFont *font,*boldFont;
 	int font_encoding,boldFont_encoding;
 	CGFloat fx,fy;
+	CGFloat fontBoundDiffY;
 
 	BOOL use_multi_cell_glyphs;
 	BOOL blackOnWhite;

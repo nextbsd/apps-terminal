@@ -732,7 +732,7 @@ if (blackOnWhite)
                                                               foreColor, NSForegroundColorAttributeName,
                                                               backColor, NSBackgroundColorAttributeName,
                                                               nil];
-					[strBuf drawAtPoint:NSMakePoint(scr_x,scr_y) withAttributes:attrs];
+					[strBuf drawAtPoint:NSMakePoint(scr_x,scr_y+fontBoundDiffY) withAttributes:attrs];
                                         [strBuf release];
 				}
 
@@ -2270,7 +2270,7 @@ improve? */
 
 	{
 		NSSize s;
-		NSRect r;
+		NSRect brRoman, brBold;
 
 		font=[TerminalViewDisplayPrefs terminalFont];
 		[font retain];
@@ -2278,14 +2278,16 @@ improve? */
 		boldFont=[TerminalViewDisplayPrefs boldTerminalFont];
 		[boldFont retain];
 
-		r=[font boundingRectForFont];
+		brRoman=[font boundingRectForFont];
+		brBold=[boldFont boundingRectForFont];
+		fontBoundDiffY = brRoman.origin.y - brBold.origin.y;
 		s=[TerminalView characterCellSize];
 		fx=s.width;
 		fy=s.height;
 
 		/* TODO: clear up font metrics issues with xlib/backart */
 		NSLog(@"NSFont %@ info %@ size %g %@ %d", font, [font fontInfo], [font pointSize], NSStringFromRect([font boundingRectForGlyph: 'A']), [font glyphIsEncoded: 'A']);
-		NSDebugLLog(@"term",@"Bounding (%g %g)+(%g %g)",r.origin.x,r.origin.y,fx,fy);
+		NSDebugLLog(@"term",@"Bounding (%g %g)+(%g %g)",brRoman.origin.x,brRoman.origin.y,fx,fy);
 		font_encoding=[font mostCompatibleStringEncoding];
 		boldFont_encoding=[boldFont mostCompatibleStringEncoding];
 		NSDebugLLog(@"term",@"encoding %i and %i",

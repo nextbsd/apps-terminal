@@ -1,3 +1,8 @@
+2017-08-07 Riccardo Mottola <rm@gnu.org>
+
+	* TerminalView.m
+	Compensate for differences in roman/bold font bounding boxes.
+
 2017-08-05 Riccardo Mottola <rm@gnu.org>
 
 	* TerminalView.m
