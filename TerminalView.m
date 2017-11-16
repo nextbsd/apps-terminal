@@ -466,13 +466,10 @@ if (blackOnWhite)
 -(void) drawRect: (NSRect)r
 {
 	int ix,iy;
-	char buf[8];
 	NSGraphicsContext *cur=GSCurrentContext();
 	int x0,y0,x1,y1;
 	NSFont *f,*current_font=nil;
         NSColor *foreColor, *backColor;
-
-	int encoding;
 
 
 	NSDebugLLog(@"draw",@"drawRect: (%g %g)+(%g %g) %i\n",
@@ -669,12 +666,10 @@ if (blackOnWhite)
 					total_draw++;
 					if ((ch->attr&3)==2)
 					{
-						encoding=boldFont_encoding;
 						f=boldFont;
 					}
 					else
 					{
-						encoding=font_encoding;
 						f=font;
 					}
 					if (f!=current_font)
@@ -683,50 +678,9 @@ if (blackOnWhite)
 						current_font=f;
 					}
 
-					/* we short-circuit utf8 for performance with back-art */
-					/* TODO: short-circuit latin1 too? */
-					if (encoding==NSUTF8StringEncoding)
-					{
-						unichar uch=ch->ch;
-						if (uch>=0x800)
-						{
-							buf[2]=(uch&0x3f)|0x80;
-							uch>>=6;
-							buf[1]=(uch&0x3f)|0x80;
-							uch>>=6;
-							buf[0]=(uch&0x0f)|0xe0;
-							buf[3]=0;
-						}
-						else if (uch>=0x80)
-						{
-							buf[1]=(uch&0x3f)|0x80;
-							uch>>=6;
-							buf[0]=(uch&0x1f)|0xc0;
-							buf[2]=0;
-						}
-						else
-						{
-							buf[0]=uch;
-							buf[1]=0;
-						}
-					}
-					else
-					{
-						unichar uch=ch->ch;
-						if (uch<=0x80)
-						{
-							buf[0]=uch;
-							buf[1]=0;
-						}
-						else
-						{
-						        unsigned char *pbuf=(unsigned char *)buf;
-							unsigned int dlen=sizeof(buf)-1;
-							GSFromUnicode(&pbuf,&dlen,&uch,1,encoding,NULL,GSUniTerminate);
-						}
-					}
 					/* baseline here for mc-case 0.65 */
-                                        strBuf = [[NSString alloc] initWithCString:buf];
+                                        strBuf = [[NSString alloc] initWithCharacters:&(ch->ch)
+								   length: 1];
 					attrs = [NSDictionary dictionaryWithObjectsAndKeys:
                                                                 current_font, NSFontAttributeName,
                                                               foreColor, NSForegroundColorAttributeName,
@@ -2288,10 +2242,6 @@ improve? */
 		/* TODO: clear up font metrics issues with xlib/backart */
 		NSLog(@"NSFont %@ info %@ size %g %@ %d", font, [font fontInfo], [font pointSize], NSStringFromRect([font boundingRectForGlyph: 'A']), [font glyphIsEncoded: 'A']);
 		NSDebugLLog(@"term",@"Bounding (%g %g)+(%g %g)",brRoman.origin.x,brRoman.origin.y,fx,fy);
-		font_encoding=[font mostCompatibleStringEncoding];
-		boldFont_encoding=[boldFont mostCompatibleStringEncoding];
-		NSDebugLLog(@"term",@"encoding %i and %i",
-			font_encoding,boldFont_encoding);
 	}
 
 	use_multi_cell_glyphs=[TerminalViewDisplayPrefs useMultiCellGlyphs];

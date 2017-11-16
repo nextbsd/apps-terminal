@@ -1,3 +1,9 @@
+2017-11-16 Riccardo Mottola <rm@gnu.org>
+
+	* TerminalView.h
+	* TerminalView.m
+	Remove unichar copying and encoding, drawAtPoint is unicode safe.
+
 2017-10-23 Eduardo Osorio Armenta <eduardo.osorio.armenta@gmail.com>
 
 	* Spanish.lproj/Localizable.strings

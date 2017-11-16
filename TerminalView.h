@@ -40,7 +40,6 @@ struct selection_range
 	NSScroller *scroller;
 
 	NSFont *font,*boldFont;
-	int font_encoding,boldFont_encoding;
 	CGFloat fx,fy;
 	CGFloat fontBoundDiffY;
 
