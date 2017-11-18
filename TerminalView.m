@@ -527,7 +527,10 @@ if (blackOnWhite)
 		int ry;
 		screen_char_t *ch;
 		float scr_y,scr_x,start_x;
+		SingleCharString *strBuf;
 
+
+		strBuf = [[SingleCharString alloc] init];
 		/* setting the color is slow, so we try to avoid it */
 		unsigned char l_color,l_attr,color;
 
@@ -661,7 +664,6 @@ if (blackOnWhite)
 				if (ch->ch!=0 && ch->ch!=32 && ch->ch!=MULTI_CELL_GLYPH)
 				{
 					NSDictionary *attrs;
-                                        NSString *strBuf;
 
 					total_draw++;
 					if ((ch->attr&3)==2)
@@ -674,20 +676,16 @@ if (blackOnWhite)
 					}
 					if (f!=current_font)
 					{
-					/* ~190 cycles/change */
 						current_font=f;
 					}
 
-					/* baseline here for mc-case 0.65 */
-                                        strBuf = [[NSString alloc] initWithCharacters:&(ch->ch)
-								   length: 1];
+					strBuf->ch=ch->ch;
 					attrs = [NSDictionary dictionaryWithObjectsAndKeys:
                                                                 current_font, NSFontAttributeName,
                                                               foreColor, NSForegroundColorAttributeName,
                                                               backColor, NSBackgroundColorAttributeName,
                                                               nil];
 					[strBuf drawAtPoint:NSMakePoint(scr_x,scr_y+fontBoundDiffY) withAttributes:attrs];
-                                        [strBuf release];
 				}
 
 				/* underline */
@@ -695,6 +693,7 @@ if (blackOnWhite)
                                    [NSBezierPath fillRect:NSMakeRect(scr_x,scr_y,fx,1)];
 			}
 		}
+		[strBuf release];
 	}
 
 	if (draw_cursor)
@@ -2347,3 +2346,34 @@ improve? */
 
 @end
 
+
+@implementation SingleCharString
+
+- (id) initWithBytesNoCopy: (void *)c
+                    length: (NSUInteger)l
+                  encoding: (NSStringEncoding)encoding
+              freeWhenDone: (BOOL)freeWhenDone
+{
+  if (2 == l && NSUnicodeStringEncoding == encoding)
+    {
+      ch = *((unichar*)c);
+    }
+  else
+    {
+      [self release];
+      self = nil;
+    }
+  return self;
+}
+
+- (NSUInteger) length
+{
+  return 1;
+}
+
+- (unichar) characterAtIndex: (NSUInteger)index
+{
+  return ch;
+}
+
+@end

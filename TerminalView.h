@@ -124,5 +124,14 @@ struct selection_range
 	arg0: (NSString *)arg0;
 @end
 
+
+@interface SingleCharString : NSString
+{
+@public
+  unichar       ch;
+}
+
+@end
+
 #endif
 
