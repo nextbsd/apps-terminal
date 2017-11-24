@@ -1,4 +1,5 @@
-/*
+/* -*- mode: objc -*-
+
 Copyright (c) 2002 Alexander Malmberg <alexander@malmberg.org>
 Copyright (c) 2017 Riccardo Mottola <rm@gnu.org>
 
@@ -125,13 +126,6 @@ struct selection_range
 @end
 
 
-@interface SingleCharString : NSString
-{
-@public
-  unichar       ch;
-}
-
-@end
 
 #endif
 

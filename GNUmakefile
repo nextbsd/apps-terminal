@@ -47,6 +47,7 @@ Terminal_OBJC_FILES = \
 	TerminalWindow.m \
 	TerminalWindowPrefs.m \
 	\
+	StringClasses.m \
 	TerminalView.m \
 	TerminalViewPrefs.m \
 	\

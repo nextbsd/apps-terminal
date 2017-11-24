@@ -1,3 +1,12 @@
+2017-11-24 Riccardo Mottola <rm@gnu.org>
+
+	* StringClasses.h
+	* StringClasses.m
+	* TerminalView.h
+	* TerminalView.m
+	Separate SingleCharString into StringClasses and also add
+	StringAttributesDict for fast attributes mutation.
+
 2017-11-18 Riccardo Mottola <rm@gnu.org>
 
 	* TerminalView.h

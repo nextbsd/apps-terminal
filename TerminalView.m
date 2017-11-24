@@ -83,6 +83,8 @@ activated */
 #import "TerminalViewPrefs.h"
 #import "TerminalParser_Linux.h"
 
+#import "StringClasses.h"
+
 
 /* forkpty replacement */
 #ifdef USE_FORKPTY_REPLACEMENT
@@ -528,9 +530,11 @@ if (blackOnWhite)
 		screen_char_t *ch;
 		float scr_y,scr_x,start_x;
 		SingleCharString *strBuf;
+		StringAttributesDict *attrs;
 
 
 		strBuf = [[SingleCharString alloc] init];
+		attrs = [[StringAttributesDict alloc] init];
 		/* setting the color is slow, so we try to avoid it */
 		unsigned char l_color,l_attr,color;
 
@@ -663,8 +667,6 @@ if (blackOnWhite)
 
 				if (ch->ch!=0 && ch->ch!=32 && ch->ch!=MULTI_CELL_GLYPH)
 				{
-					NSDictionary *attrs;
-
 					total_draw++;
 					if ((ch->attr&3)==2)
 					{
@@ -680,11 +682,9 @@ if (blackOnWhite)
 					}
 
 					strBuf->ch=ch->ch;
-					attrs = [NSDictionary dictionaryWithObjectsAndKeys:
-                                                                current_font, NSFontAttributeName,
-                                                              foreColor, NSForegroundColorAttributeName,
-                                                              backColor, NSBackgroundColorAttributeName,
-                                                              nil];
+					attrs->font = current_font;
+					attrs->foregroundColor = foreColor;
+					attrs->backgroundColor = backColor;
 					[strBuf drawAtPoint:NSMakePoint(scr_x,scr_y+fontBoundDiffY) withAttributes:attrs];
 				}
 
@@ -694,6 +694,7 @@ if (blackOnWhite)
 			}
 		}
 		[strBuf release];
+		[attrs release];
 	}
 
 	if (draw_cursor)
@@ -2347,33 +2348,3 @@ improve? */
 @end
 
 
-@implementation SingleCharString
-
-- (id) initWithBytesNoCopy: (void *)c
-                    length: (NSUInteger)l
-                  encoding: (NSStringEncoding)encoding
-              freeWhenDone: (BOOL)freeWhenDone
-{
-  if (2 == l && NSUnicodeStringEncoding == encoding)
-    {
-      ch = *((unichar*)c);
-    }
-  else
-    {
-      [self release];
-      self = nil;
-    }
-  return self;
-}
-
-- (NSUInteger) length
-{
-  return 1;
-}
-
-- (unichar) characterAtIndex: (NSUInteger)index
-{
-  return ch;
-}
-
-@end
