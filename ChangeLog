@@ -1,3 +1,9 @@
+2017-11-30 Riccardo Mottola <rm@gnu.org>
+
+	* StringClasses.m
+	* TerminalView.m
+	Fix Foreground/Background color issues that were broken on DPS conversion.
+
 2017-11-24 Riccardo Mottola <rm@gnu.org>
 
 	* StringClasses.h

@@ -471,7 +471,7 @@ if (blackOnWhite)
 	NSGraphicsContext *cur=GSCurrentContext();
 	int x0,y0,x1,y1;
 	NSFont *f,*current_font=nil;
-        NSColor *foreColor, *backColor;
+        NSColor *foreColor;
 
 
 	NSDebugLLog(@"draw",@"drawRect: (%g %g)+(%g %g) %i\n",
@@ -485,10 +485,10 @@ if (blackOnWhite)
 	{
 		float a,b;
 		if (blackOnWhite)
-                  backColor = [NSColor whiteColor];
+                  [[NSColor whiteColor] set];
 		else
-		  backColor = [NSColor blackColor];
-                [backColor set];
+		  [[NSColor blackColor] set];
+                
 		if (r.origin.x<border_x)
 		  [NSBezierPath fillRect:NSMakeRect(r.origin.x,r.origin.y,border_x-r.origin.x,r.size.height)];
 		if (r.origin.y<border_y)
@@ -603,7 +603,7 @@ if (blackOnWhite)
 
 						l_color=color;
 						l_attr=ch->attr&0x03;
-						backColor = set_background(cur,l_color,l_attr);
+						foreColor = set_background(cur,l_color,l_attr);
 					}
 				}
 
@@ -660,7 +660,7 @@ if (blackOnWhite)
 						{
 							l_color=color;
 							l_attr=ch->attr&0x03;
-							backColor = set_background(cur,l_color,l_attr);
+							foreColor = set_background(cur,l_color,l_attr);
 						}
 					}
 				}
@@ -684,7 +684,6 @@ if (blackOnWhite)
 					strBuf->ch=ch->ch;
 					attrs->font = current_font;
 					attrs->foregroundColor = foreColor;
-					attrs->backgroundColor = backColor;
 					[strBuf drawAtPoint:NSMakePoint(scr_x,scr_y+fontBoundDiffY) withAttributes:attrs];
 				}
 

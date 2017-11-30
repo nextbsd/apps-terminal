@@ -61,12 +61,10 @@
   keys = [[NSArray alloc] initWithObjects:
 			    NSFontAttributeName,
 			  NSForegroundColorAttributeName,
-			  NSBackgroundColorAttributeName,
 			  NSParagraphStyleAttributeName,
 			  nil];
   font = nil;
   foregroundColor = nil;
-  backgroundColor = nil;
   paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] retain];
   return self;
 }
@@ -99,8 +97,6 @@
     return font;
   if (aKey == NSForegroundColorAttributeName)
     return foregroundColor;
-  if (aKey == NSBackgroundColorAttributeName)
-    return backgroundColor;
   if (aKey == NSParagraphStyleAttributeName)
     return paragraphStyle;
 
