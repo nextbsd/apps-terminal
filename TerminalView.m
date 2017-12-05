@@ -400,13 +400,24 @@ static const float col_h[8]={  0,240,120,180,  0,300, 60,  0};
 static const float col_s[8]={0.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0};
 
 static NSColor* set_background(NSGraphicsContext *gc,
-	unsigned char color,unsigned char in)
+                               unsigned char color,unsigned char in, BOOL blackOnWhite)
 {
 	float bh,bs,bb;
 	int bg=color>>4;
         NSColor *nsColor;
 
-	if (bg==0)
+        if (blackOnWhite)
+          {
+            if (color == 0)
+              {
+                bg = 8;
+              }
+            else if (color == 7)
+              {
+                bg = 0;
+              }
+          }
+        if (bg==0)
 		bb=0.0;
 	else if (bg>=8)
 		bg-=8,bb=1.0;
@@ -431,7 +442,6 @@ if (blackOnWhite)
   {
     if (color == 0) { fg = 7; in = 2; }		// Black becomes white
     else if (color == 7) { fg = 0; in = 0; }	// White becomes black
-    //else in = 3;				// Other colors are saturated
   }
 
 	if (fg>=8)
@@ -603,7 +613,7 @@ if (blackOnWhite)
 
 						l_color=color;
 						l_attr=ch->attr&0x03;
-						foreColor = set_background(cur,l_color,l_attr);
+						foreColor = set_background(cur,l_color,l_attr,blackOnWhite);
 					}
 				}
 
@@ -660,7 +670,7 @@ if (blackOnWhite)
 						{
 							l_color=color;
 							l_attr=ch->attr&0x03;
-							foreColor = set_background(cur,l_color,l_attr);
+							foreColor = set_background(cur,l_color,l_attr,blackOnWhite);
 						}
 					}
 				}
