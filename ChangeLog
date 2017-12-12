@@ -1,3 +1,9 @@
+2017-12-12 Riccardo Mottola <rm@gnu.org>
+
+	* TerminalView.m
+	Clean up color functions to return only color and set it in
+	R() macro or use it the string attributes.
+
 2017-12-05 Riccardo Mottola <rm@gnu.org>
 
 	* TerminalView.m

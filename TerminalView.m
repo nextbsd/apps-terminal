@@ -399,8 +399,10 @@ static int total_draw=0;
 static const float col_h[8]={  0,240,120,180,  0,300, 60,  0};
 static const float col_s[8]={0.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0};
 
-static NSColor* set_background(NSGraphicsContext *gc,
-                               unsigned char color,unsigned char in, BOOL blackOnWhite)
+static NSColor* colorForBackground(NSGraphicsContext *gc,
+				   unsigned char color,
+				   unsigned char in,
+				   BOOL blackOnWhite)
 {
 	float bh,bs,bb;
 	int bg=color>>4;
@@ -427,12 +429,13 @@ static NSColor* set_background(NSGraphicsContext *gc,
 	bh=col_h[bg]/360.0;
 
 	nsColor = [NSColor colorWithCalibratedHue:bh saturation:bs brightness:bb alpha:1];
-        [nsColor set];
         return nsColor;
 }
 
-static NSColor* set_foreground(NSGraphicsContext *gc,
-	unsigned char color,unsigned char in, BOOL blackOnWhite)
+static NSColor* colorForForeground(NSGraphicsContext *gc,
+				   unsigned char color,
+				   unsigned char in,
+				   BOOL blackOnWhite)
 {
 	int fg=color;
 	float h,s,b;
@@ -470,9 +473,15 @@ if (blackOnWhite)
 		s*=0.75;
 
 	nsColor = [NSColor colorWithCalibratedHue:h saturation:s brightness:b alpha:1];
-        [nsColor set];
         return nsColor;
 }
+
+/* draw character(s) background with a rect of given color */
+#define R(c,scr_x,scr_y,fx,fy) \
+			{ \
+			  [c set]; \
+			  [NSBezierPath fillRect:NSMakeRect(scr_x,scr_y,fx,fy)]; \
+			};
 
 
 -(void) drawRect: (NSRect)r
@@ -553,7 +562,7 @@ if (blackOnWhite)
 		are combined and drawn with a single rectfill. */
 		l_color=0;
 		l_attr=0;
-		foreColor = set_foreground(cur,l_color,l_attr,blackOnWhite);
+		foreColor = colorForForeground(cur,l_color,l_attr,blackOnWhite);
 		for (iy=y0;iy<y1;iy++)
 		{
 			ry=iy+current_scroll;
@@ -563,9 +572,7 @@ if (blackOnWhite)
 				ch=&sbuf[x0+(max_scrollback+ry)*sx];
 
 			scr_y=(sy-1-iy)*fy+border_y;
-
-
-#define R(scr_x,scr_y,fx,fy) [NSBezierPath fillRect:NSMakeRect(scr_x,scr_y,fx,fy)]
+ 
 			start_x=-1;
 			for (ix=x0;ix<x1;ix++,ch++)
 			{
@@ -574,7 +581,7 @@ if (blackOnWhite)
 					if (start_x!=-1)
 					{
 						scr_x=ix*fx+border_x;
-						R(start_x,scr_y,scr_x-start_x,fy);
+						R(foreColor,start_x,scr_y,scr_x-start_x,fy);
 						start_x=-1;
 					}
 					continue;
@@ -590,13 +597,13 @@ if (blackOnWhite)
 					{
 						if (start_x!=-1)
 						{
-							R(start_x,scr_y,scr_x-start_x,fy);
+							R(foreColor,start_x,scr_y,scr_x-start_x,fy);
 							start_x=scr_x;
 						}
 
 						l_color=color;
 						l_attr=ch->attr&0x03;
-						foreColor = set_foreground(cur,l_color,l_attr,blackOnWhite);
+						foreColor = colorForForeground(cur,l_color,l_attr,blackOnWhite);
 					}
 				}
 				else
@@ -607,13 +614,13 @@ if (blackOnWhite)
 					{
 						if (start_x!=-1)
 						{
-							R(start_x,scr_y,scr_x-start_x,fy);
+							R(foreColor,start_x,scr_y,scr_x-start_x,fy);
 							start_x=scr_x;
 						}
 
 						l_color=color;
 						l_attr=ch->attr&0x03;
-						foreColor = set_background(cur,l_color,l_attr,blackOnWhite);
+						foreColor = colorForBackground(cur,l_color,l_attr,blackOnWhite);
 					}
 				}
 
@@ -624,7 +631,7 @@ if (blackOnWhite)
 			if (start_x!=-1)
 			{
 				scr_x=ix*fx+border_x;
-				R(start_x,scr_y,scr_x-start_x,fy);
+				R(foreColor,start_x,scr_y,scr_x-start_x,fy);
 			}
 		}
 
@@ -659,7 +666,7 @@ if (blackOnWhite)
 						{
 							l_color=color;
 							l_attr=ch->attr&0x03;
-							foreColor = set_foreground(cur,l_color,l_attr,blackOnWhite);
+							foreColor = colorForForeground(cur,l_color,l_attr,blackOnWhite);
 						}
 					}
 					else
@@ -670,7 +677,7 @@ if (blackOnWhite)
 						{
 							l_color=color;
 							l_attr=ch->attr&0x03;
-							foreColor = set_background(cur,l_color,l_attr,blackOnWhite);
+							foreColor = colorForBackground(cur,l_color,l_attr,blackOnWhite);
 						}
 					}
 				}
