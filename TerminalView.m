@@ -262,11 +262,11 @@ int forkpty (int *amaster, char *slaveName, const struct termios *termp, const s
         /* child */
         ptyMakeControllingTty(&fds, slaveName);
     	if (fds != STDIN_FILENO && dup2(fds, STDIN_FILENO) == -1)
-	    perror("error duplicationg stdin");
+	    perror("error duplicating stdin");
 	if (fds != STDOUT_FILENO && dup2(fds, STDOUT_FILENO) == -1)
-	    perror("error duplicationg stdout");
+	    perror("error duplicating stdout");
 	if (fds != STDERR_FILENO && dup2(fds, STDERR_FILENO) == -1)
-	    perror("error duplicationg stderr");
+	    perror("error duplicating stderr");
 	
 	if (fds != STDIN_FILENO && fds != STDOUT_FILENO && fds != STDERR_FILENO)
 	    close(fds);
