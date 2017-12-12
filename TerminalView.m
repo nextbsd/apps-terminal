@@ -404,7 +404,7 @@ static NSColor* colorForBackground(NSGraphicsContext *gc,
 				   unsigned char in,
 				   BOOL blackOnWhite)
 {
-	float bh,bs,bb;
+	float h,s,b;
 	int bg=color>>4;
         NSColor *nsColor;
 
@@ -420,15 +420,15 @@ static NSColor* colorForBackground(NSGraphicsContext *gc,
               }
           }
         if (bg==0)
-		bb=0.0;
+		b=0.0;
 	else if (bg>=8)
-		bg-=8,bb=1.0;
+		bg-=8,b=1.0;
 	else
-		bb=0.6;
-	bs=col_s[bg];
-	bh=col_h[bg]/360.0;
+		b=0.6;
+	s=col_s[bg];
+	h=col_h[bg]/360.0;
 
-	nsColor = [NSColor colorWithCalibratedHue:bh saturation:bs brightness:bb alpha:1];
+	nsColor = [NSColor colorWithCalibratedHue:h saturation:s brightness:b alpha:1];
         return nsColor;
 }
 
