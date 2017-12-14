@@ -399,82 +399,78 @@ static int total_draw=0;
 static const float col_h[8]={  0,240,120,180,  0,300, 60,  0};
 static const float col_s[8]={0.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0};
 
-static NSColor* colorForBackground(NSGraphicsContext *gc,
-				   unsigned char color,
-				   unsigned char in,
-				   BOOL blackOnWhite)
+static NSColor* decodeColor(BOOL forForeground,
+                            unsigned char color,
+                            unsigned char in,
+                            BOOL blackOnWhite)
 {
 	float h,s,b;
-	int bg=color>>4;
-        NSColor *nsColor;
+	int c;
+
+        if (forForeground)
+          c = color;
+        else
+          c = color>>4;
 
         if (blackOnWhite)
           {
             if (color == 0)
               {
-                bg = 8;
+                c = 8;
+                if (forForeground)
+                  {
+                    c = 7;
+                    in = 2;
+                  }
               }
             else if (color == 7)
               {
-                bg = 0;
+                c = 0;
+                if (forForeground)
+                  in = 0;
               }
           }
-        if (bg==0)
-		b=0.0;
-	else if (bg>=8)
-		bg-=8,b=1.0;
+        
+        if (c == 0)
+          {
+            b=0.0;
+            if (forForeground)
+              {
+                if (in==2)
+                  b=0.4;
+              }
+          }
+	else if (c >= 8)
+          {
+            c -= 8;
+            b = 1.0;
+            if (forForeground)
+              in++;
+          }
 	else
-		b=0.6;
-	s=col_s[bg];
-	h=col_h[bg]/360.0;
+          {
+            b=0.6;
 
-	nsColor = [NSColor colorWithCalibratedHue:h saturation:s brightness:b alpha:1];
-        return nsColor;
+            if (forForeground)
+              {
+                if (in==0)
+                  b=0.6;
+                else if (in==1)
+                  b=0.8;
+                else
+                  b=1.0;
+              }
+          }
+        
+	s=col_s[c];
+	h=col_h[c]/360.0;
+
+        if (forForeground && in==2)
+          s*=0.75;
+
+	return [NSColor colorWithCalibratedHue:h saturation:s brightness:b alpha:1];
 }
 
-static NSColor* colorForForeground(NSGraphicsContext *gc,
-				   unsigned char color,
-				   unsigned char in,
-				   BOOL blackOnWhite)
-{
-	int fg=color;
-	float h,s,b;
-        NSColor *nsColor;
-
-if (blackOnWhite)
-  {
-    if (color == 0) { fg = 7; in = 2; }		// Black becomes white
-    else if (color == 7) { fg = 0; in = 0; }	// White becomes black
-  }
-
-	if (fg>=8)
-	{
-		in++;
-		fg-=8;
-	}
-
-	if (fg==0)
-	{
-		if (in==2)
-			b=0.4;
-		else
-			b=0.0;
-	}
-	else if (in==0)
-		b=0.6;
-	else if (in==1)
-		b=0.8;
-	else
-		b=1.0;
-
-	h=col_h[fg]/360.0;
-	s=col_s[fg];
-	if (in==2)
-		s*=0.75;
-
-	nsColor = [NSColor colorWithCalibratedHue:h saturation:s brightness:b alpha:1];
-        return nsColor;
-}
 
 /* draw character(s) background with a rect of given color */
 #define R(c,scr_x,scr_y,fx,fy) \
@@ -562,7 +558,7 @@ if (blackOnWhite)
 		are combined and drawn with a single rectfill. */
 		l_color=0;
 		l_attr=0;
-		foreColor = colorForForeground(cur,l_color,l_attr,blackOnWhite);
+		foreColor = decodeColor(YES,l_color,l_attr,blackOnWhite);
 		for (iy=y0;iy<y1;iy++)
 		{
 			ry=iy+current_scroll;
@@ -603,7 +599,7 @@ if (blackOnWhite)
 
 						l_color=color;
 						l_attr=ch->attr&0x03;
-						foreColor = colorForForeground(cur,l_color,l_attr,blackOnWhite);
+						foreColor = decodeColor(YES,l_color,l_attr,blackOnWhite);
 					}
 				}
 				else
@@ -620,7 +616,7 @@ if (blackOnWhite)
 
 						l_color=color;
 						l_attr=ch->attr&0x03;
-						foreColor = colorForBackground(cur,l_color,l_attr,blackOnWhite);
+						foreColor = decodeColor(NO,l_color,l_attr,blackOnWhite);
 					}
 				}
 
@@ -666,7 +662,7 @@ if (blackOnWhite)
 						{
 							l_color=color;
 							l_attr=ch->attr&0x03;
-							foreColor = colorForForeground(cur,l_color,l_attr,blackOnWhite);
+							foreColor = decodeColor(YES,l_color,l_attr,blackOnWhite);
 						}
 					}
 					else
@@ -677,7 +673,7 @@ if (blackOnWhite)
 						{
 							l_color=color;
 							l_attr=ch->attr&0x03;
-							foreColor = colorForBackground(cur,l_color,l_attr,blackOnWhite);
+							foreColor = decodeColor(NO,l_color,l_attr,blackOnWhite);
 						}
 					}
 				}

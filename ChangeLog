@@ -1,3 +1,8 @@
+2017-12-14 Riccardo Mottola <rm@gnu.org>
+
+	* TerminalView.m
+	Unify back ad foreground color decoding into decodeColor()
+
 2017-12-12 Riccardo Mottola <rm@gnu.org>
 
 	* TerminalView.m
