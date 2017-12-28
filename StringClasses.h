@@ -22,6 +22,7 @@
 #import <Foundation/Foundation.h>
 #import <AppKit/NSFont.h>
 #import <AppKit/NSColor.h>
+#import <AppKit/NSAttributedString.h>
 
 /*
  Optimized NSString which represents a single unicode character.
@@ -48,5 +49,6 @@
   NSColor *foregroundColor;
   NSColor *backgroundColor;
   NSParagraphStyle *paragraphStyle;
+  NSNumber *underlineStyle;
 }
 @end

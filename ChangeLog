@@ -1,3 +1,10 @@
+2017-12-28 Riccardo Mottola <rm@gnu.org>
+
+	* StringClasses.h
+	* StringClasses.m
+	* TerminalView.m
+	Underline through String attribute and not through custom code.
+
 2017-12-14 Riccardo Mottola <rm@gnu.org>
 
 	* TerminalView.m

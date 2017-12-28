@@ -697,12 +697,12 @@ static NSColor* decodeColor(BOOL forForeground,
 					strBuf->ch=ch->ch;
 					attrs->font = current_font;
 					attrs->foregroundColor = foreColor;
+                                        if (ch->attr&0x4)
+                                          attrs->underlineStyle = [NSNumber numberWithInteger:NSUnderlineStyleSingle];
+                                        else
+                                          attrs->underlineStyle = [NSNumber numberWithInteger:NSUnderlineStyleNone];
 					[strBuf drawAtPoint:NSMakePoint(scr_x,scr_y+fontBoundDiffY) withAttributes:attrs];
 				}
-
-				/* underline */
-				if (ch->attr&0x4)
-                                   [NSBezierPath fillRect:NSMakeRect(scr_x,scr_y,fx,1)];
 			}
 		}
 		[strBuf release];

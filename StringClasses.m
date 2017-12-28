@@ -62,10 +62,12 @@
 			    NSFontAttributeName,
 			  NSForegroundColorAttributeName,
 			  NSParagraphStyleAttributeName,
+                          NSUnderlineStyleAttributeName,
 			  nil];
   font = nil;
   foregroundColor = nil;
   paragraphStyle = [[NSParagraphStyle defaultParagraphStyle] retain];
+  underlineStyle = [NSNumber numberWithInteger:NSUnderlineStyleNone];
   return self;
 }
 
@@ -99,7 +101,8 @@
     return foregroundColor;
   if (aKey == NSParagraphStyleAttributeName)
     return paragraphStyle;
-
+  if (aKey == NSUnderlineStyleAttributeName)
+    return underlineStyle;
   NSLog(@"asking for unknown key: %@", aKey);
   return nil;
 }
