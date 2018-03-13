@@ -74,7 +74,7 @@ endif
 
 Terminal_LOCALIZED_RESOURCE_FILES = Localizable.strings
 Terminal_LANGUAGES = English Swedish German French Spanish Hungarian Turkish \
-	Norwegian Russian Italian
+	Norwegian Russian Italian Japanese
 
 Terminal_APPLICATION_ICON = Terminal.tiff
 Terminal_RESOURCE_FILES = \
