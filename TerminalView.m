@@ -483,7 +483,6 @@ static NSColor* decodeColor(BOOL forForeground,
 -(void) drawRect: (NSRect)r
 {
 	int ix,iy;
-	NSGraphicsContext *cur=GSCurrentContext();
 	int x0,y0,x1,y1;
 	NSFont *f,*current_font=nil;
         NSColor *foreColor;
