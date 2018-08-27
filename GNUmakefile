@@ -1,5 +1,5 @@
 # copyright 2002-2003 Alexander Malmberg <alexander@malmberg.org>
-# copyright 2008-2017 Riccardo Mottola
+# copyright 2008-2018 Riccardo Mottola
 #
 # This file is a part of Terminal.app. Terminal.app is free software; you
 # can redistribute it and/or modify it under the terms of the GNU General
@@ -73,14 +73,17 @@ endif
 endif
 
 Terminal_LOCALIZED_RESOURCE_FILES = Localizable.strings
-Terminal_LANGUAGES = English Swedish German French Spanish Hungarian Turkish \
-	Norwegian Russian Italian Japanese
+Terminal_LANGUAGES = English Swedish German French Spanish Hungarian Turkish Norwegian Russian Italian Japanese
 
 Terminal_APPLICATION_ICON = Terminal.tiff
 Terminal_RESOURCE_FILES = \
-	Terminal.tiff DefaultTerminalServices.svcs \
-	cursor_line.tiff cursor_stroked.tiff cursor_filled.tiff \
-	cursor_inverted.tiff TerminalInfo.plist
+	Resources/Terminal.tiff \
+	Resources/DefaultTerminalServices.svcs \
+	Resources/cursor_line.tiff \
+	Resources/cursor_stroked.tiff \
+	Resources/cursor_filled.tiff \
+	Resources/cursor_inverted.tiff \
+	TerminalInfo.plist
 
 MAKE_STRINGS_OPTIONS = --aggressive-match --aggressive-remove
 
