@@ -218,6 +218,7 @@ NSString *TerminalWindowNoMoreActiveWindowsNotification=
 	[[NSNotificationCenter defaultCenter]
 		removeObserver: self];
         [terminal_views release];
+        [tab_view release];
 	[super dealloc];
 }
 
