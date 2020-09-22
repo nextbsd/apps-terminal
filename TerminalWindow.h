@@ -1,6 +1,6 @@
 /*
   Copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
-            2016 Riccardo Mottola
+            2016-2020  Riccardo Mottola
             2016 Tim Sheridan
 
   This file is a part of Terminal.app. Terminal.app is free software; you
@@ -17,7 +17,7 @@
 #import <AppKit/NSWindowController.h>
 #import <AppKit/NSTabView.h>
 
-NSString *TerminalWindowNoMoreActiveWindowsNotification;
+extern NSString *TerminalWindowNoMoreActiveWindowsNotification;
 
 @interface TerminalWindowController : NSWindowController
 {
