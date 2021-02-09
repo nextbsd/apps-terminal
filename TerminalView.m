@@ -26,27 +26,22 @@ activated */
 
 #include <math.h>
 #include <unistd.h>
+#include <termios.h>
 
 #ifdef __NetBSD__
 #  include <sys/types.h>
 #  include <sys/ioctl.h>
-#  include <termios.h>
 #  include <pcap.h>
 #  include <util.h>
 #define TCSETS TIOCSETA
 #elif defined(__FreeBSD__)
 #  include <sys/types.h>
 #  include <sys/ioctl.h>
-#  include <termios.h>
 #  include <libutil.h>
 #  include <pcap.h>
 #elif defined(__OpenBSD__)
-#  include <termios.h>
 #  include <util.h>
 #  include <sys/ioctl.h>
-#elif defined (__GNU__)
-#else
-#  include <termio.h>
 #endif
 
 #include <sys/time.h>

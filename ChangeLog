@@ -1,3 +1,8 @@
+2021-02-10 Riccardo Mottola <rm@gnu.org>
+
+	* TerminalView.m:
+	Use termios.h on all systems
+
 2018-03-13  Riccardo Mottola <rm@gnu.org>
 
 	* Japanese.lproj/Localizable.strings
