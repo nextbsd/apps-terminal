@@ -66,7 +66,10 @@ ifeq ($(findstring solaris, $(GNUSTEP_TARGET_OS)), solaris)
 else
 
 ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
+# Exclude GNU/kFreeBSD (kfreebsd-gnu) where iconv is part of glibc.
+ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)),)
  Terminal_TOOL_LIBS += -liconv 
+endif
 endif
 
  Terminal_TOOL_LIBS += -lutil

@@ -1,3 +1,8 @@
+2021-02-26  Yavor Doganov  <yavor@gnu.org>
+
+	* GNUmakefile (Terminal_TOOL_LIBS): Exclude GNU/kFreeBSD from the
+	FreeBSD conditional when linking with iconv.
+
 2021-02-10 Riccardo Mottola <rm@gnu.org>
 
 	* TerminalView.m:
