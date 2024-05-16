@@ -75,6 +75,10 @@ endif
  Terminal_TOOL_LIBS += -lutil
 endif
 
+ifeq ($(findstring openbsd, $(GNUSTEP_TARGET_OS)), openbsd)
+ Terminal_TOOL_LIBS += -liconv
+endif
+
 Terminal_LOCALIZED_RESOURCE_FILES = Localizable.strings
 Terminal_LANGUAGES = English Swedish German French Spanish Hungarian Turkish Norwegian Russian Italian Japanese
 
