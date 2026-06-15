@@ -45,6 +45,8 @@ static NSString
 	*UseMultiCellGlyphsKey=@"UseMultiCellGlyphs",
 	*BlackOnWhiteKey=@"BlackOnWhite",
 	*CursorStyleKey=@"CursorStyle",
+	*CursorBlinksKey=@"CursorBlinks",
+	*CursorBlinkIntervalKey=@"CursorBlinkInterval",
 	*ScrollBackLinesKey=@"ScrollBackLines",
 
 	*CursorColorRKey=@"CursorColorR",
@@ -63,6 +65,8 @@ static float saturation[3]={1.0,1.0,0.75};
 
 static int cursorStyle;
 static NSColor *cursorColor;
+static BOOL cursorBlinks;
+static float cursorBlinkInterval;
 
 static int scrollBackLines;
 
@@ -106,6 +110,13 @@ static int scrollBackLines;
 		blackOnWhite=[ud boolForKey: BlackOnWhiteKey];
 
 		cursorStyle=[ud integerForKey: CursorStyleKey];
+		if ([ud objectForKey: CursorBlinksKey])
+			cursorBlinks=[ud boolForKey: CursorBlinksKey];
+		else
+			cursorBlinks=YES;
+		cursorBlinkInterval=[ud floatForKey: CursorBlinkIntervalKey];
+		if (cursorBlinkInterval<=0)
+			cursorBlinkInterval=0.5;
 		if ([ud objectForKey: CursorColorRKey])
 		{
 			float r,g,b,a;
@@ -174,6 +185,16 @@ static int scrollBackLines;
 	return cursorColor;
 }
 
++(BOOL) cursorBlinks
+{
+	return cursorBlinks;
+}
+
++(float) cursorBlinkInterval
+{
+	return cursorBlinkInterval;
+}
+
 +(int) scrollBackLines
 {
 	return scrollBackLines;
@@ -206,6 +227,14 @@ static int scrollBackLines;
 	cursorStyle=[[m_cursorStyle selectedCell] tag];
 	[ud setInteger: cursorStyle
 		forKey: CursorStyleKey];
+	cursorBlinks=!![b_cursorBlinks state];
+	[ud setBool: cursorBlinks
+		forKey: CursorBlinksKey];
+	cursorBlinkInterval=[f_cursorBlinkInterval floatValue];
+	if (cursorBlinkInterval<=0)
+		cursorBlinkInterval=0.5;
+	[ud setFloat: cursorBlinkInterval
+		forKey: CursorBlinkIntervalKey];
 
 	{
 		DESTROY(cursorColor);
@@ -255,6 +284,8 @@ static int scrollBackLines;
 
 	[m_cursorStyle selectCellWithTag: [[self class] cursorStyle]];
 	[w_cursorColor setColor: [[self class] cursorColor]];
+	[b_cursorBlinks setState: [[self class] cursorBlinks]];
+	[f_cursorBlinkInterval setFloatValue: [[self class] cursorBlinkInterval]];
 
 	f=[[self class] terminalFont];
 	[f_terminalFont setStringValue: [NSString stringWithFormat: @"%@ %0.1f",[f fontName],[f pointSize]]];
@@ -326,7 +357,7 @@ static int scrollBackLines;
 				[box setAutoresizingMask: NSViewMinXMargin|NSViewMaxXMargin];
 				[box setTitle: _(@"Cursor")];
 
-				t = [[[GSTable alloc] initWithNumberOfRows: 2 numberOfColumns: 2] autorelease];
+				t = [[[GSTable alloc] initWithNumberOfRows: 4 numberOfColumns: 2] autorelease];
 				[t setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
 
 				f=[NSTextField newLabel: _(@"Style:")];
@@ -381,6 +412,28 @@ static int scrollBackLines;
 
 				[[NSColorPanel sharedColorPanel] setShowsAlpha: YES];
 
+				f=[NSTextField newLabel: _(@"Blink:")];
+				[f setAutoresizingMask: NSViewMinXMargin|NSViewMinYMargin|NSViewMaxYMargin];
+				[t putView: f  atRow: 2 column: 0  withXMargins: 2 yMargins: 2];
+				DESTROY(f);
+
+				butt=b_cursorBlinks=[[NSButton alloc] init];
+				[butt setTitle: _(@"Blink cursor")];
+				[butt setButtonType: NSSwitchButton];
+				[butt sizeToFit];
+				[t putView: butt  atRow: 2 column: 1  withXMargins: 2 yMargins: 2];
+				DESTROY(butt);
+
+				f=[NSTextField newLabel: _(@"Blink interval (seconds):")];
+				[f setAutoresizingMask: NSViewMinXMargin|NSViewMinYMargin|NSViewMaxYMargin];
+				[t putView: f  atRow: 3 column: 0  withXMargins: 2 yMargins: 2];
+				DESTROY(f);
+
+				f_cursorBlinkInterval=f=[[NSTextField alloc] init];
+				[f setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
+				[f sizeToFit];
+				[t putView: f  atRow: 3 column: 1  withXMargins: 2 yMargins: 2];
+				DESTROY(f);
 
 				[t sizeToFit];
 				[box setContentView: t];
@@ -779,4 +832,3 @@ static BOOL commandAsMeta,doubleEscape, altIsNotMeta;
 }
 
 @end
-

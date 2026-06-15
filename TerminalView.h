@@ -30,6 +30,7 @@ extern NSString
 
 
 @class NSScroller;
+@class NSTimer;
 
 struct selection_range
 {
@@ -73,6 +74,8 @@ struct selection_range
 
 	int draw_all; /* 0=only lazy, 1=don't know, do all, 2=do all */
 	BOOL draw_cursor;
+	BOOL cursor_blink_visible;
+	NSTimer *cursor_blink_timer;
 
 	struct selection_range selection;
 
@@ -128,4 +131,3 @@ struct selection_range
 
 
 #endif
-

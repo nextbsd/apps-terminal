@@ -58,6 +58,7 @@ activated */
 #import <Foundation/NSDebug.h>
 #import <Foundation/NSNotification.h>
 #import <Foundation/NSRunLoop.h>
+#import <Foundation/NSTimer.h>
 #import <Foundation/NSUserDefaults.h>
 #import <Foundation/NSCharacterSet.h>
 #import <Foundation/NSArchiver.h>
@@ -69,6 +70,7 @@ activated */
 #import <AppKit/NSFont.h>
 #import <AppKit/NSGraphics.h>
 #import <AppKit/NSScroller.h>
+#import <AppKit/NSWindow.h>
 #import <AppKit/NSBezierPath.h>
 #import <AppKit/NSAttributedString.h>
 #import <AppKit/NSStringDrawing.h>
@@ -303,6 +305,15 @@ NSString
 -(void) _clearSelection;
 @end
 
+@interface TerminalView (cursor_blink)
+-(BOOL) _cursorShouldBlink;
+-(void) _cursorBlinkActivityChanged: (NSNotification *)notification;
+-(void) _updateCursorBlinkTimer;
+-(void) _startCursorBlinkTimer;
+-(void) _stopCursorBlinkTimer;
+-(void) _showCursorForActivity;
+@end
+
 @interface TerminalView (input) <RunLoopEvents>
 -(void) closeProgram;
 -(void) runShell;
@@ -389,6 +400,97 @@ TerminalScreen protocol implementation and rendering methods
 
 
 static int total_draw=0;
+
+
+-(NSRect) _cursorCellRect
+{
+	NSRect r;
+
+	r.origin.x=cursor_x*fx+border_x;
+	r.origin.y=(sy-1-cursor_y+current_scroll)*fy+border_y;
+	r.size.width=fx;
+	r.size.height=fy;
+	return r;
+}
+
+-(void) _setCursorNeedsDisplay
+{
+	if (!screen || sx<=0 || sy<=0)
+		return;
+
+	SCREEN(cursor_x,cursor_y).attr|=0x80;
+	draw_cursor=YES;
+	[self setNeedsLazyDisplayInRect: [self _cursorCellRect]];
+}
+
+-(void) _cursorBlink: (NSTimer *)timer
+{
+	cursor_blink_visible=!cursor_blink_visible;
+	[self _setCursorNeedsDisplay];
+}
+
+-(BOOL) _cursorShouldBlink
+{
+	NSWindow *window=[self window];
+
+	return [TerminalViewDisplayPrefs cursorBlinks] &&
+		window && [window isKeyWindow] && [NSApp isActive];
+}
+
+-(void) _cursorBlinkActivityChanged: (NSNotification *)notification
+{
+	[self _updateCursorBlinkTimer];
+}
+
+-(void) _showCursorForActivity
+{
+	[self _stopCursorBlinkTimer];
+	[self _startCursorBlinkTimer];
+}
+
+-(void) _startCursorBlinkTimer
+{
+	float interval;
+
+	if (cursor_blink_timer)
+		return;
+	if (![self _cursorShouldBlink])
+		return;
+
+	cursor_blink_visible=YES;
+	interval=[TerminalViewDisplayPrefs cursorBlinkInterval];
+	if (interval<=0)
+		interval=0.5;
+	cursor_blink_timer=[[NSTimer scheduledTimerWithTimeInterval: interval
+		target: self
+		selector: @selector(_cursorBlink:)
+		userInfo: nil
+		repeats: YES] retain];
+}
+
+-(void) _stopCursorBlinkTimer
+{
+	BOOL needsDisplay=!cursor_blink_visible;
+
+	if (cursor_blink_timer)
+	{
+		[cursor_blink_timer invalidate];
+		DESTROY(cursor_blink_timer);
+	}
+	cursor_blink_visible=YES;
+	if (needsDisplay)
+		[self _setCursorNeedsDisplay];
+}
+
+-(void) _updateCursorBlinkTimer
+{
+	[self _stopCursorBlinkTimer];
+	cursor_blink_visible=YES;
+	if ([self _cursorShouldBlink])
+		[self _startCursorBlinkTimer];
+	else
+		[self _setCursorNeedsDisplay];
+}
 
 
 static const float col_h[8]={  0,240,120,180,  0,300, 60,  0};
@@ -706,25 +808,28 @@ static NSColor* decodeColor(BOOL forForeground,
 	if (draw_cursor)
 	{
 		float x,y;
-		[[TerminalViewDisplayPrefs cursorColor] set];
-
-		x=cursor_x*fx+border_x;
-		y=(sy-1-cursor_y+current_scroll)*fy+border_y;
-
-		switch ([TerminalViewDisplayPrefs cursorStyle])
+		if (cursor_blink_visible)
 		{
-		case CURSOR_LINE:
-		  [NSBezierPath fillRect:NSMakeRect(x,y,fx,fy*0.1)];
-		  break;
-		case CURSOR_BLOCK_STROKE:
-		  [NSBezierPath strokeRect:NSMakeRect(x+0.5,y+0.5,fx-1.0,fy-1.0)];
-		  break;
-		case CURSOR_BLOCK_FILL:
-		  [NSBezierPath fillRect:NSMakeRect(x,y,fx,fy)];
-		  break;
-		case CURSOR_BLOCK_INVERT:
-	          NSHighlightRect(NSMakeRect(x, y, fx, fy));
-	  	  break;
+			[[TerminalViewDisplayPrefs cursorColor] set];
+
+			x=cursor_x*fx+border_x;
+			y=(sy-1-cursor_y+current_scroll)*fy+border_y;
+
+			switch ([TerminalViewDisplayPrefs cursorStyle])
+			{
+			case CURSOR_LINE:
+			  [NSBezierPath fillRect:NSMakeRect(x,y,fx,fy*0.1)];
+			  break;
+			case CURSOR_BLOCK_STROKE:
+			  [NSBezierPath strokeRect:NSMakeRect(x+0.5,y+0.5,fx-1.0,fy-1.0)];
+			  break;
+			case CURSOR_BLOCK_FILL:
+			  [NSBezierPath fillRect:NSMakeRect(x,y,fx,fy)];
+			  break;
+			case CURSOR_BLOCK_INVERT:
+		          NSHighlightRect(NSMakeRect(x, y, fx, fy));
+		  	  break;
+			}
 		}
 		draw_cursor=NO;
 	}
@@ -1113,6 +1218,7 @@ static NSColor* decodeColor(BOOL forForeground,
 -(void) viewPrefsDidChange: (NSNotification *)n
 {
 	/* TODO: handle font changes? */
+	[self _updateCursorBlinkTimer];
 	[self setNeedsDisplay: YES];
 }
 
@@ -1222,6 +1328,8 @@ Keyboard events
 
 -(void) keyDown: (NSEvent *)e
 {
+	[self _showCursorForActivity];
+
 	NSString *s=[e charactersIgnoringModifiers];
 
 	NSDebugLLog(@"key",@"got key flags=%08x  repeat=%i '%@' '%@' %4i %04x %li %04x %li\n",
@@ -1778,6 +1886,8 @@ Handle master_fd
 		ADD_DIRTY(cursor_x,cursor_y,1,1);
 		draw_cursor=YES;
 	}
+	if (total>0)
+		[self _showCursorForActivity];
 
 	NSDebugLLog(@"term",@"done (%i %i) (%i %i)\n",
 		dirty.x0,dirty.y0,dirty.x1,dirty.y1);
@@ -2220,6 +2330,18 @@ improve? */
 	[self _resizeTerminalTo: size];
 }
 
+-(void) viewWillMoveToWindow: (NSWindow *)newWindow
+{
+	if (!newWindow)
+		[self _stopCursorBlinkTimer];
+}
+
+-(void) viewDidMoveToWindow
+{
+	if ([self window])
+		[self _updateCursorBlinkTimer];
+}
+
 
 - initWithFrame: (NSRect)frame
 {
@@ -2256,6 +2378,7 @@ improve? */
 	screen=malloc(sizeof(screen_char_t)*sx*sy);
 	memset(screen,0,sizeof(screen_char_t)*sx*sy);
 	draw_all=2;
+	cursor_blink_visible=YES;
 
 	max_scrollback=[TerminalViewDisplayPrefs scrollBackLines];
 	sbuf=malloc(sizeof(screen_char_t)*sx*max_scrollback);
@@ -2274,6 +2397,26 @@ improve? */
 		selector: @selector(viewPrefsDidChange:)
 		name: TerminalViewDisplayPrefsDidChangeNotification
 		object: nil];
+	[[NSNotificationCenter defaultCenter]
+		addObserver: self
+		selector: @selector(_cursorBlinkActivityChanged:)
+		name: NSWindowDidBecomeKeyNotification
+		object: nil];
+	[[NSNotificationCenter defaultCenter]
+		addObserver: self
+		selector: @selector(_cursorBlinkActivityChanged:)
+		name: NSWindowDidResignKeyNotification
+		object: nil];
+	[[NSNotificationCenter defaultCenter]
+		addObserver: self
+		selector: @selector(_cursorBlinkActivityChanged:)
+		name: NSApplicationDidBecomeActiveNotification
+		object: nil];
+	[[NSNotificationCenter defaultCenter]
+		addObserver: self
+		selector: @selector(_cursorBlinkActivityChanged:)
+		name: NSApplicationDidResignActiveNotification
+		object: nil];
 
 	return self;
 }
@@ -2282,6 +2425,8 @@ improve? */
 {
 	[[NSNotificationCenter defaultCenter]
 		removeObserver: self];
+
+	[self _stopCursorBlinkTimer];
 
 	[self closeProgram];
 
@@ -2352,5 +2497,3 @@ improve? */
 }
 
 @end
-
-

@@ -14,7 +14,7 @@ of the License. See COPYING or main.m for more information.
 #import "PrefBox.h"
 
 
-@class NSString,NSFont,NSColor;
+@class NSString,NSFont,NSColor,NSButton;
 @class GSVbox,NSTextField,NSColorWell,NSMatrix;
 
 extern NSString *TerminalViewDisplayPrefsDidChangeNotification;
@@ -25,6 +25,8 @@ extern NSString *TerminalViewDisplayPrefsDidChangeNotification;
 	NSTextField *f_terminalFont,*f_boldTerminalFont;
 	NSColorWell *w_cursorColor;
 	NSMatrix *m_cursorStyle;
+	NSButton *b_cursorBlinks;
+	NSTextField *f_cursorBlinkInterval;
 	NSTextField *f_scrollBackLines;
 	NSButton *b_useMultiCellGlyphs;
 	NSButton *b_blackOnWhite;
@@ -47,6 +49,8 @@ extern NSString *TerminalViewDisplayPrefsDidChangeNotification;
 #define CURSOR_BLOCK_INVERT  3
 +(int) cursorStyle;
 +(NSColor *) cursorColor;
++(BOOL) cursorBlinks;
++(float) cursorBlinkInterval;
 
 +(int) scrollBackLines;
 
@@ -83,4 +87,3 @@ extern NSString *TerminalViewDisplayPrefsDidChangeNotification;
 @end
 
 #endif
-
