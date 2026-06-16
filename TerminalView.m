@@ -808,7 +808,7 @@ static NSColor* decodeColor(BOOL forForeground,
 	if (draw_cursor)
 	{
 		float x,y;
-		if (cursor_blink_visible)
+		if (cursor_visible && cursor_blink_visible)
 		{
 			[[TerminalViewDisplayPrefs cursorColor] set];
 
@@ -902,6 +902,26 @@ static NSColor* decodeColor(BOOL forForeground,
 	if (cursor_x<0) cursor_x=0;
 	if (cursor_y>=sy) cursor_y=sy-1;
 	if (cursor_y<0) cursor_y=0;
+}
+
+-(void) ts_setCursorVisible: (BOOL)visible
+{
+	if (cursor_visible==visible)
+		return;
+	[self _setCursorNeedsDisplay];
+	cursor_visible=visible;
+	[self _setCursorNeedsDisplay];
+}
+
+-(void) ts_clearScrollback
+{
+	sb_length=0;
+	current_scroll=0;
+	if (scroller)
+	{
+		[scroller setFloatValue: 1.0  knobProportion: 1.0];
+		[scroller setEnabled: NO];
+	}
 }
 
 -(void) ts_putChar: (screen_char_t)ch  count: (int)c  at: (int)x :(int)y
@@ -2378,6 +2398,7 @@ improve? */
 	screen=malloc(sizeof(screen_char_t)*sx*sy);
 	memset(screen,0,sizeof(screen_char_t)*sx*sy);
 	draw_all=2;
+	cursor_visible=YES;
 	cursor_blink_visible=YES;
 
 	max_scrollback=[TerminalViewDisplayPrefs scrollBackLines];

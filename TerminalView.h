@@ -74,6 +74,7 @@ struct selection_range
 
 	int draw_all; /* 0=only lazy, 1=don't know, do all, 2=do all */
 	BOOL draw_cursor;
+	BOOL cursor_visible;
 	BOOL cursor_blink_visible;
 	NSTimer *cursor_blink_timer;
 

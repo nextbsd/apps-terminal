@@ -64,6 +64,14 @@ static const unichar *_set_translate(int charset)
 -(void) _csi_at: (unsigned int)vpar;
 -(void) _csi_m;
 
+-(void) _carriageReturn;
+-(void) _lineFeed;
+-(void) _reverseIndex;
+-(void) _putScreenChar: (screen_char_t)ch;
+-(void) _putUnicodeCharacter: (unichar)uc;
+-(void) _tabForward: (int)count;
+-(void) _tabBackward: (int)count;
+-(void) _screenAlignmentTest;
 -(void) _default_attr;
 -(void) _update_attr;
 
@@ -71,6 +79,13 @@ static const unichar *_set_translate(int charset)
 
 
 #define SCREEN(x,y) ((x)+(y)*width)
+
+static NSString *TerminalStringByDroppingKeyEquivalentPrefix(NSString *s)
+{
+	if ([s length]>1 && [s characterAtIndex: 0]==NSHelpFunctionKey)
+		return [s substringFromIndex: 1];
+	return s;
+}
 
 
 @implementation TerminalParser_Linux
@@ -138,6 +153,7 @@ static const unichar *_set_translate(int charset)
 	bottom		= height;
 	vc_state	= ESnormal;
 	ques		= 0;
+	csi_private	= 0;
 
 	translate	= set_translate(LAT1_MAP,currcons);
 	G0_charset	= LAT1_MAP;
@@ -147,6 +163,7 @@ static const unichar *_set_translate(int charset)
 //	report_mouse	= 0;
 	utf             = 0;
 	utf_count       = 0;
+	have_last_char	= 0;
 
 	disp_ctrl	= 0;
 	toggle_meta	= 0;
@@ -156,6 +173,7 @@ static const unichar *_set_translate(int charset)
 	decawm		= 1;
 	deccm		= 1;
 	decim		= 0;
+	[ts ts_setCursorVisible: YES];
 
 #if 0
 	set_kbd(decarm);
@@ -203,6 +221,9 @@ static const unichar *_set_translate(int charset)
 			count = width*height;
 			start = SCREEN(0,0);
 			break;
+		case 3: /* erase scrollback */
+			[ts ts_clearScrollback];
+			return;
 		default:
 			return;
 	}
@@ -329,13 +350,32 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 			case 27:
 				reverse = 0;
 				break;
+			case 90: case 91: case 92: case 93:
+			case 94: case 95: case 96: case 97:
+				color = color_table[par[i]-90+8]
+					| background;
+				break;
+			case 100: case 101: case 102: case 103:
+			case 104: case 105: case 106: case 107:
+				color = (color_table[par[i]-100+8]<<4)
+					| foreground;
+				break;
 			case 38: /* ANSI X3.64-1979 (SCO-ish?)
 				  * Enables underscore, white foreground
 				  * with white underscore (Linux - use
 				  * default foreground).
 				  */
-				color = (def_color & 0x0f) | background;
-				underline = 1;
+				if (i+2<=npar && par[i+1]==5)
+				{
+					color = color_table[par[i+2]&15]
+						| background;
+					i += 2;
+				}
+				else
+				{
+					color = (def_color & 0x0f) | background;
+					underline = 1;
+				}
 				break;
 			case 39: /* ANSI X3.64-1979 (SCO-ish?)
 				  * Disable underline option.
@@ -347,6 +387,14 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 				break;
 			case 49:
 				color = (def_color & 0xf0) | foreground;
+				break;
+			case 48:
+				if (i+2<=npar && par[i+1]==5)
+				{
+					color = (color_table[par[i+2]&15]<<4)
+						| foreground;
+					i += 2;
+				}
 				break;
 			default:
 				if (par[i] >= 30 && par[i] <= 37)
@@ -385,6 +433,124 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 	[ts ts_scrollDown: t:b  rows: scrdown_nr]; \
 	[ts ts_putChar: video_erase_char  count: step  offset: t*width]; \
 } while (0)
+
+-(void) _carriageReturn
+{
+	x=0;
+	[ts ts_goto: x:y];
+}
+
+-(void) _lineFeed
+{
+	if (y+1==bottom)
+	{
+		scrup(foo,top,bottom,1,(top==0 && bottom==height)?YES:NO);
+	}
+	else if (y<height-1)
+	{
+		y++;
+		[ts ts_goto: x:y];
+	}
+}
+
+-(void) _reverseIndex
+{
+	if (y==top)
+	{
+		scrdown(foo,top,bottom,1);
+	}
+	else if (y>0)
+	{
+		y--;
+		[ts ts_goto: x:y];
+	}
+}
+
+-(void) _putScreenChar: (screen_char_t)ch
+{
+	int char_width;
+
+	if (x>=width && decawm)
+	{
+		[self _carriageReturn];
+		[self _lineFeed];
+	}
+	char_width=[ts relativeWidthOfCharacter: ch.ch];
+	if (char_width<1)
+		char_width=1;
+	if (decim)
+		[ts ts_shiftRow: y  at: x  delta: char_width];
+	[ts ts_putChar: ch  count: 1  at: x:y];
+	last_char=ch;
+	have_last_char=1;
+	if (x<width)
+	{
+		x++;
+		char_width--;
+		if (char_width+x>width)
+			char_width=width-x;
+		if (char_width>0)
+		{
+			ch.ch=MULTI_CELL_GLYPH;
+			[ts ts_putChar: ch  count: char_width  at: x:y];
+			x+=char_width;
+		}
+		[ts ts_goto: x:y];
+	}
+}
+
+-(void) _putUnicodeCharacter: (unichar)uc
+{
+	screen_char_t ch;
+
+	ch.color=color;
+	ch.attr=(intensity)|(underline<<2)|(reverse<<3)|(blink<<4);
+	ch.ch=uc;
+	[self _putScreenChar: ch];
+}
+
+-(void) _tabForward: (int)count
+{
+	if (count<1)
+		count=1;
+	while (count-- > 0 && x < width - 1)
+	{
+		do
+		{
+			x++;
+		} while (x < width - 1 &&
+		         !(tab_stop[x >> 5] & (1 << (x & 31))));
+	}
+	[ts ts_goto: x:y];
+}
+
+-(void) _tabBackward: (int)count
+{
+	if (count<1)
+		count=1;
+	while (count-- > 0 && x > 0)
+	{
+		do
+		{
+			x--;
+		} while (x > 0 &&
+		         !(tab_stop[x >> 5] & (1 << (x & 31))));
+	}
+	[ts ts_goto: x:y];
+}
+
+-(void) _screenAlignmentTest
+{
+	screen_char_t ch;
+
+	ch.color=color;
+	ch.attr=(intensity)|(underline<<2)|(reverse<<3)|(blink<<4);
+	ch.ch='E';
+	[ts ts_putChar: ch  count: width*height  offset: SCREEN(0,0)];
+	gotoxy(currcons,0,0);
+	last_char=ch;
+	have_last_char=1;
+}
 
 
 #define insert_char(foo,nr) do { \
@@ -495,6 +661,25 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 				break;
 			case 25:		/* Cursor on/off */
 				deccm = on_off;
+				[ts ts_setCursorVisible: on_off];
+				break;
+			case 1048:		/* Save/restore cursor */
+				if (on_off)
+					save_cur(currcons);
+				else
+					restore_cur(currcons);
+				break;
+			case 1047:		/* Alternate screen buffer */
+			case 1049:
+				/* There is no alternate buffer in this screen API yet.
+				   Preserve the cursor side effect expected by many apps. */
+				if (par[i]==1049)
+				{
+					if (on_off)
+						save_cur(currcons);
+					else
+						restore_cur(currcons);
+				}
 				break;
 			case 1000:
 				NSDebugLLog(@"term",@"ignore _set_mode 1000");
@@ -586,31 +771,9 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 
 -(void) processByte: (unsigned char)c
 {
-#define lf() do { \
-	if (y+1==bottom) \
-	{ \
-		scrup(foo,top,bottom,1,(top==0 && bottom==height)?YES:NO); \
-	} \
-	else if (y<height-1) \
-	{ \
-		y++; \
-		[ts ts_goto: x:y]; \
-	} \
-} while (0)
-
-#define ri() do { \
-	if (y==top) \
-	{ \
-		scrdown(foo,top,bottom,1); \
-	} \
-	else if (y>0) \
-	{ \
-		y--; \
-		[ts ts_goto: x:y]; \
-	} \
-} while (0)
-
-#define cr() do { x=0; [ts ts_goto: x:y]; } while (0)
+#define lf() [self _lineFeed]
+#define ri() [self _reverseIndex]
+#define cr() [self _carriageReturn]
 
 
 #define cursor_report(foo,bar) do { \
@@ -626,6 +789,7 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 
 #define VT102ID "\033[?6c"
 #define respond_ID(foo) do { [ts ts_sendCString: VT102ID]; } while (0)
+#define respond_secondary_ID(foo) do { [ts ts_sendCString: "\033[>0;0;0c"]; } while (0)
 
 
 	switch (c)
@@ -643,6 +807,11 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 
 			return;
 		}
+		if (vc_state==ESosc_ignore)
+		{
+			vc_state=ESnormal;
+			return;
+		}
 		NSBeep();
 		return;
 	case 8:
@@ -653,12 +822,7 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 		}
 		return;
 	case 9:
-		while (x < width - 1) {
-			x++;
-			if (tab_stop[x >> 5] & (1 << (x & 31)))
-				break;
-		}
-		[ts ts_goto: x:y];
+		[self _tabForward: 1];
 		return;
 	case 10: case 11: case 12:
 		lf();
@@ -681,6 +845,16 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 		vc_state = ESnormal;
 		return;
 	case 27:
+		if (vc_state==EStitle_buf)
+		{
+			vc_state = EStitle_esc;
+			return;
+		}
+		if (vc_state==ESosc_ignore)
+		{
+			vc_state = ESosc_ignore_esc;
+			return;
+		}
 		vc_state = ESesc;
 		return;
 	case 127:
@@ -756,10 +930,8 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 	case ESnonstd:
 		switch (c)
 		{
-		case '0':
-		case '1':
-		case '2':
-		case '3':
+		case '0': case '1': case '2': case '3': case '4':
+		case '5': case '6': case '7': case '8': case '9':
 			vc_state=EStitle_semi;
 			title_type=c-'0';
 			return;
@@ -779,17 +951,27 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 			reset_palette(currcons);
 #endif
 			vc_state = ESnormal;
+			return;
 		}
-		vc_state = ESnormal;
+		vc_state = ESosc_ignore;
 		return;
 	case EStitle_semi:
-		if (c==';')
+		if (c>='0' && c<='9')
 		{
-			vc_state=EStitle_buf;
-			title_len=0;
+			title_type=title_type*10+c-'0';
+		}
+		else if (c==';')
+		{
+			if (title_type>=0 && title_type<=3)
+			{
+				vc_state=EStitle_buf;
+				title_len=0;
+			}
+			else
+				vc_state=ESosc_ignore;
 		}
 		else
-			vc_state=ESnormal;
+			vc_state=ESosc_ignore;
 		return;
 	case EStitle_buf:
 		if (title_len==TITLE_BUF_SIZE)
@@ -800,6 +982,33 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 		{
 			title_buf[title_len++]=c;
 		}
+		return;
+	case EStitle_esc:
+		if (c=='\\')
+		{
+			NSString *new_title;
+			title_buf[title_len]=0;
+			new_title=[NSString stringWithCString: title_buf];
+			[ts ts_setTitle: new_title  type: title_type];
+			vc_state=ESnormal;
+		}
+		else
+		{
+			if (title_len<TITLE_BUF_SIZE)
+				title_buf[title_len++]=27;
+			if (title_len<TITLE_BUF_SIZE)
+				title_buf[title_len++]=c;
+			else
+				vc_state=ESnormal;
+		}
+		return;
+	case ESosc_ignore:
+		return;
+	case ESosc_ignore_esc:
+		if (c=='\\')
+			vc_state=ESnormal;
+		else
+			vc_state=ESosc_ignore;
 		return;
 	case ESpalette:
 		NSDebugLLog(@"term",@"ignore palette sequence (2)");
@@ -825,14 +1034,18 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 		for(npar = 0 ; npar < NPAR ; npar++)
 			par[npar] = 0;
 		npar = 0;
+		csi_private = 0;
 		vc_state = ESgetpars;
 		if (c == '[') { /* Function key */
 			vc_state=ESfunckey;
 			return;
 		}
 		ques = (c=='?');
-		if (ques)
+		if (ques || c=='>')
+		{
+			csi_private = c;
 			return;
+		}
 	case ESgetpars:
 		if (c==';' && npar<NPAR-1) {
 			npar++;
@@ -852,6 +1065,10 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 			set_mode(currcons,0);
 			return;
 		case 'c':
+			if (csi_private=='>') {
+				respond_secondary_ID(tty);
+				return;
+			}
 			NSDebugLLog(@"term",@"ignore ESgotpars c");
 #if 0
 			if (ques) {
@@ -872,8 +1089,13 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 			}
 			return;
 		}
+		if (csi_private && csi_private!='?') {
+			csi_private = 0;
+			return;
+		}
 		if (ques) {
 			ques = 0;
+			csi_private = 0;
 			return;
 		}
 		switch(c) {
@@ -905,6 +1127,12 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 			if (!par[0]) par[0]++;
 			gotoxy(currcons,0,y-par[0]);
 			return;
+		case 'I':
+			[self _tabForward: par[0]];
+			return;
+		case 'Z':
+			[self _tabBackward: par[0]];
+			return;
 		case 'd':
 			if (par[0]) par[0]--;
 			gotoxay(currcons,x,par[0]);
@@ -929,6 +1157,14 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 		case 'P':
 			csi_P(currcons,par[0]);
 			return;
+		case 'S':
+			if (!par[0]) par[0]++;
+			scrup(foo,top,bottom,par[0],NO);
+			return;
+		case 'T':
+			if (!par[0]) par[0]++;
+			scrdown(foo,top,bottom,par[0]);
+			return;
 		case 'c':
 			if (!par[0])
 				respond_ID(tty);
@@ -946,6 +1182,15 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 			return;
 		case 'm':
 			csi_m(currcons);
+			return;
+		case 'b':
+			if (!par[0]) par[0]++;
+			if (have_last_char)
+			{
+				int i;
+				for (i=0; i<par[0]; i++)
+					[self _putScreenChar: last_char];
+			}
 			return;
 		case 'q': /* DECLL - but only 3 leds */
 			/* map 0,1,2,3 to 0,1,2,4 */
@@ -1003,18 +1248,12 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 		return;
 	case EShash:
 		vc_state = ESnormal;
-		NSDebugLLog(@"term",@"ignore EShash");
-#if 0
-		if (c == '8') {
-			/* DEC screen alignment test. kludge :-) */
-			video_erase_char =
-				(video_erase_char & 0xff00) | 'E';
-			csi_J(currcons, 2);
-			video_erase_char =
-				(video_erase_char & 0xff00) | ' ';
-			do_update_region(currcons, origin, screenbuf_size/2);
+		if (c == '8')
+		{
+			[self _screenAlignmentTest];
+			return;
 		}
-#endif
+		NSDebugLLog(@"term",@"ignore EShash");
 		return;
 	case ESsetG0:
 		if (c == '0')
@@ -1094,39 +1333,11 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 		}
 		else
 
-#define PUTCH \
-	if (x>=width && decawm) \
-	{ \
-		cr(); \
-		lf(); \
-	} \
-	char_width=[ts relativeWidthOfCharacter: ch.ch]; \
-	if (decim) \
-		[ts ts_shiftRow: y  at: x  delta: char_width]; \
-	[ts ts_putChar: ch  count: 1  at: x:y]; \
-	if (x<width) \
-	{ \
-		x++; \
-		char_width--; \
-		if (char_width+x>width) \
-			char_width=width-x; \
-		if (char_width>0) \
-		{ \
-			ch.ch=MULTI_CELL_GLYPH; \
-			[ts ts_putChar: ch  count: char_width  at: x:y]; \
-			x+=char_width; \
-		} \
-		[ts ts_goto: x:y]; \
-	}
-
 		{
-			screen_char_t ch;
-
 			char *inp;
 			size_t in_size;
 			char *outp;
 			size_t out_size;
-			int char_width;
 
 			int ret;
 
@@ -1142,9 +1353,6 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 			}
 			input_buf[input_buf_len++]=c;
 
-			ch.color=color;
-			ch.attr=(intensity)|(underline<<2)|(reverse<<3)|(blink<<4);
-
 			inp=(char *)input_buf;
 			in_size=input_buf_len;
 
@@ -1158,16 +1366,14 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 
 				if (out_size==0)
 				{
-					ch.ch=ntohl(unich);
-					PUTCH
+					[self _putUnicodeCharacter: ntohl(unich)];
 				}
 				if (ret>=0)
 					break;
 
 				if (errno==EILSEQ)
 				{ /* illegal input sequence. skip one byte and try again. */
-					ch.ch=0xfffd;
-					PUTCH
+					[self _putUnicodeCharacter: 0xfffd];
 					in_size--;
 					inp++;
 				}
@@ -1193,15 +1399,9 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 		}
 
 		{
-			screen_char_t ch;
-			int char_width;
-			ch.color=color;
-			ch.attr=(intensity)|(underline<<2)|(reverse<<3)|(blink<<4);
-			ch.ch=unich;
-			PUTCH
+			[self _putUnicodeCharacter: unich];
 		}
 		return;
-#undef PUTCH
 	}
 }
 
@@ -1263,82 +1463,91 @@ Translates '\n' to '\r' when sending.
 
 -(void) handleKeyEvent: (NSEvent *)e
 {
-	NSString *s=[e charactersIgnoringModifiers];
+	NSString *s=TerminalStringByDroppingKeyEquivalentPrefix(
+		[e charactersIgnoringModifiers]);
+	NSString *characters=TerminalStringByDroppingKeyEquivalentPrefix(
+		[e characters]);
 	unsigned int mask=[e modifierFlags];
 	unichar ch,ch2;
 
 	const char *str;
 	NSString *nstr;
 
-	if ([s length]>1)
-	{
-		s=[e characters];
-		NSDebugLLog(@"key",@" writing '%@'\n",s);
-		[self sendString: s];
-		return;
-	}
-
-	ch=[s characterAtIndex: 0];
 	str=NULL;
 	nstr=nil;
 	ch2=0;
-	switch (ch)
+
+	if ([s length]>1)
 	{
-	case '\e':
-		if ([TerminalViewKeyboardPrefs doubleEscape])
-			str="\e\e";
-		else
-			str="\e";
-		break;
+		NSDebugLLog(@"key",@" writing '%@'\n",characters);
+		nstr=characters;
+		ch=0;
+	}
+	else if ([s length]==0)
+	{
+		return;
+	}
+	else
+	{
+		ch=[s characterAtIndex: 0];
+		switch (ch)
+		{
+		case '\e':
+			if ([TerminalViewKeyboardPrefs doubleEscape])
+				str="\e\e";
+			else
+				str="\e";
+			break;
 
-	case NSUpArrowFunctionKey   : str="\e[A"; break;
-	case NSDownArrowFunctionKey : str="\e[B"; break;
-	case NSLeftArrowFunctionKey : str="\e[D"; break;
-	case NSRightArrowFunctionKey: str="\e[C"; break;
+		case NSUpArrowFunctionKey   : str="\e[A"; break;
+		case NSDownArrowFunctionKey : str="\e[B"; break;
+		case NSLeftArrowFunctionKey : str="\e[D"; break;
+		case NSRightArrowFunctionKey: str="\e[C"; break;
 
-	case NSF1FunctionKey : str="\e[[A"; break;
-	case NSF2FunctionKey : str="\e[[B"; break;
-	case NSF3FunctionKey : str="\e[[C"; break;
-	case NSF4FunctionKey : str="\e[[D"; break;
-	case NSF5FunctionKey : str="\e[[E"; break;
+		case NSF1FunctionKey : str="\e[[A"; break;
+		case NSF2FunctionKey : str="\e[[B"; break;
+		case NSF3FunctionKey : str="\e[[C"; break;
+		case NSF4FunctionKey : str="\e[[D"; break;
+		case NSF5FunctionKey : str="\e[[E"; break;
 
-	case NSF6FunctionKey : str="\e[17~"; break;
-	case NSF7FunctionKey : str="\e[18~"; break;
-	case NSF8FunctionKey : str="\e[19~"; break;
-	case NSF9FunctionKey : str="\e[20~"; break;
-	case NSF10FunctionKey: str="\e[21~"; break;
-	case NSF11FunctionKey: str="\e[23~"; break;
-	case NSF12FunctionKey: str="\e[24~"; break;
+		case NSF6FunctionKey : str="\e[17~"; break;
+		case NSF7FunctionKey : str="\e[18~"; break;
+		case NSF8FunctionKey : str="\e[19~"; break;
+		case NSF9FunctionKey : str="\e[20~"; break;
+		case NSF10FunctionKey: str="\e[21~"; break;
+		case NSF11FunctionKey: str="\e[23~"; break;
+		case NSF12FunctionKey: str="\e[24~"; break;
 
-	case NSF13FunctionKey: str="\e[25~"; break;
-	case NSF14FunctionKey: str="\e[26~"; break;
-	case NSF15FunctionKey: str="\e[28~"; break;
-	case NSF16FunctionKey: str="\e[29~"; break;
-	case NSF17FunctionKey: str="\e[31~"; break;
-	case NSF18FunctionKey: str="\e[32~"; break;
-	case NSF19FunctionKey: str="\e[33~"; break;
-	case NSF20FunctionKey: str="\e[34~"; break;
+		case NSF13FunctionKey: str="\e[25~"; break;
+		case NSF14FunctionKey: str="\e[26~"; break;
+		case NSF15FunctionKey: str="\e[28~"; break;
+		case NSF16FunctionKey: str="\e[29~"; break;
+		case NSF17FunctionKey: str="\e[31~"; break;
+		case NSF18FunctionKey: str="\e[32~"; break;
+		case NSF19FunctionKey: str="\e[33~"; break;
+		case NSF20FunctionKey: str="\e[34~"; break;
 
-	case NSHomeFunctionKey    : str="\e[1~"; break;
-	case NSInsertFunctionKey  : str="\e[2~"; break;
-	case NSDeleteFunctionKey  : str="\e[3~"; break;
-	case NSEndFunctionKey     : str="\e[4~"; break;
-	case NSPageUpFunctionKey  : str="\e[5~"; break;
-	case NSPageDownFunctionKey: str="\e[6~"; break;
+		case NSHomeFunctionKey    : str="\e[1~"; break;
+		case NSInsertFunctionKey  : str="\e[2~"; break;
+		case NSDeleteFunctionKey  : str="\e[3~"; break;
+		case NSEndFunctionKey     : str="\e[4~"; break;
+		case NSPageUpFunctionKey  : str="\e[5~"; break;
+		case NSPageDownFunctionKey: str="\e[6~"; break;
 
-	case 9:	// tab
-		if (mask&NSShiftKeyMask)
-			str="\e[Z";
-		else
-			nstr=[e characters];
-		break;
+		case 9:	// tab
+			if (mask&NSShiftKeyMask)
+				str="\e[Z";
+			else
+				nstr=characters;
+			break;
 
-	case 8: ch2=0x7f; break;
-	case 3: ch2=0x0d; break;
+		case 8: ch2=0x7f; break;
+		case 3: ch2=0x0d; break;
 
-	default:
-		nstr=[e characters];
-		break;
+		default:
+			nstr=characters;
+			break;
+		}
 	}
 
 	{
@@ -1460,4 +1669,3 @@ Translates '\n' to '\r' when sending.
 }
 
 @end
-

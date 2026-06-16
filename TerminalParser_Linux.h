@@ -39,11 +39,12 @@ of the License. See COPYING or main.m for more information.
 
 enum { ESnormal, ESesc, ESsquare, ESgetpars, ESgotpars, ESfunckey,
 	EShash, ESsetG0, ESsetG1, ESpercent, ESignore, ESnonstd,
-	ESpalette, EStitle_semi, EStitle_buf } ESstate;
+	ESpalette, EStitle_semi, EStitle_buf, EStitle_esc, ESosc_ignore,
+	ESosc_ignore_esc } ESstate;
 	int vc_state;
 
 	unsigned char decscnm,decom,decawm,deccm,decim;
-	unsigned char ques;
+	unsigned char ques,csi_private;
 	unsigned char charset,utf,disp_ctrl,toggle_meta;
 	int G0_charset,G1_charset;
 
@@ -55,6 +56,8 @@ enum { ESnormal, ESesc, ESsquare, ESgetpars, ESgotpars, ESfunckey,
 #define background (color & 0xf0)
 
 	screen_char_t video_erase_char;
+	screen_char_t last_char;
+	unsigned char have_last_char;
 
 #define NPAR 16
 	int npar;
@@ -70,4 +73,3 @@ enum { ESnormal, ESesc, ESsquare, ESgetpars, ESgotpars, ESfunckey,
 @end
 
 #endif
-
