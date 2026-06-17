@@ -286,6 +286,69 @@ static NSString *TerminalStringByDroppingKeyEquivalentPrefix(NSString *s)
 static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 				       8,12,10,14, 9,13,11,15 };
 
+static unsigned char
+_colorFromRGB(int red, int green, int blue)
+{
+	static const int ansi_rgb[16][3] = {
+		{  0,   0,   0}, {170,   0,   0},
+		{  0, 170,   0}, {170,  85,   0},
+		{  0,   0, 170}, {170,   0, 170},
+		{  0, 170, 170}, {170, 170, 170},
+		{ 85,  85,  85}, {255,  85,  85},
+		{ 85, 255,  85}, {255, 255,  85},
+		{ 85,  85, 255}, {255,  85, 255},
+		{ 85, 255, 255}, {255, 255, 255}
+	};
+	int i, best = 0, best_dist = 0x7fffffff;
+
+	if (red < 0) red = 0;
+	if (green < 0) green = 0;
+	if (blue < 0) blue = 0;
+	if (red > 255) red = 255;
+	if (green > 255) green = 255;
+	if (blue > 255) blue = 255;
+
+	for (i = 0; i < 16; i++)
+	{
+		int dr = red - ansi_rgb[i][0];
+		int dg = green - ansi_rgb[i][1];
+		int db = blue - ansi_rgb[i][2];
+		int dist = dr * dr + dg * dg + db * db;
+
+		if (dist < best_dist)
+		{
+			best = i;
+			best_dist = dist;
+		}
+	}
+
+	return color_table[best];
+}
+
+static unsigned char
+_colorFrom256(int index)
+{
+	static const int cube[] = { 0, 95, 135, 175, 215, 255 };
+
+	if (index < 0)
+		index = 0;
+	else if (index > 255)
+		index = 255;
+
+	if (index < 16)
+		return color_table[index];
+	if (index < 232)
+	{
+		index -= 16;
+		return _colorFromRGB(cube[index / 36],
+				     cube[(index / 6) % 6],
+				     cube[index % 6]);
+	}
+
+	index = 8 + (index - 232) * 10;
+	return _colorFromRGB(index, index, index);
+}
+
 -(void) _csi_m
 {
 	int i;
@@ -360,16 +423,25 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 				color = (color_table[par[i]-100+8]<<4)
 					| foreground;
 				break;
-			case 38: /* ANSI X3.64-1979 (SCO-ish?)
-				  * Enables underscore, white foreground
-				  * with white underscore (Linux - use
-				  * default foreground).
-				  */
+			case 38:
 				if (i+2<=npar && par[i+1]==5)
 				{
-					color = color_table[par[i+2]&15]
+					color = _colorFrom256(par[i+2])
 						| background;
 					i += 2;
+				}
+				else if (i+4<=npar && par[i+1]==2)
+				{
+					color = _colorFromRGB(par[i+2],
+							      par[i+3],
+							      par[i+4])
+						| background;
+					i += 4;
+				}
+				else if (i+1<=npar &&
+					 (par[i+1]==2 || par[i+1]==5))
+				{
+					i = npar;
 				}
 				else
 				{
@@ -377,13 +449,8 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 					underline = 1;
 				}
 				break;
-			case 39: /* ANSI X3.64-1979 (SCO-ish?)
-				  * Disable underline option.
-				  * Reset colour to default? It did this
-				  * before...
-				  */
+			case 39:
 				color = (def_color & 0x0f) | background;
-				underline = 0;
 				break;
 			case 49:
 				color = (def_color & 0xf0) | foreground;
@@ -391,9 +458,22 @@ static unsigned char color_table[] = { 0, 4, 2, 6, 1, 5, 3, 7,
 			case 48:
 				if (i+2<=npar && par[i+1]==5)
 				{
-					color = (color_table[par[i+2]&15]<<4)
+					color = (_colorFrom256(par[i+2])<<4)
 						| foreground;
 					i += 2;
+				}
+				else if (i+4<=npar && par[i+1]==2)
+				{
+					color = (_colorFromRGB(par[i+2],
+							       par[i+3],
+							       par[i+4])<<4)
+						| foreground;
+					i += 4;
+				}
+				else if (i+1<=npar &&
+					 (par[i+1]==2 || par[i+1]==5))
+				{
+					i = npar;
 				}
 				break;
 			default:
