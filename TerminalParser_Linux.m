@@ -67,6 +67,7 @@ static const unichar *_set_translate(int charset)
 -(void) _carriageReturn;
 -(void) _lineFeed;
 -(void) _reverseIndex;
+-(void) _clearDisplay;
 -(void) _putScreenChar: (screen_char_t)ch;
 -(void) _putUnicodeCharacter: (unichar)uc;
 -(void) _tabForward: (int)count;
@@ -154,6 +155,7 @@ static NSString *TerminalStringByDroppingKeyEquivalentPrefix(NSString *s)
 	vc_state	= ESnormal;
 	ques		= 0;
 	csi_private	= 0;
+	csi_intermediate = 0;
 
 	translate	= set_translate(LAT1_MAP,currcons);
 	G0_charset	= LAT1_MAP;
@@ -546,6 +548,12 @@ _colorFrom256(int index)
 	}
 }
 
+-(void) _clearDisplay
+{
+	[self _csi_J: 2];
+	gotoxy(currcons,0,0);
+}
+
 -(void) _putScreenChar: (screen_char_t)ch
 {
 	int char_width;
@@ -904,10 +912,13 @@ _colorFrom256(int index)
 	case 9:
 		[self _tabForward: 1];
 		return;
-	case 10: case 11: case 12:
+	case 10: case 11:
 		lf();
 /*		if (!is_kbd(lnm))*/
 			return;
+	case 12:
+		[self _clearDisplay];
+		return;
 	case 13:
 		cr();
 		return;
@@ -1115,6 +1126,7 @@ _colorFrom256(int index)
 			par[npar] = 0;
 		npar = 0;
 		csi_private = 0;
+		csi_intermediate = 0;
 		vc_state = ESgetpars;
 		if (c == '[') { /* Function key */
 			vc_state=ESfunckey;
@@ -1134,9 +1146,18 @@ _colorFrom256(int index)
 			par[npar] *= 10;
 			par[npar] += c-'0';
 			return;
+		} else if (c>=' ' && c<='/') {
+			csi_intermediate = c;
+			return;
 		} else vc_state=ESgotpars;
 	case ESgotpars:
 		vc_state = ESnormal;
+		if (csi_intermediate) {
+			if (csi_intermediate==' ' && c=='q')
+				NSDebugLLog(@"term",@"ignore DECSCUSR");
+			csi_intermediate = 0;
+			return;
+		}
 		switch(c) {
 		case 'h':
 			set_mode(currcons,1);

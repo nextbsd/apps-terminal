@@ -59,7 +59,7 @@ static character_set_choice_t cs_choices[]={
 
 		characterSet=[[ud stringForKey: CharacterSetKey] retain];
 		if (!characterSet)
-			characterSet=@"iso-8859-1";
+			characterSet=@"utf-8";
 	}
 }
 
@@ -172,4 +172,3 @@ static character_set_choice_t cs_choices[]={
 }
 
 @end
-
