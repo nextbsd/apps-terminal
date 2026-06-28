@@ -568,6 +568,101 @@ static NSColor* decodeColor(BOOL forForeground,
 	return [NSColor colorWithCalibratedHue:h saturation:s brightness:b alpha:1];
 }
 
+static BOOL getBoxDrawingSegments(unichar ch,
+                                  BOOL *left,
+                                  BOOL *right,
+                                  BOOL *up,
+                                  BOOL *down)
+{
+	*left=*right=*up=*down=NO;
+
+	switch (ch)
+	{
+		case 0x2500: *left=*right=YES; break;             /* light horizontal */
+		case 0x2502: *up=*down=YES; break;                /* light vertical */
+		case 0x2501: *left=*right=YES; break;             /* heavy horizontal */
+		case 0x2503: *up=*down=YES; break;                /* heavy vertical */
+		case 0x250c: *right=*down=YES; break;             /* light down and right */
+		case 0x2510: *left=*down=YES; break;              /* light down and left */
+		case 0x2514: *right=*up=YES; break;               /* light up and right */
+		case 0x2518: *left=*up=YES; break;                /* light up and left */
+		case 0x250f: *right=*down=YES; break;             /* heavy down and right */
+		case 0x2513: *left=*down=YES; break;              /* heavy down and left */
+		case 0x2517: *right=*up=YES; break;               /* heavy up and right */
+		case 0x251b: *left=*up=YES; break;                /* heavy up and left */
+		case 0x251c: *right=*up=*down=YES; break;         /* light vertical and right */
+		case 0x2524: *left=*up=*down=YES; break;          /* light vertical and left */
+		case 0x252c: *left=*right=*down=YES; break;       /* light down and horizontal */
+		case 0x2534: *left=*right=*up=YES; break;         /* light up and horizontal */
+		case 0x253c: *left=*right=*up=*down=YES; break;   /* light vertical and horizontal */
+		case 0x2550: *left=*right=YES; break;             /* double horizontal */
+		case 0x2551: *up=*down=YES; break;                /* double vertical */
+		case 0x2554: *right=*down=YES; break;             /* double down and right */
+		case 0x2557: *left=*down=YES; break;              /* double down and left */
+		case 0x255a: *right=*up=YES; break;               /* double up and right */
+		case 0x255d: *left=*up=YES; break;                /* double up and left */
+		case 0x256d: *right=*down=YES; break;             /* rounded down and right */
+		case 0x256e: *left=*down=YES; break;              /* rounded down and left */
+		case 0x256f: *left=*up=YES; break;                /* rounded up and left */
+		case 0x2570: *right=*up=YES; break;               /* rounded up and right */
+		default: return NO;
+	}
+
+	return YES;
+}
+
+static BOOL drawBoxDrawingCharacter(unichar ch, CGFloat x, CGFloat y,
+                                    CGFloat width, CGFloat height)
+{
+	BOOL left,right,up,down;
+	CGFloat cx,cy,t,half;
+
+	if (!getBoxDrawingSegments(ch,&left,&right,&up,&down))
+		return NO;
+
+	cx=x+width/2.0;
+	cy=y+height/2.0;
+	t=floor(MIN(width,height)/8.0);
+	if (t<1.0)
+		t=1.0;
+	half=t/2.0;
+
+	if (left)
+		[NSBezierPath fillRect: NSMakeRect(x,cy-half,cx-x,t)];
+	if (right)
+		[NSBezierPath fillRect: NSMakeRect(cx,cy-half,x+width-cx,t)];
+	if (up)
+		[NSBezierPath fillRect: NSMakeRect(cx-half,cy,t,y+height-cy)];
+	if (down)
+		[NSBezierPath fillRect: NSMakeRect(cx-half,y,t,cy-y)];
+
+	return YES;
+}
+
+static BOOL drawFallbackTerminalCharacter(unichar ch, CGFloat x, CGFloat y,
+                                          CGFloat width, CGFloat height)
+{
+	CGFloat size;
+
+	if (drawBoxDrawingCharacter(ch,x,y,width,height))
+		return YES;
+
+	switch (ch)
+	{
+		case 0x00b7: /* middle dot */
+		case 0x2022: /* bullet */
+		case 0x25cf: /* black circle */
+			size=floor(MIN(width,height)/4.0);
+			if (size<2.0)
+				size=2.0;
+			[[NSBezierPath bezierPathWithOvalInRect:
+				NSMakeRect(x+(width-size)/2.0,y+(height-size)/2.0,size,size)] fill];
+			return YES;
+		default:
+			return NO;
+	}
+}
+
 
 /* draw character(s) background with a rect of given color */
 #define R(c,scr_x,scr_y,fx,fy) \
@@ -797,7 +892,9 @@ static NSColor* decodeColor(BOOL forForeground,
                                           attrs->underlineStyle = [NSNumber numberWithInteger:NSUnderlineStyleSingle];
                                         else
                                           attrs->underlineStyle = [NSNumber numberWithInteger:NSUnderlineStyleNone];
-					[strBuf drawAtPoint:NSMakePoint(scr_x,scr_y+fontBoundDiffY) withAttributes:attrs];
+					[foreColor set];
+					if (!drawFallbackTerminalCharacter(ch->ch,scr_x,scr_y,fx,fy))
+						[strBuf drawAtPoint:NSMakePoint(scr_x,scr_y+fontBoundDiffY) withAttributes:attrs];
 				}
 			}
 		}
