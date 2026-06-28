@@ -43,9 +43,9 @@ enum { ESnormal, ESesc, ESsquare, ESgetpars, ESgotpars, ESfunckey,
 	ESosc_ignore_esc } ESstate;
 	int vc_state;
 
-	unsigned char decscnm,decom,decawm,deccm,decim;
+	unsigned char decscnm,decom,decawm,deccm,decim,decckm,kbdapplic,lnm;
 	unsigned char ques,csi_private,csi_intermediate;
-	unsigned char charset,utf,disp_ctrl,toggle_meta;
+	unsigned char charset,utf,disp_ctrl,toggle_meta,single_shift;
 	int G0_charset,G1_charset;
 
 	const unichar *translate;

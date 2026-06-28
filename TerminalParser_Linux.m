@@ -145,6 +145,7 @@ static NSString *TerminalStringByDroppingKeyEquivalentPrefix(NSString *s)
 	G0_charset	= saved_G0; \
 	G1_charset	= saved_G1; \
 	translate	= set_translate(charset ? G1_charset : G0_charset,currcons); \
+	single_shift	= 0; \
 } while (0)
 
 
@@ -175,6 +176,10 @@ static NSString *TerminalStringByDroppingKeyEquivalentPrefix(NSString *s)
 	decawm		= 1;
 	deccm		= 1;
 	decim		= 0;
+	decckm		= 0;
+	kbdapplic	= 0;
+	lnm		= 0;
+	single_shift	= 0;
 	[ts ts_setCursorVisible: YES];
 
 #if 0
@@ -701,17 +706,17 @@ _colorFrom256(int index)
 	for (i=0; i<=npar; i++)
 		if (ques) switch(par[i]) {	/* DEC private modes set/reset */
 			case 1:			/* Cursor keys send ^[Ox/^[[x */
-				if (on_off)
-				{
-					set_kbd(decckm);
-				}
-				else
-				{
-					clr_kbd(decckm);
-				}
+				decckm = on_off;
 				break;
 			case 3:	/* 80/132 mode switch unimplemented */
-				NSDebugLLog(@"term",@"ignore _set_mode 3");
+				/* VT100 DECCOLM also clears the screen, resets margins,
+				   and homes the cursor. The screen API cannot request a
+				   host-window resize, but preserve the terminal semantics
+				   that applications test after the mode switch. */
+				top = 0;
+				bottom = height;
+				decom = 0;
+				[self _clearDisplay];
 #if 0
 				deccolm = on_off;
 				(void) vc_resize(height, deccolm ? 132 : 80);
@@ -783,13 +788,7 @@ _colorFrom256(int index)
 				decim = on_off;
 				break;
 			case 20:		/* Lf, Enter == CrLf/Lf */
-				NSDebugLLog(@"term",@"ignore _set_mode 20");
-#if 0
-				if (on_off)
-					set_kbd(lnm);
-				else
-					clr_kbd(lnm);
-#endif
+				lnm = on_off;
 				break;
 		}
 }
@@ -875,6 +874,10 @@ _colorFrom256(int index)
 	[ts ts_sendCString: "\033[0n"]; \
 } while (0)
 
+#define terminal_parameter_report(foo) do { \
+	[ts ts_sendCString: "\033[2;1;1;112;112;1;0x"]; \
+} while (0)
+
 #define VT102ID "\033[?6c"
 #define respond_ID(foo) do { [ts ts_sendCString: VT102ID]; } while (0)
 #define respond_secondary_ID(foo) do { [ts ts_sendCString: "\033[>0;0;0c"]; } while (0)
@@ -914,8 +917,11 @@ _colorFrom256(int index)
 		return;
 	case 10: case 11:
 		lf();
-/*		if (!is_kbd(lnm))*/
-			return;
+		if (lnm)
+		{
+			cr();
+		}
+		return;
 	case 12:
 		[self _clearDisplay];
 		return;
@@ -951,11 +957,49 @@ _colorFrom256(int index)
 	case 127:
 //		del(currcons);
 		return;
-	case 128+27:			// This kills UTF-8 unless we do some funky stuff
+	case 0x84:		/* IND */
+		if (!utf_count) {
+			lf();
+			return;
+		}
+		break;
+	case 0x85:		/* NEL */
+		if (!utf_count) {
+			cr();
+			lf();
+			return;
+		}
+		break;
+	case 0x88:		/* HTS */
+		if (!utf_count) {
+			tab_stop[x >> 5] |= (1 << (x & 31));
+			return;
+		}
+		break;
+	case 0x8d:		/* RI */
+		if (!utf_count) {
+			ri();
+			return;
+		}
+		break;
+	case 0x8e:		/* SS2 */
+		if (!utf_count) {
+			single_shift = 2;
+			return;
+		}
+		break;
+	case 0x8f:		/* SS3 */
+		if (!utf_count) {
+			single_shift = 3;
+			return;
+		}
+		break;
+	case 0x9b:		/* CSI */
 		if (!utf_count) {
 			vc_state = ESsquare;
 			return;
 		}
+		break;
 	}
 	switch(vc_state) {
 	case ESesc:
@@ -976,6 +1020,12 @@ _colorFrom256(int index)
 			return;
 		case 'M':
 			ri();
+			return;
+		case 'N':
+			single_shift = 2;
+			return;
+		case 'O':
+			single_shift = 3;
 			return;
 		case 'D':
 			lf();
@@ -1005,16 +1055,10 @@ _colorFrom256(int index)
 			[self _reset_terminal];
 			return;
 		case '>':  /* Numeric keypad */
-			NSDebugLLog(@"term",@"ignore ESesc >  keypad");
-#if 0
-			clr_kbd(kbdapplic);
-#endif
+			kbdapplic = 0;
 			return;
 		case '=':  /* Appl. keypad */
-			NSDebugLLog(@"term",@"ignore ESesc =  keypad");
-#if 0
-			set_kbd(kbdapplic);
-#endif
+			kbdapplic = 1;
 			return;
 		}
 		return;
@@ -1189,6 +1233,10 @@ _colorFrom256(int index)
 					cursor_report(currcons,tty);
 			}
 			return;
+		case 'x':
+			if (!ques && (par[0] == 0 || par[0] == 1))
+				terminal_parameter_report(tty);
+			return;
 		}
 		if (csi_private && csi_private!='?') {
 			csi_private = 0;
@@ -1278,7 +1326,10 @@ _colorFrom256(int index)
 					tab_stop[1] =
 					tab_stop[2] =
 					tab_stop[3] =
-					tab_stop[4] = 0;
+					tab_stop[4] =
+					tab_stop[5] =
+					tab_stop[6] =
+					tab_stop[7] = 0;
 			}
 			return;
 		case 'm':
@@ -1354,13 +1405,23 @@ _colorFrom256(int index)
 			[self _screenAlignmentTest];
 			return;
 		}
+		if (c >= '3' && c <= '6')
+		{
+			/* Double-height/double-width line attributes need per-line
+			   rendering support. The fixed cell screen keeps normal width. */
+			return;
+		}
 		NSDebugLLog(@"term",@"ignore EShash");
 		return;
 	case ESsetG0:
 		if (c == '0')
 			G0_charset = GRAF_MAP;
-		else if (c == 'B')
+		else if (c == 'B' || c == '<' || c == '>')
 			G0_charset = LAT1_MAP;
+		else if (c == 'A')
+			G0_charset = LAT1_MAP;
+		else if (c == '1' || c == '2')
+			G0_charset = GRAF_MAP;
 		else if (c == 'U')
 			G0_charset = IBMPC_MAP;
 		else if (c == 'K')
@@ -1372,8 +1433,12 @@ _colorFrom256(int index)
 	case ESsetG1:
 		if (c == '0')
 			G1_charset = GRAF_MAP;
-		else if (c == 'B')
+		else if (c == 'B' || c == '<' || c == '>')
 			G1_charset = LAT1_MAP;
+		else if (c == 'A')
+			G1_charset = LAT1_MAP;
+		else if (c == '1' || c == '2')
+			G1_charset = GRAF_MAP;
 		else if (c == 'U')
 			G1_charset = IBMPC_MAP;
 		else if (c == 'K')
@@ -1426,11 +1491,15 @@ _colorFrom256(int index)
 				return;
 			}
 		}
-		else if (!iconv_state || translate!=translate_maps[0])
+		else if (!iconv_state || translate!=translate_maps[0] || single_shift)
 		{
+			const unichar *active_translate = translate;
+			if (single_shift == 2 || single_shift == 3)
+				active_translate = set_translate(G1_charset,currcons);
 			if (toggle_meta)
 				c|=0x80;
-			unich=translate[c];
+			unich=active_translate[c];
+			single_shift = 0;
 		}
 		else
 
@@ -1528,7 +1597,14 @@ Translates '\n' to '\r' when sending.
 		{
 			ucs=[s characterAtIndex: i];
 			if (ucs=='\n')
+			{
+				if (lnm)
+				{
+					[ts ts_sendCString: "\r\n"];
+					continue;
+				}
 				ucs='\r';
+			}
 			ucs=htonl(ucs);
 
 			inp=&ucs;
@@ -1550,7 +1626,15 @@ Translates '\n' to '\r' when sending.
 		for (i=0;i<l;i++)
 		{
 			ucs=[s characterAtIndex: i];
-			if (ucs=='\n') ucs='\r';
+			if (ucs=='\n')
+			{
+				if (lnm)
+				{
+					[ts ts_sendCString: "\r\n"];
+					continue;
+				}
+				ucs='\r';
+			}
 			if (ucs<256)
 			{
 				buf=ucs;
@@ -1559,6 +1643,34 @@ Translates '\n' to '\r' when sending.
 			else
 				NSBeep();
 		}
+	}
+}
+
+static const char *
+_vt100ApplicationKeypadString(unichar ch)
+{
+	switch (ch)
+	{
+	case '0': return "\033Op";
+	case '1': return "\033Oq";
+	case '2': return "\033Or";
+	case '3': return "\033Os";
+	case '4': return "\033Ot";
+	case '5': return "\033Ou";
+	case '6': return "\033Ov";
+	case '7': return "\033Ow";
+	case '8': return "\033Ox";
+	case '9': return "\033Oy";
+	case '.': return "\033On";
+	case ',': return "\033Ol";
+	case '-': return "\033Om";
+	case '+': return "\033Ok";
+	case '=': return "\033OX";
+	case '*': return "\033Oj";
+	case '/': return "\033Oo";
+	case 3:   return "\033OM";
+	case 13:  return "\033OM";
+	default:  return NULL;
 	}
 }
 
@@ -1600,10 +1712,10 @@ Translates '\n' to '\r' when sending.
 				str="\e";
 			break;
 
-		case NSUpArrowFunctionKey   : str="\e[A"; break;
-		case NSDownArrowFunctionKey : str="\e[B"; break;
-		case NSLeftArrowFunctionKey : str="\e[D"; break;
-		case NSRightArrowFunctionKey: str="\e[C"; break;
+		case NSUpArrowFunctionKey   : str=decckm ? "\eOA" : "\e[A"; break;
+		case NSDownArrowFunctionKey : str=decckm ? "\eOB" : "\e[B"; break;
+		case NSLeftArrowFunctionKey : str=decckm ? "\eOD" : "\e[D"; break;
+		case NSRightArrowFunctionKey: str=decckm ? "\eOC" : "\e[C"; break;
 
 		case NSF1FunctionKey : str="\e[[A"; break;
 		case NSF2FunctionKey : str="\e[[B"; break;
@@ -1643,10 +1755,20 @@ Translates '\n' to '\r' when sending.
 			break;
 
 		case 8: ch2=0x7f; break;
-		case 3: ch2=0x0d; break;
+		case 3:
+			if (kbdapplic && (mask&NSNumericPadKeyMask))
+				str=_vt100ApplicationKeypadString(ch);
+			else if (lnm)
+				str="\r\n";
+			else
+				ch2=0x0d;
+			break;
 
 		default:
-			nstr=characters;
+			if (kbdapplic && (mask&NSNumericPadKeyMask))
+				str=_vt100ApplicationKeypadString(ch);
+			if (!str)
+				nstr=characters;
 			break;
 		}
 	}
