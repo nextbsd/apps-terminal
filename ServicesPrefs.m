@@ -55,11 +55,11 @@ of the License. See COPYING or main.m for more information.
 		forKey: Key];
 	[d setObject: [tf_cmdline stringValue]
 		forKey: Commandline];
-	[d setObject: [NSString stringWithFormat: @"%i",[pb_input indexOfSelectedItem]]
+	[d setObject: [NSString stringWithFormat: @"%li",(long int)[pb_input indexOfSelectedItem]]
 		forKey: Input];
-	[d setObject: [NSString stringWithFormat: @"%i",[pb_output indexOfSelectedItem]]
+	[d setObject: [NSString stringWithFormat: @"%li",(long int)[pb_output indexOfSelectedItem]]
 		forKey: ReturnData];
-	[d setObject: [NSString stringWithFormat: @"%i",[pb_type indexOfSelectedItem]]
+	[d setObject: [NSString stringWithFormat: @"%li",(long int)[pb_type indexOfSelectedItem]]
 		forKey: Type];
 
 	i=0;
