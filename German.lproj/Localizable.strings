@@ -111,7 +111,8 @@ add comments above this one
 "Terminal" = "Terminal";
 
 /* File: main.m:171 */
-"New terminal" = "Neues Fenster";
+"New terminal" = "Neues Terminal";
+"New tab" = "Neuer Reiter";
 
 
 /*** Strings from PreferencesWindowController.m ***/
@@ -247,6 +248,7 @@ add comments above this one
 "Cut" = "Ausschneiden";
 /* File: main.m:186 */
 "Edit" = "Bearbeiten";
+"View" = "Ansicht";
 /* File: main.m:203 */
 "Hide" = "Ausblenden";
 /* File: main.m:159 */
@@ -263,3 +265,5 @@ add comments above this one
 "Services" = "Dienste";
 /* File: main.m:194 */
 "Windows" = "Fenster";
+
+"Show tab bar"="Reiterleiste anzeigen";
