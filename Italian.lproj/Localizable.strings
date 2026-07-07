@@ -181,6 +181,9 @@ add comments above this one
 "Color:" = "Colore:";
 /* File: TerminalViewPrefs.m:322 */
 "Cursor" = "Cursore";
+"Blink:" = "Lampeggio:";
+"Blink cursor" = "Cursore lampeggiante";
+"Blink interval (seconds):" = "Intervallo lampeggio (sec):";
 /* File: TerminalViewPrefs.m:273 */
 /* File: TerminalViewPrefs.m:268 */
 "Display" = "Display";

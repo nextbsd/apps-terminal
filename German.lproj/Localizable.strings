@@ -209,6 +209,9 @@ add comments above this one
 "Color:" = "Farbe:";
 /* File: TerminalViewPrefs.m:277 */
 "Cursor" = "Cursor";
+"Blink:" = "Blinken:";
+"Blink cursor" = "Blinkender Cursor";
+"Blink interval (seconds):" = "Blinkrate (Sek):";
 /* File: TerminalViewPrefs.m:230 */
 /* File: TerminalViewPrefs.m:225 */
 "Display" = "Darstellung";
