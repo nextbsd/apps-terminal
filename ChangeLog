@@ -1,3 +1,7 @@
+2026-07-07  Yavor Doganov  <yavor@gnu.org>
+
+	* TerminalView.m : Check return value of `write'.
+
 2021-02-26  Yavor Doganov  <yavor@gnu.org>
 
 	* GNUmakefile (Terminal_TOOL_LIBS): Exclude GNU/kFreeBSD from the

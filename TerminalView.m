@@ -2199,7 +2199,12 @@ Handle master_fd
 	{
 		const char *s=[d UTF8String];
 		close(pipefd[0]);
-		write(pipefd[1],s,strlen(s));
+		if (write(pipefd[1],s,strlen(s)) < 0)
+		{
+			NSLog(_(@"Unexpected error while writing."));
+			close(pipefd[1]);
+			return;
+		}
 		close(pipefd[1]);
 	}
 
