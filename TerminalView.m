@@ -2167,7 +2167,7 @@ Handle master_fd
 		putenv("TERM=linux");
 		putenv("TERM_PROGRAM=GNUstep_Terminal");
 		execv(cpath,(char *const*)cargs);
-		fprintf(stderr,"Unable to spawn process '%s': %m!",cpath);
+		fprintf(stderr,"Unable to spawn process '%s': %s!", cpath, strerror(errno));
 		exit(1);
 	}
 
