@@ -1,3 +1,9 @@
+2017-12-07  Yavor Doganov  <yavor@gnu.org>
+
+	* TerminalView.m
+	(runProgram:withArguments:inDirectory:initialInput:arg0:): Fix
+	int-to-pointer-cast compiler warning.
+
 2026-07-07  Yavor Doganov  <yavor@gnu.org>
 
 	* TerminalView.m : Check return value of `write'.

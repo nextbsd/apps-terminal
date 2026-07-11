@@ -2186,7 +2186,7 @@ Handle master_fd
 	}
 
 	rl=[NSRunLoop currentRunLoop];
-	[rl addEvent: (void *)master_fd
+	[rl addEvent: (void *)(intptr_t)master_fd
 		type: ET_RDESC
 		watcher: self
 		forMode: NSDefaultRunLoopMode];
