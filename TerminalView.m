@@ -639,12 +639,159 @@ static BOOL drawBoxDrawingCharacter(unichar ch, CGFloat x, CGFloat y,
 	return YES;
 }
 
+static void fillCellRect(CGFloat x, CGFloat y, CGFloat width, CGFloat height,
+                         CGFloat left, CGFloat bottom,
+                         CGFloat rectWidth, CGFloat rectHeight)
+{
+	[NSBezierPath fillRect:
+		NSMakeRect(x+floor(left*width),y+floor(bottom*height),
+			ceil(rectWidth*width),ceil(rectHeight*height))];
+}
+
+static BOOL drawBlockElementCharacter(unichar ch, CGFloat x, CGFloat y,
+                                      CGFloat width, CGFloat height)
+{
+	int shade,i;
+	CGFloat unit;
+
+	switch (ch)
+	{
+		case 0x2580: fillCellRect(x,y,width,height,0.0,0.5,1.0,0.5); return YES;
+		case 0x2581: case 0x2582: case 0x2583: case 0x2584:
+		case 0x2585: case 0x2586: case 0x2587: case 0x2588:
+			unit=(ch-0x2580)/8.0;
+			fillCellRect(x,y,width,height,0.0,0.0,1.0,unit);
+			return YES;
+		case 0x2589: fillCellRect(x,y,width,height,0.0,0.0,7.0/8.0,1.0); return YES;
+		case 0x258a: fillCellRect(x,y,width,height,0.0,0.0,6.0/8.0,1.0); return YES;
+		case 0x258b: fillCellRect(x,y,width,height,0.0,0.0,5.0/8.0,1.0); return YES;
+		case 0x258c: fillCellRect(x,y,width,height,0.0,0.0,4.0/8.0,1.0); return YES;
+		case 0x258d: fillCellRect(x,y,width,height,0.0,0.0,3.0/8.0,1.0); return YES;
+		case 0x258e: fillCellRect(x,y,width,height,0.0,0.0,2.0/8.0,1.0); return YES;
+		case 0x258f: fillCellRect(x,y,width,height,0.0,0.0,1.0/8.0,1.0); return YES;
+		case 0x2590: fillCellRect(x,y,width,height,0.5,0.0,0.5,1.0); return YES;
+		case 0x2594: fillCellRect(x,y,width,height,0.0,7.0/8.0,1.0,1.0/8.0); return YES;
+		case 0x2595: fillCellRect(x,y,width,height,7.0/8.0,0.0,1.0/8.0,1.0); return YES;
+		case 0x2596: fillCellRect(x,y,width,height,0.0,0.0,0.5,0.5); return YES;
+		case 0x2597: fillCellRect(x,y,width,height,0.5,0.0,0.5,0.5); return YES;
+		case 0x2598: fillCellRect(x,y,width,height,0.0,0.5,0.5,0.5); return YES;
+		case 0x2599:
+			fillCellRect(x,y,width,height,0.0,0.0,0.5,1.0);
+			fillCellRect(x,y,width,height,0.5,0.0,0.5,0.5);
+			return YES;
+		case 0x259a:
+			fillCellRect(x,y,width,height,0.0,0.5,0.5,0.5);
+			fillCellRect(x,y,width,height,0.5,0.0,0.5,0.5);
+			return YES;
+		case 0x259b:
+			fillCellRect(x,y,width,height,0.0,0.0,0.5,1.0);
+			fillCellRect(x,y,width,height,0.5,0.5,0.5,0.5);
+			return YES;
+		case 0x259c:
+			fillCellRect(x,y,width,height,0.0,0.5,1.0,0.5);
+			fillCellRect(x,y,width,height,0.5,0.0,0.5,0.5);
+			return YES;
+		case 0x259d: fillCellRect(x,y,width,height,0.5,0.5,0.5,0.5); return YES;
+		case 0x259e:
+			fillCellRect(x,y,width,height,0.5,0.5,0.5,0.5);
+			fillCellRect(x,y,width,height,0.0,0.0,0.5,0.5);
+			return YES;
+		case 0x259f:
+			fillCellRect(x,y,width,height,0.5,0.0,0.5,1.0);
+			fillCellRect(x,y,width,height,0.0,0.0,0.5,0.5);
+			return YES;
+		case 0x2591: shade=4; break;
+		case 0x2592: shade=8; break;
+		case 0x2593: shade=12; break;
+		default:
+			return NO;
+	}
+
+	for (i=0;i<16;i++)
+	{
+		if ((i*shade)%16<shade)
+			fillCellRect(x,y,width,height,(i%4)/4.0,(i/4)/4.0,1.0/4.0,1.0/4.0);
+	}
+	return YES;
+}
+
+static BOOL drawBraillePatternCharacter(unichar ch, CGFloat x, CGFloat y,
+                                        CGFloat width, CGFloat height)
+{
+	int dot;
+	unsigned int pattern;
+	CGFloat cellWidth,cellHeight,size;
+
+	if (ch<0x2800 || ch>0x28ff)
+		return NO;
+
+	pattern=ch-0x2800;
+	if (!pattern)
+		return YES;
+
+	cellWidth=width/2.0;
+	cellHeight=height/4.0;
+	size=floor(MIN(cellWidth,cellHeight)*0.6);
+	if (size<1.0)
+		size=1.0;
+
+	for (dot=0;dot<8;dot++)
+	{
+		int column,row;
+		CGFloat dotX,dotY;
+
+		if (!(pattern&(1<<dot)))
+			continue;
+
+		column=(dot==3 || dot==4 || dot==5 || dot==7) ? 1 : 0;
+		switch (dot)
+		{
+			case 0: case 3: row=0; break;
+			case 1: case 4: row=1; break;
+			case 2: case 5: row=2; break;
+			default: row=3; break;
+		}
+
+		dotX=x+column*cellWidth+(cellWidth-size)/2.0;
+		dotY=y+(3-row)*cellHeight+(cellHeight-size)/2.0;
+		[[NSBezierPath bezierPathWithOvalInRect:
+			NSMakeRect(dotX,dotY,size,size)] fill];
+	}
+
+	return YES;
+}
+
+static BOOL isFallbackTerminalCharacter(unichar ch)
+{
+	if ((ch>=0x2500 && ch<=0x257f) ||
+	    (ch>=0x2580 && ch<=0x259f) ||
+	    (ch>=0x2800 && ch<=0x28ff))
+		return YES;
+
+	switch (ch)
+	{
+		case 0x00b7: /* middle dot */
+		case 0x2022: /* bullet */
+		case 0x25cf: /* black circle */
+			return YES;
+		default:
+			return NO;
+	}
+}
+
 static BOOL drawFallbackTerminalCharacter(unichar ch, CGFloat x, CGFloat y,
                                           CGFloat width, CGFloat height)
 {
 	CGFloat size;
 
+	if (!isFallbackTerminalCharacter(ch))
+		return NO;
+
 	if (drawBoxDrawingCharacter(ch,x,y,width,height))
+		return YES;
+	if (drawBlockElementCharacter(ch,x,y,width,height))
+		return YES;
+	if (drawBraillePatternCharacter(ch,x,y,width,height))
 		return YES;
 
 	switch (ch)
@@ -1323,6 +1470,8 @@ static BOOL drawFallbackTerminalCharacter(unichar ch, CGFloat x, CGFloat y,
 -(int) relativeWidthOfCharacter: (unichar)ch
 {
 	int s;
+	if (isFallbackTerminalCharacter(ch))
+		return 1;
 	if (!use_multi_cell_glyphs)
 		return 1;
 	s=ceil([font boundingRectForGlyph: ch].size.width/fx);
