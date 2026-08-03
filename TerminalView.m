@@ -721,6 +721,8 @@ static BOOL drawBraillePatternCharacter(unichar ch, CGFloat x, CGFloat y,
 	int dot;
 	unsigned int pattern;
 	CGFloat cellWidth,cellHeight,size;
+	static const unsigned char dotColumn[8]={0,0,0,1,1,1,0,1};
+	static const unsigned char dotRow[8]={0,1,2,0,1,2,3,3};
 
 	if (ch<0x2800 || ch>0x28ff)
 		return NO;
@@ -743,17 +745,11 @@ static BOOL drawBraillePatternCharacter(unichar ch, CGFloat x, CGFloat y,
 		if (!(pattern&(1<<dot)))
 			continue;
 
-		column=(dot==3 || dot==4 || dot==5 || dot==7) ? 1 : 0;
-		switch (dot)
-		{
-			case 0: case 3: row=0; break;
-			case 1: case 4: row=1; break;
-			case 2: case 5: row=2; break;
-			default: row=3; break;
-		}
+		column=dotColumn[dot];
+		row=dotRow[dot];
 
 		dotX=x+column*cellWidth+(cellWidth-size)/2.0;
-		dotY=y+(3-row)*cellHeight+(cellHeight-size)/2.0;
+		dotY=y+row*cellHeight+(cellHeight-size)/2.0;
 		[[NSBezierPath bezierPathWithOvalInRect:
 			NSMakeRect(dotX,dotY,size,size)] fill];
 	}
