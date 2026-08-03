@@ -757,6 +757,36 @@ static BOOL drawBraillePatternCharacter(unichar ch, CGFloat x, CGFloat y,
 	return YES;
 }
 
+static BOOL drawCheckMarkCharacter(unichar ch, CGFloat x, CGFloat y,
+                                   CGFloat width, CGFloat height)
+{
+	NSBezierPath *path;
+	CGFloat lineWidth;
+
+	switch (ch)
+	{
+		case 0x2705: /* white heavy check mark */
+		case 0x2713: /* check mark */
+		case 0x2714: /* heavy check mark */
+			break;
+		default:
+			return NO;
+	}
+
+	lineWidth=floor(MIN(width,height)/6.0);
+	if (lineWidth<1.0)
+		lineWidth=1.0;
+
+	path=[NSBezierPath bezierPath];
+	[path setLineWidth: lineWidth];
+	[path moveToPoint: NSMakePoint(x+width*0.18,y+height*0.45)];
+	[path lineToPoint: NSMakePoint(x+width*0.40,y+height*0.22)];
+	[path lineToPoint: NSMakePoint(x+width*0.84,y+height*0.76)];
+	[path stroke];
+
+	return YES;
+}
+
 static BOOL isFallbackTerminalCharacter(unichar ch)
 {
 	if ((ch>=0x2500 && ch<=0x257f) ||
@@ -767,6 +797,9 @@ static BOOL isFallbackTerminalCharacter(unichar ch)
 	switch (ch)
 	{
 		case 0x00b7: /* middle dot */
+		case 0x2705: /* white heavy check mark */
+		case 0x2713: /* check mark */
+		case 0x2714: /* heavy check mark */
 		case 0x2022: /* bullet */
 		case 0x25cf: /* black circle */
 			return YES;
@@ -788,6 +821,8 @@ static BOOL drawFallbackTerminalCharacter(unichar ch, CGFloat x, CGFloat y,
 	if (drawBlockElementCharacter(ch,x,y,width,height))
 		return YES;
 	if (drawBraillePatternCharacter(ch,x,y,width,height))
+		return YES;
+	if (drawCheckMarkCharacter(ch,x,y,width,height))
 		return YES;
 
 	switch (ch)
