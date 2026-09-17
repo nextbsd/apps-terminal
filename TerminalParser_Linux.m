@@ -1681,6 +1681,12 @@ _vt100ApplicationKeypadString(unichar ch)
 	NSString *characters=TerminalStringByDroppingKeyEquivalentPrefix(
 		[e characters]);
 	unsigned int mask=[e modifierFlags];
+	BOOL commandAsMeta=[TerminalViewKeyboardPrefs commandAsMeta];
+	BOOL meta=(commandAsMeta && (mask&NSCommandKeyMask)) ||
+		(!commandAsMeta && ![TerminalViewKeyboardPrefs altIsNotMeta] &&
+		 (mask&NSAlternateKeyMask));
+	/* Meta sends Escape followed by the key without Alt's text substitution. */
+	NSString *inputCharacters=meta ? s : characters;
 	unichar ch,ch2;
 
 	const char *str;
@@ -1692,8 +1698,8 @@ _vt100ApplicationKeypadString(unichar ch)
 
 	if ([s length]>1)
 	{
-		NSDebugLLog(@"key",@" writing '%@'\n",characters);
-		nstr=characters;
+		NSDebugLLog(@"key",@" writing '%@'\n",inputCharacters);
+		nstr=inputCharacters;
 		ch=0;
 	}
 	else if ([s length]==0)
@@ -1751,7 +1757,7 @@ _vt100ApplicationKeypadString(unichar ch)
 			if (mask&NSShiftKeyMask)
 				str="\e[Z";
 			else
-				nstr=characters;
+				nstr=inputCharacters;
 			break;
 
 		case 8: ch2=0x7f; break;
@@ -1768,15 +1774,12 @@ _vt100ApplicationKeypadString(unichar ch)
 			if (kbdapplic && (mask&NSNumericPadKeyMask))
 				str=_vt100ApplicationKeypadString(ch);
 			if (!str)
-				nstr=characters;
+				nstr=inputCharacters;
 			break;
 		}
 	}
 
 	{
-		BOOL commandAsMeta=[TerminalViewKeyboardPrefs commandAsMeta];
-		BOOL altIsNotMeta =[TerminalViewKeyboardPrefs altIsNotMeta];
-
 		/*
 		Thanks to different keyboard layouts and dumb default key handling
 		in GNUstep, this is a bit complex. There seem to be two main cases:
@@ -1795,8 +1798,7 @@ _vt100ApplicationKeypadString(unichar ch)
 		
 		*/
 
-		if ((commandAsMeta && (mask&NSCommandKeyMask)) ||
-		    (!commandAsMeta && !altIsNotMeta && (mask&NSAlternateKeyMask)))
+		if (meta)
 		{
 			NSDebugLLog(@"key",@"  meta");
 			[ts ts_sendCString: "\e"];
