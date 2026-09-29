@@ -153,7 +153,7 @@
 	menu=[[NSMenu alloc] init];
 
 	/* 'Info' menu */
-	m=[[NSMenu alloc] init];
+	m=[[NSMenu alloc] initWithTitle: _(@"Info")];
 	[m addItemWithTitle: _(@"Info...")
 		action: @selector(orderFrontStandardInfoPanel:)];
 	[m addItemWithTitle: _(@"Preferences...")
@@ -163,8 +163,8 @@
 	[menu setSubmenu: m forItem: [menu addItemWithTitle: _(@"Info")]];
 	[m release];
 
-	/* 'Terminal' menu */
-	m=[[NSMenu alloc] init];
+	/* 'Shell' menu */
+	m=[[NSMenu alloc] initWithTitle: _(@"Shell")];
 	[m addItemWithTitle: _(@"New window")
 		action: @selector(openWindow:)
               keyEquivalent: @"n"];
@@ -176,7 +176,7 @@
 
 
 	/* 'Edit' menu */
-	m=[[NSMenu alloc] init];
+	m=[[NSMenu alloc] initWithTitle: _(@"Edit")];
 	[m addItemWithTitle: _(@"Cut")
 		action: @selector(cut:)
 		keyEquivalent: @"x"];
@@ -190,7 +190,7 @@
 	[m release];
 
 	/* 'View' menu */
-	m=[[NSMenu alloc] init];
+	m=[[NSMenu alloc] initWithTitle: _(@"View")];
 	[m addItemWithTitle: _(@"Show tab bar")
 		action: @selector(showTabBarToggle:)
 		keyEquivalent: @"T"];
@@ -198,7 +198,7 @@
 	[m release];
 
 	/* 'Windows' menu */
-	m=[[NSMenu alloc] init];
+	m=[[NSMenu alloc] initWithTitle: _(@"Windows")];
 	[m addItemWithTitle: _(@"Close window")
 		action: @selector(performClose:)
 		keyEquivalent: @"W"];
@@ -224,7 +224,7 @@
 	[NSApp setWindowsMenu: m];
 	[m release];
 
-	m=[[NSMenu alloc] init];
+	m=[[NSMenu alloc] initWithTitle: _(@"Services")];
 	[menu setSubmenu: m forItem: [menu addItemWithTitle: _(@"Services")]];
 	[NSApp setServicesMenu: m];
 	[m release];
@@ -587,4 +587,3 @@ int main(int argc, char **argv)
 	DESTROY(arp);
 	return 0;
 }
-
