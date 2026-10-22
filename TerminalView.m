@@ -1,4 +1,14 @@
 /*
+ * This file is part of Terminal.app.
+ * Copyright (C) 2026 Terminal contributors.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License, version 3 or later.
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See <https://www.gnu.org/licenses/> for a copy of the license.
+ */
+
+/*
 Copyright (c) 2002-2003 Alexander Malmberg <alexander@malmberg.org>
 Copyright (c) 2005-2017 Riccardo Mottola <rm@gnu.org>
 
@@ -78,7 +88,7 @@ activated */
 #import "TerminalView.h"
 
 #import "TerminalViewPrefs.h"
-#import "TerminalParser_Linux.h"
+#import "TerminalParser_VTerm.h"
 
 #import "StringClasses.h"
 
@@ -611,6 +621,29 @@ static BOOL getBoxDrawingSegments(unichar ch,
 	return YES;
 }
 
+/* Use the engine's full RGB colors, retaining the user's default background
+   preference. Reverse video and selection exchange foreground/background. */
+static NSColor *displayColor(const screen_char_t *cell, BOOL foreground,
+                             BOOL blackOnWhite)
+{
+  BOOL sourceForeground = foreground;
+  VTermColor color;
+  if (cell->attr & 8) sourceForeground = !sourceForeground;
+  if (cell->attr & 0x40) sourceForeground = !sourceForeground;
+  color = sourceForeground ? cell->foreground : cell->background;
+  if (!cell->originalCell.width)
+    return decodeColor(sourceForeground,
+                       sourceForeground ? cell->color & 15 : cell->color & 240,
+                       cell->attr & 3, blackOnWhite);
+  if (VTERM_COLOR_IS_DEFAULT_FG(&color))
+    return decodeColor(YES,7,cell->attr & 3,blackOnWhite);
+  if (VTERM_COLOR_IS_DEFAULT_BG(&color))
+    return blackOnWhite ? [NSColor whiteColor] : [NSColor blackColor];
+  return [NSColor colorWithCalibratedRed:color.rgb.red / 255.0
+                                 green:color.rgb.green / 255.0
+                                  blue:color.rgb.blue / 255.0 alpha:1.0];
+}
+
 static BOOL drawBoxDrawingCharacter(unichar ch, CGFloat x, CGFloat y,
                                     CGFloat width, CGFloat height)
 {
@@ -749,7 +782,8 @@ static BOOL drawBraillePatternCharacter(unichar ch, CGFloat x, CGFloat y,
 		row=dotRow[dot];
 
 		dotX=x+column*cellWidth+(cellWidth-size)/2.0;
-		dotY=y+row*cellHeight+(cellHeight-size)/2.0;
+		/* The view uses bottom-left coordinates; Unicode numbers from the top. */
+		dotY=y+(3-row)*cellHeight+(cellHeight-size)/2.0;
 		[[NSBezierPath bezierPathWithOvalInRect:
 			NSMakeRect(dotX,dotY,size,size)] fill];
 	}
@@ -920,14 +954,12 @@ static BOOL drawFallbackTerminalCharacter(unichar ch, CGFloat x, CGFloat y,
 		strBuf = [[SingleCharString alloc] init];
 		attrs = [[StringAttributesDict alloc] init];
 		/* setting the color is slow, so we try to avoid it */
-		unsigned char l_color,l_attr,color;
+		NSColor *nextColor;
 
 		/* Fill the background of dirty cells. Since the background doesn't
 		change that often, runs of dirty cells with the same background color
 		are combined and drawn with a single rectfill. */
-		l_color=0;
-		l_attr=0;
-		foreColor = decodeColor(YES,l_color,l_attr,blackOnWhite);
+		foreColor = nil;
 		for (iy=y0;iy<y1;iy++)
 		{
 			ry=iy+current_scroll;
@@ -954,40 +986,16 @@ static BOOL drawFallbackTerminalCharacter(unichar ch, CGFloat x, CGFloat y,
 
 				scr_x=ix*fx+border_x;
 
-				if (ch->attr&0x8)
-				{
-					color=ch->color&0xf;
-					if (ch->attr&0x40) color^=0xf;
-					if (color!=l_color || (ch->attr&0x03)!=l_attr)
-					{
-						if (start_x!=-1)
-						{
-							R(foreColor,start_x,scr_y,scr_x-start_x,fy);
-							start_x=scr_x;
-						}
-
-						l_color=color;
-						l_attr=ch->attr&0x03;
-						foreColor = decodeColor(YES,l_color,l_attr,blackOnWhite);
-					}
-				}
-				else
-				{
-					color=ch->color&0xf0;
-					if (ch->attr&0x40) color^=0xf0;
-					if (color!=l_color)
-					{
-						if (start_x!=-1)
-						{
-							R(foreColor,start_x,scr_y,scr_x-start_x,fy);
-							start_x=scr_x;
-						}
-
-						l_color=color;
-						l_attr=ch->attr&0x03;
-						foreColor = decodeColor(NO,l_color,l_attr,blackOnWhite);
-					}
-				}
+                nextColor = displayColor(ch,NO,blackOnWhite);
+                if (![nextColor isEqual:foreColor])
+                  {
+                    if (start_x!=-1)
+                      {
+                        R(foreColor,start_x,scr_y,scr_x-start_x,fy);
+                        start_x=scr_x;
+                      }
+                    foreColor=nextColor;
+                  }
 
 				if (start_x==-1)
 					start_x=scr_x;
@@ -1020,32 +1028,7 @@ static BOOL drawFallbackTerminalCharacter(unichar ch, CGFloat x, CGFloat y,
 
 				scr_x=ix*fx+border_x;
 
-				/* ~1700 cycles/change */
-				if (ch->attr&0x02 || (ch->ch!=0 && ch->ch!=32))
-				{
-					if (!(ch->attr&0x8))
-					{
-						color=ch->color&0xf;
-						if (ch->attr&0x40) color^=0xf;
-						if (color!=l_color || (ch->attr&0x03)!=l_attr)
-						{
-							l_color=color;
-							l_attr=ch->attr&0x03;
-							foreColor = decodeColor(YES,l_color,l_attr,blackOnWhite);
-						}
-					}
-					else
-					{
-						color=ch->color&0xf0;
-						if (ch->attr&0x40) color^=0xf0;
-						if (color!=l_color)
-						{
-							l_color=color;
-							l_attr=ch->attr&0x03;
-							foreColor = decodeColor(NO,l_color,l_attr,blackOnWhite);
-						}
-					}
-				}
+                foreColor = displayColor(ch,YES,blackOnWhite);
 
 				if (ch->ch!=0 && ch->ch!=32 && ch->ch!=MULTI_CELL_GLYPH)
 				{
@@ -1190,6 +1173,8 @@ static BOOL drawFallbackTerminalCharacter(unichar ch, CGFloat x, CGFloat y,
 
 -(void) ts_clearScrollback
 {
+	draw_all=2;
+	[self setNeedsDisplay: YES];
 	sb_length=0;
 	current_scroll=0;
 	if (scroller)
@@ -1197,6 +1182,30 @@ static BOOL drawFallbackTerminalCharacter(unichar ch, CGFloat x, CGFloat y,
 		[scroller setFloatValue: 1.0  knobProportion: 1.0];
 		[scroller setEnabled: NO];
 	}
+}
+
+-(void) ts_appendScrollback: (const screen_char_t *)cells count: (int)count
+{
+  if (max_scrollback <= 0) return;
+  memmove(sbuf, sbuf+sx, (max_scrollback-1)*sx*sizeof(screen_char_t));
+  memset(sbuf+(max_scrollback-1)*sx, 0, sx*sizeof(screen_char_t));
+  memcpy(sbuf+(max_scrollback-1)*sx, cells,
+         MIN(count,sx)*sizeof(screen_char_t));
+  sb_length=MIN(sb_length+1,max_scrollback);
+  [self _updateScroller];
+}
+
+-(BOOL) ts_popScrollback: (screen_char_t *)cells count: (int)count
+{
+  if (!sb_length) return NO;
+  memset(cells, 0, count*sizeof(screen_char_t));
+  memcpy(cells, sbuf+(max_scrollback-1)*sx,
+         MIN(count,sx)*sizeof(screen_char_t));
+  memmove(sbuf+sx, sbuf, (max_scrollback-1)*sx*sizeof(screen_char_t));
+  sb_length--;
+  current_scroll=MAX(current_scroll,-sb_length);
+  [self _updateScroller];
+  return YES;
 }
 
 -(void) ts_putChar: (screen_char_t)ch  count: (int)c  at: (int)x :(int)y
@@ -2098,7 +2107,7 @@ Handle master_fd
 -(void) readData
 {
 	char buf[256];
-	int size,total,i;
+	int size,total;
 
 //	get_zombies();
 
@@ -2158,8 +2167,7 @@ Handle master_fd
 		}
 
 
-		for (i=0;i<size;i++)
-			[tp processByte: buf[i]];
+		[tp processBytes: buf length: size];
 
 		total+=size;
 		/*
@@ -2344,7 +2352,7 @@ Handle master_fd
 		if (cdirectory)
 			if (chdir(cdirectory) < 0)
 				fprintf(stderr, "Unable do set directory: %s\n", cdirectory);
-		putenv("TERM=linux");
+		putenv("TERM=xterm");
 		putenv("TERM_PROGRAM=GNUstep_Terminal");
 		execv(cpath,(char *const*)cargs);
 		fprintf(stderr,"Unable to spawn process '%s': %s!", cpath, strerror(errno));
@@ -2516,7 +2524,7 @@ misc. stuff
 	int nsx,nsy;
 	struct winsize ws;
 	screen_char_t *nscreen,*nsbuf;
-	int iy,ny;
+	int iy;
 	int copy_sx;
 
 	nsx=(size.width-border_x)/fx;
@@ -2567,33 +2575,12 @@ misc. stuff
 
 //	NSLog(@"copy %i+%i %i  (%ix%i)-(%ix%i)\n",start,num,copy_sx,sx,sy,nsx,nsy);
 
-/* TODO: handle resizing and scrollback
-improve? */
-	for (iy=-sb_length;iy<sy;iy++)
-	{
-		screen_char_t *src,*dst;
-		ny=iy-sy+nsy;
-		if (ny<-max_scrollback)
-			continue;
-
-		if (iy<0)
-			src=&sbuf[sx*(max_scrollback+iy)];
-		else
-			src=&screen[sx*iy];
-
-		if (ny<0)
-			dst=&nsbuf[nsx*(max_scrollback+ny)];
-		else
-			dst=&nscreen[nsx*ny];
-
-		memcpy(dst,src,copy_sx*sizeof(screen_char_t));
-	}
-
-	sb_length=sb_length+sy-nsy;
-	if (sb_length>max_scrollback)
-		sb_length=max_scrollback;
-	if (sb_length<0)
-		sb_length=0;
+/* libvterm owns screen resizing. Preserve history here; its callbacks
+           push and pop lines when the visible screen changes height. */
+        for (iy=-sb_length; iy<0; iy++)
+          memcpy(&nsbuf[nsx*(max_scrollback+iy)],
+                 &sbuf[sx*(max_scrollback+iy)],
+                 copy_sx*sizeof(screen_char_t));
 
         cursor_y = nsy-(sy-cursor_y);
         
@@ -2687,7 +2674,7 @@ improve? */
 	sbuf=malloc(sizeof(screen_char_t)*sx*max_scrollback);
 	memset(sbuf,0,sizeof(screen_char_t)*sx*max_scrollback);
 
-	tp=[[TerminalParser_Linux alloc] initWithTerminalScreen: self
+	tp=[[TerminalParser_VTerm alloc] initWithTerminalScreen: self
 		width: sx  height: sy];
 
 	master_fd=-1;

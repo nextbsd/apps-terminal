@@ -1,4 +1,14 @@
 /*
+ * This file is part of Terminal.app.
+ * Copyright (C) 2026 Terminal contributors.
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License, version 3 or later.
+ * This program is distributed WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
+ * See <https://www.gnu.org/licenses/> for a copy of the license.
+ */
+
+/*
   copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
 
   2009-2016 GAP Project
@@ -57,7 +67,6 @@
 #import "TerminalViewPrefs.h"
 #import "TerminalWindow.h"
 #import "TerminalWindowPrefs.h"
-#import "TerminalParser_LinuxPrefs.h"
 
 @interface NSMenu (helpers)
 -(id <NSMenuItem>) addItemWithTitle: (NSString *)s;
@@ -131,9 +140,6 @@
 		[pwc addPrefBox: pb];
 		DESTROY(pb);
 
-		pb=[[TerminalParser_LinuxPrefs alloc] init];
-		[pwc addPrefBox: pb];
-		DESTROY(pb);
 	}
 	[pwc showWindow: self];
 }
