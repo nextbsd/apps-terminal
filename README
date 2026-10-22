@@ -146,22 +146,12 @@ Accept types
 Terminal emulation
 ------------------
 
-Terminal emulation uses the same bundled libvterm 0.3.3 sources as
-apps-prompt. The library is compiled into the application; no system
-libvterm installation is needed. Its MIT license is in libvterm/LICENSE
-and is included in the application resources.
-
-TERM is set to 'xterm', and TERM_PROGRAM remains 'GNUstep_Terminal'.
-libvterm owns escape parsing, UTF-8 decoding, cursor and keyboard modes,
-normal/alternate screens, terminal replies, and bracketed paste. The old
-Linux parser character-set preference is no longer used; sessions use UTF-8.
-The display supports RGB and 256-color output, and one BMP character per
-cell; supplementary characters are shown as replacement glyphs. CSI s/u
-save and restore the cursor (CSI s sets margins when DECLRMM is enabled). Full libvterm cells are preserved in history
-for restoration during resizing.
-
-Run 'make check' for the emulator integration regression tests.
-Run 'make check-gui' for view and drawing tests on an isolated Xvfb display.
+The terminal emulation code is based on Linux's console code, and nearly
+all parts of it are handled. Thus, the TERM environment variable is set
+to 'linux'. Additionally, 'vt100', 'vt220', 'xterm', and others similar
+to these should mostly work. To distinguish Terminal.app from a 'real'
+linux console, the environment variable TERM_PROGRAM is set to
+'GNUstep_Terminal'.
 
 
 The xterm extensions for setting the window's title are also supported.
@@ -173,4 +163,10 @@ You set the title using:
 
 Example (from Jeff Teunissen):
  export PROMPT_COMMAND='echo -ne "\033]2;Terminal - ${HOSTNAME}:${PWD}\007"'
+
+
+(The terminal emulation code is fairly modular. If you want to write a
+terminal emulation class for some other terminal, contact me and I'll
+do the remaining cleanups necessary to load terminal emulation classes
+from bundles.)
 

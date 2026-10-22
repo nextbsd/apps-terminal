@@ -1,14 +1,4 @@
 /*
- * This file is part of Terminal.app.
- * Copyright (C) 2026 Terminal contributors.
- * This program is free software: you can redistribute it and/or modify it
- * under the terms of the GNU General Public License, version 3 or later.
- * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See <https://www.gnu.org/licenses/> for a copy of the license.
- */
-
-/*
 Copyright 2002, 2003 Alexander Malmberg <alexander@malmberg.org>
 Copyright 2009-2012 Free Software Foundation Inc.
 
@@ -32,10 +22,6 @@ of the License. See COPYING or main.m for more information.
 #import <AppKit/NSTableColumn.h>
 #import <AppKit/NSPanel.h>
 #import <AppKit/NSBox.h>
-#import <AppKit/NSImage.h>
-#import <AppKit/NSColor.h>
-#import <AppKit/NSBezierPath.h>
-#include <math.h>
 #import <GNUstepGUI/GSHbox.h>
 #import <GNUstepGUI/GSVbox.h>
 
@@ -44,99 +30,6 @@ of the License. See COPYING or main.m for more information.
 #import "PrefBox.h"
 
 
-/* Small vector icons share the same canvas and stroke weight. */
-static void
-preferenceIconLine (CGFloat x1, CGFloat y1, CGFloat x2, CGFloat y2)
-{
-  NSBezierPath *path = [NSBezierPath bezierPath];
-  [path setLineWidth: 2];
-  [path moveToPoint: NSMakePoint(x1,y1)];
-  [path lineToPoint: NSMakePoint(x2,y2)];
-  [path stroke];
-}
-
-static NSImage *
-preferenceIcon (NSString *category)
-{
-  NSImage *image = AUTORELEASE([[NSImage alloc] initWithSize: NSMakeSize(36,36)]);
-  NSColor *ink = [NSColor colorWithCalibratedRed: .18 green: .27 blue: .34 alpha: 1];
-  NSColor *accent = [NSColor colorWithCalibratedRed: .25 green: .58 blue: .72 alpha: 1];
-  NSBezierPath *path;
-  int row, column;
-  [image lockFocus];
-  [ink set];
-  if ([category isEqual: @"TerminalViewKeyboardPrefs"])
-    {
-      path = [NSBezierPath bezierPathWithRoundedRect: NSMakeRect(2,7,32,22)
-                                           xRadius: 3 yRadius: 3];
-      [path setLineWidth: 2];
-      [path stroke];
-      [accent set];
-      for (row=0; row<2; row++)
-        for (column=0; column<5; column++)
-          [[NSBezierPath bezierPathWithRect:
-            NSMakeRect(6+column*5,18+row*5,3,3)] fill];
-      [[NSBezierPath bezierPathWithRect: NSMakeRect(10,11,16,3)] fill];
-    }
-  else if ([category isEqual: @"TerminalServicesPrefs"])
-    {
-      /* Gear: services and automation. */
-      for (column=0; column<8; column++)
-        {
-          CGFloat a=column*M_PI/4;
-          preferenceIconLine(18+11*cos(a),18+11*sin(a),
-                             18+16*cos(a),18+16*sin(a));
-        }
-      path = [NSBezierPath bezierPathWithOvalInRect: NSMakeRect(7,7,22,22)];
-      [accent set];
-      [path fill];
-      [ink set];
-      [path setLineWidth: 2];
-      [path stroke];
-      path = [NSBezierPath bezierPathWithOvalInRect: NSMakeRect(14,14,8,8)];
-      [path stroke];
-    }
-  else
-    {
-      if ([category isEqual: @"TerminalWindowPrefs"])
-        {
-          path = [NSBezierPath bezierPathWithRect: NSMakeRect(9,12,25,21)];
-          [path setLineWidth: 2];
-          [path stroke];
-        }
-      path = [NSBezierPath bezierPathWithRoundedRect: NSMakeRect(3,9,27,21)
-                                           xRadius: 2 yRadius: 2];
-      [[NSColor colorWithCalibratedWhite: .94 alpha: 1] set];
-      [path fill];
-      [ink set];
-      [path setLineWidth: 2];
-      [path stroke];
-      if ([category isEqual: @"TerminalViewShellPrefs"])
-        {
-          [accent set];
-          preferenceIconLine(8,24,13,20);
-          preferenceIconLine(13,20,8,16);
-          preferenceIconLine(16,15,24,15);
-        }
-      else if ([category isEqual: @"TerminalWindowPrefs"])
-        {
-          [accent set];
-          preferenceIconLine(4,25,29,25);
-          preferenceIconLine(7,28,10,28);
-        }
-      else
-        {
-          [accent set];
-          [[NSBezierPath bezierPathWithRect: NSMakeRect(7,13,19,13)] fill];
-          [ink set];
-          preferenceIconLine(16,9,16,4);
-          preferenceIconLine(10,3,22,3);
-        }
-    }
-  [image unlockFocus];
-  return image;
-}
-
 /*
 Changing the font in TerminalViewPrefs won't work unless the panel can be
 the main window (the font panel gets confused about where to send the
@@ -144,7 +37,6 @@ the main window (the font panel gets confused about where to send the
 won't be necessary.
 */
 @interface PreferencesPanel : NSPanel
-
 @end
 
 @implementation PreferencesPanel
@@ -152,7 +44,6 @@ won't be necessary.
 {
 	return YES;
 }
-
 @end
 
 
@@ -200,7 +91,7 @@ won't be necessary.
 			[b setAction: @selector(revert:)];
 			[b sizeToFit];
 			[hbox addView: b];
-			RELEASE(b);
+			[b release];
 
 			b=[[NSButton alloc] init];
 			[b setTitle: _(@"Apply and save")];
@@ -209,10 +100,10 @@ won't be necessary.
 			[b setAction: @selector(save:)];
 			[b sizeToFit];
 			[hbox addView: b];
-			RELEASE(b);
+			[b release];
 
 			[vbox addView: hbox  enablingYResizing: NO];
-			RELEASE(hbox);
+			[hbox release];
 		}
 
 		{
@@ -227,17 +118,17 @@ won't be necessary.
 			NSScrollView *sv;
 			NSSize s;
 
-			button_box=[[NSView alloc] initWithFrame: NSMakeRect(0,0,1,88)];
+			button_box=[[GSHbox alloc] init];
 
-			s=[NSScrollView frameSizeForContentSize: NSMakeSize(1,88)
-				hasHorizontalScroller: NO
-				hasVerticalScroller: NO
-				borderType: NSBezelBorder];
+			s=[NSScrollView frameSizeForContentSize: NSMakeSize(1,68)
+				hasHorizontalScroller: YES
+				hasVerticalScroller: YES
+				borderType: NSNoBorder]; /* TODO? */
 
 			sv=[[NSScrollView alloc] initWithFrame: NSMakeRect(0,0,1,s.height)];
 			[sv setDocumentView: button_box];
 			[sv setAutoresizingMask: NSViewWidthSizable|NSViewHeightSizable];
-			[sv setHasHorizontalScroller: NO];
+			[sv setHasHorizontalScroller: YES];
 			[sv setBorderType: NSBezelBorder];
 
 			[vbox addView: sv  enablingYResizing: NO];
@@ -245,7 +136,7 @@ won't be necessary.
 		}
 
 		[win setContentView: vbox];
-		RELEASE(vbox);
+		[vbox release];
 	}
 	[win setDelegate: self];
 	[win setTitle: _(@"Preferences")];
@@ -256,7 +147,7 @@ won't be necessary.
 
 	[win autoSetupKeyViewChain];
 
-	RELEASE(win);
+	[win release];
 
 	pref_boxes=[[NSMutableArray alloc] init];
 	pref_buttons=[[NSMutableArray alloc] init];
@@ -275,7 +166,7 @@ won't be necessary.
 	DESTROY(pref_boxes);
 	DESTROY(pref_buttons);
 	DESTROY(button_box);
-	DEALLOC;
+	[super dealloc];
 }
 
 
@@ -331,37 +222,14 @@ won't be necessary.
 	[pref_buttons addObject: b];
 
 	[pb setupButton: b];
-  [b setImage: preferenceIcon(NSStringFromClass([pb class]))];
-  [b setImagePosition: NSImageAbove];
-  [b setAutoresizingMask: NSViewNotSizable];
+	if ([b frame].size.height<=64)
+		[b setFrame: NSMakeRect(0,0,[b frame].size.width,64)];
 	[b setTarget: self];
 	[b setAction: @selector(_displayBoxButton:)];
 	[b setButtonType: NSPushOnPushOffButton];
-  [button_box addSubview: b];
-  RELEASE(b);
-  {
-    NSUInteger i;
-    CGFloat width = 88;
-    for (i=0; i<[pref_buttons count]; i++)
-      width = MAX(width,ceil([[[pref_buttons objectAtIndex:i] cell] cellSize].width)+16);
-    [button_box setFrameSize: NSMakeSize(width*[pref_buttons count],88)];
-    for (i=0; i<[pref_buttons count]; i++)
-      [[pref_buttons objectAtIndex:i] setFrame: NSMakeRect(i*width,0,width,88)];
-    /* Include the scroll-view border and window chrome, including when a
-       narrower frame was restored from an earlier version's preferences. */
-    NSWindow *window = [self window];
-    NSRect frame = [window frame];
-    NSSize minimum = [window minSize];
-    CGFloat chrome = frame.size.width
-      - [[button_box enclosingScrollView] contentSize].width;
-    minimum.width = MAX(480,ceil(width*[pref_buttons count]+chrome));
-    [window setMinSize: minimum];
-    if (frame.size.width < minimum.width)
-      {
-        frame.size.width = minimum.width;
-        [window setFrame: frame display: YES];
-      }
-  }
+	[button_box addView: b];
+	[b release];
+	[button_box sizeToFit];
 
 	if (!current)
 		[self _displayBox: pb];

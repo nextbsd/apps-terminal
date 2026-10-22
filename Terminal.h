@@ -1,14 +1,4 @@
 /*
- * This file is part of Terminal.app.
- * Copyright (C) 2026 Terminal contributors.
- * This program is free software: you can redistribute it and/or modify it
- * under the terms of the GNU General Public License, version 3 or later.
- * This program is distributed WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.
- * See <https://www.gnu.org/licenses/> for a copy of the license.
- */
-
-/*
 copyright 2002 Alexander Malmberg <alexander@malmberg.org>
 
 This file is a part of Terminal.app. Terminal.app is free software; you
@@ -20,16 +10,9 @@ of the License. See COPYING or main.m for more information.
 #ifndef Terminal_h
 #define Terminal_h
 
-#include <vterm.h>
-
-
 
 typedef struct
 {
-	/* Preserve full cells when history is restored after a resize. */
-	VTermScreenCell originalCell;
-	/* Resolved display colors; original palette indices stay in history. */
-	VTermColor foreground, background;
 	unichar ch;
 	unsigned char color;
 	unsigned char attr;
@@ -51,7 +34,6 @@ bits
 
 
 @protocol TerminalScreen
-
 -(void) ts_sendCString: (const char *)str;
 -(void) ts_sendCString: (const char *)msg  length: (int)len;
 
@@ -71,25 +53,19 @@ complete. (TODO check this) */
 -(void) ts_setTitle: (NSString *)new_title  type: (int)title_type;
 -(void) ts_setCursorVisible: (BOOL)visible;
 -(void) ts_clearScrollback;
--(void) ts_appendScrollback: (const screen_char_t *)cells count: (int)count;
--(BOOL) ts_popScrollback: (screen_char_t *)cells count: (int)count;
 
 
 -(BOOL) useMultiCellGlyphs;
 -(int) relativeWidthOfCharacter: (unichar)ch;
-
 @end
 
 
 @protocol TerminalParser
-
 - initWithTerminalScreen: (id<TerminalScreen>)ats  width: (int)w  height: (int)h;
 -(void) processByte: (unsigned char)c;
--(void) processBytes: (const char *)bytes length: (NSUInteger)length;
 -(void) setTerminalScreenWidth: (int)w height: (int)h;
 -(void) handleKeyEvent: (NSEvent *)e;
 -(void) sendString: (NSString *)str;
-
 @end
 
 

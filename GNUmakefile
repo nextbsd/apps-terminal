@@ -51,7 +51,8 @@ Terminal_OBJC_FILES = \
 	TerminalView.m \
 	TerminalViewPrefs.m \
 	\
-	TerminalParser_VTerm.m \
+	TerminalParser_Linux.m \
+	TerminalParser_LinuxPrefs.m \
 	\
 	PreferencesWindowController.m \
 	autokeyviewchain.m \
@@ -60,13 +61,23 @@ Terminal_OBJC_FILES = \
 
 
 
-ifneq ($(findstring solaris, $(GNUSTEP_TARGET_OS)), solaris)
+ifeq ($(findstring solaris, $(GNUSTEP_TARGET_OS)), solaris)
+ Terminal_TOOL_LIBS += -liconv
+else
+
+ifeq ($(findstring freebsd, $(GNUSTEP_TARGET_OS)), freebsd)
+# Exclude GNU/kFreeBSD (kfreebsd-gnu) where iconv is part of glibc.
+ifeq ($(findstring gnu, $(GNUSTEP_TARGET_OS)),)
+ Terminal_TOOL_LIBS += -liconv 
+endif
+endif
+
  Terminal_TOOL_LIBS += -lutil
 endif
 
-Terminal_C_FILES = $(wildcard libvterm/src/*.c)
-Terminal_INCLUDE_DIRS = -Ilibvterm/include
-Terminal_CFLAGS = -std=c99
+ifeq ($(findstring openbsd, $(GNUSTEP_TARGET_OS)), openbsd)
+ Terminal_TOOL_LIBS += -liconv
+endif
 
 Terminal_LOCALIZED_RESOURCE_FILES = Localizable.strings
 Terminal_LANGUAGES = English Swedish German French Spanish Hungarian Turkish Norwegian Russian Italian Japanese
@@ -74,7 +85,6 @@ Terminal_LANGUAGES = English Swedish German French Spanish Hungarian Turkish Nor
 Terminal_APPLICATION_ICON = Terminal.tiff
 Terminal_RESOURCE_FILES = \
 	Resources/Terminal.tiff \
-	Resources/libvterm-LICENSE.txt \
 	Resources/DefaultTerminalServices.svcs \
 	Resources/cursor_line.tiff \
 	Resources/cursor_stroked.tiff \
@@ -88,9 +98,3 @@ MAKE_STRINGS_OPTIONS = --aggressive-match --aggressive-remove
 
 include $(GNUSTEP_MAKEFILES)/application.make
 
-
-check:: all
-	$(MAKE) -C Tests check
-
-check-gui:: all
-	$(MAKE) -C Tests check-gui
