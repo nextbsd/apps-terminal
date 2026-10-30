@@ -102,32 +102,32 @@ of the License. See COPYING or main.m for more information.
 
 -(void) revert
 {
-	NSDictionary *d;
+  NSDictionary	*d;
 
-	[list deselectAll: self];
-	DESTROY(services);
-	DESTROY(service_list);
+  [list deselectAll: self];
+  DESTROY(services);
+  DESTROY(service_list);
 
-	services=[[NSMutableDictionary alloc] init];
-	d=[TerminalServices terminalServicesDictionary];
+  services = [[NSMutableDictionary alloc] init];
+  d = [TerminalServices terminalServicesDictionary];
 
-	{
-		NSEnumerator *e=[d keyEnumerator];
-		NSString *key;
-		while ((key=[e nextObject]))
-		{
-			[services setObject: [[d objectForKey: key] mutableCopy]
-				forKey: key];
-		}
-	}
+  {
+    NSEnumerator	*e = [d keyEnumerator];
+    NSString 		*key;
 
-	service_list=[[[services allKeys]
-		sortedArrayUsingSelector: @selector(compare:)]
-		mutableCopy];
+    while ((key = [e nextObject]))
+      {
+	[services setObject: AUTORELEASE([[d objectForKey: key] mutableCopy])
+		     forKey: key];
+      }
+  }
 
-	[list reloadData];
-	current=-1;
-	[self tableViewSelectionDidChange: nil];
+  service_list = [[[services allKeys]
+    sortedArrayUsingSelector: @selector(compare:)] mutableCopy];
+
+  [list reloadData];
+  current = -1;
+  [self tableViewSelectionDidChange: nil];
 }
 
 
