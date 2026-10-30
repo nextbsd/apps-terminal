@@ -420,7 +420,13 @@ static int total_draw=0;
 
 	SCREEN(cursor_x,cursor_y).attr|=0x80;
 	draw_cursor=YES;
-	[self setNeedsLazyDisplayInRect: [self _cursorCellRect]];
+
+	/* NB. If this view is being removed from its window we cannot ask
+	 * for it to be displayed.  The removal process removes the parent
+         * view first, so we can check that to avoid 
+         */
+	if ([_super_view window])
+		[self setNeedsLazyDisplayInRect: [self _cursorCellRect]];
 }
 
 -(void) _cursorBlink: (NSTimer *)timer
