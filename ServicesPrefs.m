@@ -49,7 +49,7 @@ of the License. See COPYING or main.m for more information.
 		new_name=name;
 	d=[services objectForKey: name];
 	if (!d)
-		d=[[NSMutableDictionary alloc] init];
+		d=[NSMutableDictionary dictionary];
 
 	[d setObject: [tf_key stringValue]
 		forKey: Key];
@@ -93,7 +93,7 @@ of the License. See COPYING or main.m for more information.
 
 	if (![services isEqual: [TerminalServices terminalServicesDictionary]])
 	{
-		[ud setObject: [services copy]
+		[ud setObject: AUTORELEASE([services copy])
 			forKey: @"TerminalServices"];
 
 		[TerminalServices updateServicesPlist];
