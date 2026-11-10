@@ -73,6 +73,7 @@ activated */
 #import <Foundation/NSCharacterSet.h>
 #import <Foundation/NSArchiver.h>
 #import <GNUstepBase/Unicode.h>
+#import <GNUstepGUI/GSTheme.h>
 #import <AppKit/NSApplication.h>
 #import <AppKit/NSPasteboard.h>
 #import <AppKit/NSDragging.h>
@@ -503,6 +504,13 @@ static int total_draw=0;
 }
 
 
+
+/* A theme can supply these colors; without them the defaults apply. */
+static NSColor *themeTerminalColor(NSString *name)
+{
+  return [[[GSTheme theme] colors] colorWithKey: name];
+}
+
 static const float col_h[8]={  0,240,120,180,  0,300, 60,  0};
 static const float col_s[8]={0.0,1.0,1.0,1.0,1.0,1.0,1.0,0.0};
 
@@ -575,6 +583,13 @@ static NSColor* decodeColor(BOOL forForeground,
         if (forForeground && in==2)
           s*=0.75;
 
+	if (forForeground && !blackOnWhite && (c == 1 || color == 0))
+	  {
+	    NSColor *themed = themeTerminalColor(c == 1 ? @"terminalBlueColor" : @"terminalBlackColor");
+	    if (themed)
+	      return themed;
+	  }
+
 	return [NSColor colorWithCalibratedHue:h saturation:s brightness:b alpha:1];
 }
 
@@ -638,7 +653,19 @@ static NSColor *displayColor(const screen_char_t *cell, BOOL foreground,
   if (color.kind==TerminalColorDefaultForeground)
     return decodeColor(YES,7,cell->attr & 3,blackOnWhite);
   if (color.kind==TerminalColorDefaultBackground)
-    return blackOnWhite ? [NSColor whiteColor] : [NSColor blackColor];
+    {
+      NSColor *themed = blackOnWhite ? nil : themeTerminalColor(@"terminalBackgroundColor");
+      if (themed)
+        return themed;
+      return blackOnWhite ? [NSColor whiteColor] : [NSColor blackColor];
+    }
+  /* ANSI colors reach us as RGB, so match the two a theme can restyle. */
+  if (sourceForeground && !blackOnWhite && color.rgb.red == 0 && color.rgb.green == 0)
+    {
+      NSColor *themed = themeTerminalColor(color.rgb.blue ? @"terminalBlueColor" : @"terminalBlackColor");
+      if (themed)
+        return themed;
+    }
   return [NSColor colorWithCalibratedRed:color.rgb.red / 255.0
                                  green:color.rgb.green / 255.0
                                   blue:color.rgb.blue / 255.0 alpha:1.0];
@@ -905,7 +932,7 @@ static BOOL drawFallbackTerminalCharacter(unichar ch, CGFloat x, CGFloat y,
 		if (blackOnWhite)
                   [[NSColor whiteColor] set];
 		else
-		  [[NSColor blackColor] set];
+		  [(themeTerminalColor(@"terminalBackgroundColor") ?: [NSColor blackColor]) set];
                 
 		if (r.origin.x<border_x)
 		  [NSBezierPath fillRect:NSMakeRect(r.origin.x,r.origin.y,border_x-r.origin.x,r.size.height)];
@@ -2638,6 +2665,10 @@ misc. stuff
 	sy=25;
 
 	if (!(self=[super initWithFrame: frame])) return nil;
+	[[NSNotificationCenter defaultCenter] addObserver: self
+		selector: @selector(_themeDidActivate:)
+		name: GSThemeDidActivateNotification
+		object: nil];
 
 	{
 		NSSize s;
@@ -2709,6 +2740,12 @@ misc. stuff
 		object: nil];
 
 	return self;
+}
+
+-(void) _themeDidActivate: (NSNotification *)notification
+{
+	draw_all=1;
+	[self setNeedsDisplay: YES];
 }
 
 -(void) dealloc
