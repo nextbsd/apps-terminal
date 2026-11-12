@@ -149,6 +149,14 @@
 {
 }
 
+/* Keep running when the last window closes (libs-gui quits by default in
+   the in-window menu style); a new window can be opened from the menu or
+   the Dock. */
+-(BOOL) applicationShouldTerminateAfterLastWindowClosed: (NSApplication *)sender
+{
+	return NO;
+}
+
 
 -(void) applicationWillFinishLaunching: (NSNotification *)n
 {
