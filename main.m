@@ -223,9 +223,12 @@
 	[m addItemWithTitle: _(@"Move tab right")
 		action: @selector(moveTabRight:)
 		keyEquivalent: @")"];
+	[m addItemWithTitle: _(@"Miniaturize window")
+		action: @selector(performMiniaturize:)
+		keyEquivalent: @"m"];
 	[m addItemWithTitle: _(@"Miniaturize all")
 		action: @selector(miniaturizeAll:)
-		keyEquivalent: @"m"];
+		keyEquivalent: @"M"];
 	[menu setSubmenu: m forItem: [menu addItemWithTitle: _(@"Windows")]];
 	[NSApp setWindowsMenu: m];
 	[m release];

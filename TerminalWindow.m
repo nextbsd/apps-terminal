@@ -123,7 +123,10 @@ NSString *TerminalWindowNoMoreActiveWindowsNotification=
 	[hb addView: scroller  enablingXResizing: NO];
 	[scroller release];
 
-	tab_view = [[NSTabView alloc] init];
+	/* A real size, so the tab item's view isn't sized from a zero-sized
+	   tab view (that logged "given negative width/height"). */
+	tab_view = [[NSTabView alloc] initWithFrame:
+		NSMakeRect(0, 0, contentSize.width, contentSize.height)];
 	[tab_view setDelegate:self];
 	tab_item = [[NSTabViewItem alloc] init];
 	[tab_item setLabel:@"Terminal"];
