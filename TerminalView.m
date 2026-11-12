@@ -1142,6 +1142,22 @@ static BOOL drawFallbackTerminalCharacter(unichar ch, CGFloat x, CGFloat y,
 	[super setNeedsDisplayInRect: r];
 }
 
+/* A lazy update (draw_all==0) paints only the cells marked dirty and
+relies on the window keeping the rest. A display of more than what was
+marked lazily, such as the window redrawing itself after a screen change,
+must paint every cell, or the unmarked ones stay blank until the program
+prints something. */
+-(void) displayRectIgnoringOpacity: (NSRect)r
+	inContext: (NSGraphicsContext *)context
+{
+	NSRect needed=NSIntersectionRect(r,[self visibleRect]);
+
+	if (draw_all==0 && !NSIsEmptyRect(needed) &&
+	    !NSContainsRect(_invalidRect,needed))
+		draw_all=2;
+	[super displayRectIgnoringOpacity: r inContext: context];
+}
+
 
 -(void) benchmark: (id)sender
 {
@@ -2669,6 +2685,10 @@ misc. stuff
 		selector: @selector(_themeDidActivate:)
 		name: GSThemeDidActivateNotification
 		object: nil];
+	[[NSNotificationCenter defaultCenter] addObserver: self
+		selector: @selector(_screenParametersDidChange:)
+		name: NSApplicationDidChangeScreenParametersNotification
+		object: nil];
 
 	{
 		NSSize s;
@@ -2745,6 +2765,14 @@ misc. stuff
 -(void) _themeDidActivate: (NSNotification *)notification
 {
 	draw_all=1;
+	[self setNeedsDisplay: YES];
+}
+
+/* The screen changed: the window may have moved or lost its contents, so
+redraw every cell. */
+-(void) _screenParametersDidChange: (NSNotification *)notification
+{
+	draw_all=2;
 	[self setNeedsDisplay: YES];
 }
 
